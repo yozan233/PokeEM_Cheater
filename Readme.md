@@ -1,4 +1,4 @@
-# PokeEM-Cheater
+# PokeEM_Cheater
 
 * 如何使用
 1. 将devkitPro\devkitARM\bin目录添加到PATH变量
