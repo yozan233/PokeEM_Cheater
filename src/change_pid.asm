@@ -218,7 +218,7 @@ create_shiny_pid:
 	ldr r0, =0x0000FFF8
 	and r3, r0
 	lsl r4, r3, #0x0
-	ldr r3, =0x0806F5CD @;rng
+	ldr r3, =0x0806F5CD @;Random
 	mov r11, r1
 	str r2, [sp, #0x4]
 	mov r9, r3

@@ -7,7 +7,8 @@ extern void load_icons(void);
 extern void task_02(u8 task_id);
 const struct rbox_short rbox_table[] __attribute__((align(4))) = 
 {
-	{0x00, 0x01, 0x01, 0x1C, 0xF, 0x0F, 0x57, 0x00},{0x00, 0x01, 0x11, 0x1C, 0x02, 0x0F, 0x00, 0x00}
+	// {0x00, 0x01, 0x01, 0x1C, 0xF, 0x0F, 0x57},{0x00, 0x01, 0x11, 0x1C, 0x02, 0x0F, 0x00}
+	{0x00,0x01,0x01,0x1C,0xF,0x0F,0x57,0x00},{0xFF,0,0,0,0,0,0},{0,1,0x11,28,2,0xF,0}
 };
 //	.byte 0x00, 0x01, 0x01, 0x1C, 0xF, 0x0F, 0x57, 0x00
 //	.byte 0x00, 0x01, 0x11, 0x1C, 0x02, 0x0F, 0x00, 0x00
@@ -19,13 +20,12 @@ void task_loader(u8 task_id)
 	switch(*(*malloc_pointer_loc+2))
 	{
 		case 0:
-			vblank_handler_set((void*)0);
-			strbData->mode=0;
-			strbData->select=0;
-			strbData->over=0;
-			strbData->party=0;
+			SetVBlankCallback((void*)0);
+			myTempData->page=0;
+			myTempData->select=0;
+			myTempData->over=0;
+			myTempData->party=0;
 			sub_bg_init();
-			// setData();
 			load_icons();
 			break;
 		case 1:
@@ -33,42 +33,42 @@ void task_loader(u8 task_id)
 				return;
 			else break;
 		case 2:
-			gpu_copy_to_tileset(0,0x0850E87C,0x120,0x2FF);//box_title
+			LoadBgTiles(0,0x0850E87C,0x120,0x2FF);//box_title
 			box_palxE();
 			
 			//内容盒子
-			rbox_calc_and_send(rbox_table);
-			remo_clear_unk();
+			InitWindows(rbox_table);
+			DeactivateAllTextPrinters();
 			set_text(0);
-			rboxid_bg_prepare(0);
+			PutWindowTilemap(0);
 			
 			
 			//活动盒子
-			temp = rbox_spawn(rbox_table+1);
-			strbData->boxid = temp;
+			temp = AddWindow(rbox_table+2);
+			myTempData->boxid = temp;
 			box_draw(temp,0xE);
-			rboxid_print(temp,1,text_table,6,0,0,0); //按键提示盒子
+			AddTextPrinterParameterized(temp,1,text_table,6,0,0,0); //按键提示盒子
 			
 			u16 crc = CalcCRC16WithTable(text_table+0x1C9,0x17);
 			//(text_table+0x1E0) - (text_table+0x1C9)
 			// x+1E0-x-1C9
 			// 0x1E0-0x1C9
 			// 0x17
-			//testr();
+			// MyTest();
 						
-			if (crc != 0x8E73){
+			if (crc != 0x97AB){
 				DoSoftReset();
 			}
 			
-			lcd_io_set(0xA,0x1E07);
-			lcd_io_set(0x48,0x1F3F);
-			lcd_io_set(0x4A,0x0F1F);
-			bgid_send_tilemap(0);
-			bgid_send_tilemap(1);
+			SetGpuReg(0xA,0x1E07);
+			SetGpuReg(0x48,0x1F3F);
+			SetGpuReg(0x4A,0x0F1F);
+			CopyBgTilemapBufferToVram(0);
+			CopyBgTilemapBufferToVram(1);
 			break;
 		case 3:
-			oak_fade(0xFFFFFFFF,0,0x10,0,0); //make it come back to bright
-			vblank_handler_set(vblank_cb_080F4BFC); //will update the fade_ctrl
+			BeginNormalPaletteFade(0xFFFFFFFF,0,0x10,0,0); //make it come back to bright
+			SetVBlankCallback(VBlankCB_SelectScreen); //will update the fade_ctrl
 			break;
 		default:
 			if(!((pal_fade_control->mix_color) >> 8 & 0x80))

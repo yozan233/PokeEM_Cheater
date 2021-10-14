@@ -2,11 +2,11 @@
 .global load_icons @make it a global function
 .thumb_func @make the assembler know that the function is in thumb
 
-.equ gpu_pal_obj_alloc_tag_and_apply, 0x8008745
+.equ LoadSpritePalette, 0x8008745
 .equ pal_gfx, 0x8DDE1F8
-.equ pokemon_getattr, 0x806A519
-.equ gpu_tile_obj_alloc_tag_and_upload, 0x80084F9
-.equ template_instanciate_forward_search, 0x8006DF5
+.equ GetMonData, 0x806A519
+.equ LoadSpriteSheet, 0x80084F9
+.equ CreateSprite, 0x8006DF5
 .equ obj_palette, 0x02037914
 .equ icons_pal, 0x0857C540
 .equ objects, 0x02020630
@@ -140,7 +140,7 @@ mov r0, sp
 mov r1, #0x22
 mov r2, #0xC
 mov r3, #0
-ldr r4, =template_instanciate_forward_search
+ldr r4, =CreateSprite
 bl bx_r4
 ldr r4, =var_8004
 strb r0, [r4,#0x6]
@@ -204,7 +204,7 @@ mov r0, sp
 mov r1, #0x2E	@;横坐标
 mov r2, #0x4C	@;纵坐标
 mov r3, #0x0
-ldr r4, =template_instanciate_forward_search
+ldr r4, =CreateSprite
 bl bx_r4
 
 add sp, sp, #0x18

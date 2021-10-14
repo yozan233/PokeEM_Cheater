@@ -1,12 +1,72 @@
 #include "types.h"
-/*macroinstructions*/
 
-/*structs*/
-struct graphic
+/* define */
+#define BUTTONS_A 1
+#define BUTTONS_B 2
+#define BUTTONS_SELECT 4
+#define BUTTONS_START 8
+#define BUTTONS_RIGHT 0x10
+#define BUTTONS_LEFT 0x20
+#define BUTTONS_UP 0x40
+#define BUTTONS_DOWN 0x80
+#define BUTTONS_R 0x100
+#define BUTTONS_L 0x200
+
+#define TRUE 1
+#define FALSE 0
+
+#define PAGE_MAIN 0
+#define PAGE_POKE_INFO 0x10
+#define PAGE_POKE_INFO2 0x11
+#define PAGE_IVS 0x12
+#define PAGE_EVS 0x13
+#define PAGE_MOVES 0x14
+#define PAGE_SPECIE 0x15
+#define PAGE_POKE_NAME 0x16
+#define PAGE_ITEMS 0x20
+#define PAGE_OTHER 0x30
+#define PAGE_PLAYER_NAME 0x31
+
+#define GENDER_ALL_MALE 0 //全雄性
+#define GENDER_FEMALE 1 //雌性
+#define GENDER_MALE 2 //雄性
+#define GENDER_ALL_FEMALE 3 //全雌性
+#define GENDER_NONE 4 //无性别
+
+#define BALLS_POCKET 1
+
+#define VAR_8004 0x020375E0
+#define gSprites 0x02020630
+
+#define OBJ_PaletteMem2 0x02037D14
+#define gSpeciesNames_Pointer 0x08000144 //精灵种族名字
+#define gBaseStats_Pointer 0x080001BC //精灵种族值
+#define gMonIconTable_Pointer 0x8000138 //精灵小图标
+#define gMoveNames_Pointer 0x08000148 //技能名称
+#define gMonIconPaletteIndices_Pointer 0x800013C //精灵小图标调色板编号
+#define gExperienceTables_Pointer 0x0806DFF0 //经验值表
+#define gAbilityNames_Pointer 0x080001C0 //特性名字
+#define qhAbilityNames 0x082E99F8 //漆黑特性名字2
+#define gBattleMoves_Pointer 0x080001CC //技能表
+#define gTypeNames_Pointer 0x080166F4 //属性名称
+#define gPlayerParty 0x020244EC //精灵队伍
+#define gText_ThreeDashes 0x85e8d45 //文本"---"
+
+#define maxLvlOffset 0x0804A5BE
+#define gmaxLvlOffsetFlag 0x0806DFB2
+#define gFlightPointCount 0x08122C88
+#define gMonIcon_Egg 0x08d8fc74
+#define gSaveBlock2Ptr 0x03005d90
+#define gBagPockets 0x02039dd8
+
+#define BUFFER_2 0x02021DC4
+#define BUFFER_3 0x02021EC4
+
+/* structs */
+struct SpriteFrameImage
 {
-	u8 *img;
-	u16 size;
-	u16 tag;
+    const void *data;
+    u16 size;
 };
 
 struct pal_graphic
@@ -16,67 +76,114 @@ struct pal_graphic
 	u16 filler;
 };
 
-struct rotscale
+struct AffineAnimCmd
 {
-	s16 xscal;
-	s16 yscal;
-	s8 rotation;
-	u8 duration;
-	u16 filler;
+    s16 type;
+    u32* frame;
+    u32* loop;
+    u32* jump;
+    u32* end;
 };
 
-struct image_frame
+struct AnimCmd
 {
-	u16 cmd;
-	u16 parameter;
+	u16 type;
+	u32* frame;
+    u32* loop;
+    u32* jump;
 };
 
-struct oam
+struct OamData
 {
-	u16 attr0;
-    u16 attr1;
-    u16 attr2;
-    s16 fill;
+    /*0x00*/ u32 y:8;
+    /*0x01*/ u32 affineMode:2;  // 0x1, 0x2 -> 0x4
+             u32 objMode:2;     // 0x4, 0x8 -> 0xC
+             u32 mosaic:1;      // 0x10
+             u32 bpp:1;         // 0x20
+             u32 shape:2;       // 0x40, 0x80 -> 0xC0
+
+    /*0x02*/ u32 x:9;
+             u32 matrixNum:5; // bits 3/4 are h-flip/v-flip if not in affine mode
+             u32 size:2;
+
+    /*0x04*/ u16 tileNum:10;    // 0x3FF
+             u16 priority:2;    // 0x400, 0x800 -> 0xC00
+             u16 paletteNum:4;
+    /*0x06*/ u16 affineParam;
 };
 
-struct objtemplate
+struct SpriteTemplate
 {
-	u16 tiles_tag;
-	u16 pal_tag;
-	struct oam *oam_ptr;
-	struct image_frame **anime_table;
-	struct graphic *gfx_table;
-	struct rotscale **rotscale_table;
-	void (*callback)(void*);
+    /*0x00*/ u16 tileTag;
+    /*0x02*/ u16 paletteTag;
+    /*0x04*/ struct OamData *oam;
+    /*0x08*/ struct AnimCmd **anims;
+    /*0x0C*/ struct SpriteFrameImage *images;
+    /*0x10*/ struct AffineAnimCmd **affineAnims;
+    /*0x14*/ void (*callback)(void*);
 };
 
-struct obj
+struct Sprite
 {
-	struct oam oamdata;
-	struct image_frame **anime_table;
-	struct graphic *gfx_table;
-	struct rotscale **rotscale_table;
-	struct objtemplate *obj_template;
-	u8 *npc_type_detail;
-	void (*callback)(void*);
-	u16 x1;
-	u16 y1;
-	s16 x2;
-	s16 y2;
-	s8 x3;
-	s8 y3;
-	u8 anime_index;
-	u8 frame_index;
-	u8 delay;
-	u8 frame_cnt;
-	u16 privatevars[8];
-	u8 bitfield2;
-	u8 bitfield;
-	u16 base_tile;
-	u8 npc_type_detail_index;
-	u8 y_height_related;
+    /*0x00*/ struct OamData oam;
+    /*0x08*/ struct AnimCmd **anims;
+    /*0x0C*/ struct SpriteFrameImage *images;
+    /*0x10*/ struct AffineAnimCmd **affineAnims;
+    /*0x14*/ struct SpriteTemplate *template;
+    /*0x18*/ struct SubspriteTable *subspriteTables;
+    /*0x1C*/ void (*callback)(void*);
+
+    /*0x20*/ struct Coords16 *pos1;
+    /*0x24*/ struct Coords16 *pos2;
+    /*0x28*/ s8 centerToCornerVecX;
+    /*0x29*/ s8 centerToCornerVecY;
+
+    /*0x2A*/ u8 animNum;
+    /*0x2B*/ u8 animCmdIndex;
+    /*0x2C*/ u8 animDelayCounter:6;
+             bool8 animPaused:1;
+             bool8 affineAnimPaused:1;
+    /*0x2D*/ u8 animLoopCounter;
+
+    // general purpose data fields
+    /*0x2E*/ s16 data[8];
+
+    /*0x3E*/ bool16 inUse:1;               //1
+             bool16 coordOffsetEnabled:1;  //2
+             bool16 invisible:1;           //4
+             bool16 flags_3:1;             //8
+             bool16 flags_4:1;             //0x10
+             bool16 flags_5:1;             //0x20
+             bool16 flags_6:1;             //0x40
+             bool16 flags_7:1;             //0x80
+    /*0x3F*/ bool16 hFlip:1;               //1
+             bool16 vFlip:1;               //2
+             bool16 animBeginning:1;       //4
+             bool16 affineAnimBeginning:1; //8
+             bool16 animEnded:1;           //0x10
+             bool16 affineAnimEnded:1;     //0x20
+             bool16 usingSheet:1;          //0x40
+             bool16 flags_f:1;             //0x80
+
+    /*0x40*/ u16 sheetTileStart;
+
+    /*0x42*/ u8 subspriteTableNum:6;
+             u8 subspriteMode:2;
+
+    /*0x43*/ u8 subpriority;
 };
 
+struct Coords16
+{
+    s16 x;
+    s16 y;
+};
+
+struct UCoords16
+{
+    u16 x;
+    u16 y;
+};
 
 struct rbox_short
 {
@@ -114,21 +221,10 @@ struct superstate
 /*0x30*/	u16 buttons4_new_and_keyrepeat;
 /*0x32*/	u16 keypad_countdown;
 	u32 unused_apparently;
-	struct oam sprites[128];
+	struct OamData sprites[128];
 	u8 multi_purpose_state_tracker;
 	u8 gpu_sprites_upload_skip;
 };
-
-#define BUTTONS_A 1
-#define BUTTONS_B 2
-#define BUTTONS_SELECT 4
-#define BUTTONS_START 8
-#define BUTTONS_RIGHT 0x10
-#define BUTTONS_LEFT 0x20
-#define BUTTONS_UP 0x40
-#define BUTTONS_DOWN 0x80
-#define BUTTONS_R 0x100
-#define BUTTONS_L 0x200
 
 struct Time
 {
@@ -148,9 +244,18 @@ struct fly
 
 };
 
-struct Datastruct
+struct MySaveblock
 {
-	u8 mode;			//0x00
+	u32 malloc; 	//0x00
+	u8 nop;			//0x04
+	u8 cursorPicId; //0x05
+	u8 monIconId;	//0x06
+};
+
+
+struct MyDatastruct
+{
+	u8 page;			//0x00
 	u8 select;			//0x01
 	u8 over;			//0x02
 	u8 boxid;			//0x03
@@ -213,7 +318,7 @@ struct font
 	u8 fill;
 };
 
-struct mybuffer
+struct MyBuffer
 {
 	u16 buffer0;
 	u16 buffer1;
@@ -224,41 +329,6 @@ struct mybuffer
 	u16 buffer6;
 	u16 buffer7;
 };
-struct poke_basestats{
-    u8 base_hp;
-    u8 base_atk;
-    u8 base_def;
-    u8 base_spd;
-    u8 base_spatk;
-    u8 base_spdef;
-    u8 type1;
-    u8 type2;
-    u8 catch_rate;
-    u8 exp_yield;
-    u16 evs_hp : 2; //0x1, 0x2
-    u16 evs_atk : 2; //0x4, 0x8
-    u16 evs_def : 2; //0x10, 0x20
-    u16 evs_spd : 2; //0x40, 0x80
-    u16 evs_spatk : 2;//0x100, 0x200
-    u16 evs_spdef : 2; //0x400, 0x800
-    u16 unused : 4; //0x1000, 0x2000, 0x4000, 0x8000
-    u16 item1;
-    u16 item2;
-    u8 gender_ratio;
-    u8 hatching;
-    u8 friendship;
-    u8 exp_curve;
-    u8 egg_group1;
-    u8 egg_group2;
-    u8 ability1;
-    u8 ability2;
-    u8 safari_flee_rate;
-    u8 dex_colour;
-    u16 padding;
-};
-
-
-
 
 struct pokemon
 {
@@ -305,30 +375,6 @@ struct fade_ctrl
 	u8 field_B;
 };
 
-struct trainerdata
-{
-	u8 name[8];
-	u8 gender;
-	u8 centercheck;
-	u16 TID;
-	u16 SID;
-	u16 hours;
-	u8 mins;
-	u8 secs;
-	u8 frames;
-	u8 options_button_style;
-	u8 options_text_speed;
-	u8 unk[19];
-	u8 pokemon_flags_3[52];
-	u8 pokemon_flags_4[52];
-	u8 field_90[1044];
-	u8 fourCharacters[4];
-	u8 field_4A8[1008];
-	u8 mapdata[1672];
-	u32 obfuscation_xor_key;
-	u8 field_F24[127];
-	u8 last_byte_in_sav2;
-};
 
 struct bg_cfg
 {
@@ -383,4 +429,113 @@ union DISPCNT_CON
 {
 	u16 DISPCNT_D;
 	struct DISPCNT DISPCNT_S;
+};
+
+struct BaseStats
+{
+ /* 0x00 */ u8 baseHP;
+ /* 0x01 */ u8 baseAttack;
+ /* 0x02 */ u8 baseDefense;
+ /* 0x03 */ u8 baseSpeed;
+ /* 0x04 */ u8 baseSpAttack;
+ /* 0x05 */ u8 baseSpDefense;
+ /* 0x06 */ u8 type1;
+ /* 0x07 */ u8 type2;
+ /* 0x08 */ u8 catchRate;
+ /* 0x09 */ u8 expYield;
+ /* 0x0A */ u16 evYield_HP:2;
+ /* 0x0A */ u16 evYield_Attack:2;
+ /* 0x0A */ u16 evYield_Defense:2;
+ /* 0x0A */ u16 evYield_Speed:2;
+ /* 0x0B */ u16 evYield_SpAttack:2;
+ /* 0x0B */ u16 evYield_SpDefense:2;
+ /* 0x0C */ u16 item1;
+ /* 0x0E */ u16 item2;
+ /* 0x10 */ u8 genderRatio;
+ /* 0x11 */ u8 eggCycles;
+ /* 0x12 */ u8 friendship;
+ /* 0x13 */ u8 growthRate;
+ /* 0x14 */ u8 eggGroup1;
+ /* 0x15 */ u8 eggGroup2;
+ /* 0x16 */ u8 abilities[2];
+ /* 0x18 */ u8 safariZoneFleeRate;
+ /* 0x19 */ u8 bodyColor : 7;
+            u8 noFlip : 1;
+};
+
+struct MapHeader
+{
+    /* 0x00 */ struct MapLayout *mapLayout;
+    /* 0x04 */ struct MapEvents *events;
+    /* 0x08 */ u8 *mapScripts;
+    /* 0x0C */ u32 *connections;
+    /* 0x10 */ u16 music;
+    /* 0x12 */ u16 mapLayoutId;
+    /* 0x14 */ u8 regionMapSectionId;
+    /* 0x15 */ u8 cave;
+    /* 0x16 */ u8 weather;
+    /* 0x17 */ u8 mapType;
+    /* 0x18 */ u8 filler_18;
+    /* 0x19 */ u8 escapeRope;
+    /* 0x1A */ u8 flags;
+    /* 0x1B */ u8 battleType;
+};
+
+struct MapLayout
+{
+    /*0x00*/ s32 width;
+    /*0x04*/ s32 height;
+    /*0x08*/ u16 *border;
+    /*0x0c*/ u16 *map;
+    /*0x10*/ u32 *primaryTileset;
+    /*0x14*/ u32 *secondaryTileset;
+};
+
+struct MapEvents
+{
+    u8 eventObjectCount;
+    u8 warpCount;
+    u8 coordEventCount;
+    u8 bgEventCount;
+
+    u32 *eventObjects;
+    u32 *warps;
+    u32 *coordEvents;
+    u32 *bgEvents;
+};
+
+struct SaveBlock2
+{
+    /*0x00*/ u8 playerName[8];
+    /*0x08*/ u8 playerGender; // MALE, FEMALE
+    /*0x09*/ u8 specialSaveWarp;
+    /*0x0A*/ u8 playerTrainerId[4];
+    /*0x0E*/ u16 playTimeHours;
+    /*0x10*/ u8 playTimeMinutes;
+    /*0x11*/ u8 playTimeSeconds;
+    /*0x12*/ u8 playTimeVBlanks;
+    /*0x13*/ u8 optionsButtonMode;         // OPTIONS_BUTTON_MODE_[NORMAL/LR/L_EQUALS_A]
+    /*0x14*/ u16 optionsTextSpeed:3;       // OPTIONS_TEXT_SPEED_[SLOW/MID/FAST]
+    u16 optionsWindowFrameType:5; // Specifies one of the 20 decorative borders for text boxes
+    u16 optionsSound:1;           // OPTIONS_SOUND_[MONO/STEREO]
+    u16 optionsBattleStyle:1;     // OPTIONS_BATTLE_STYLE_[SHIFT/SET]
+    u16 optionsBattleSceneOff:1;  // whether battle animations are disabled
+    u16 regionMapZoom:1;          // whether the map is zoomed in
+    /*0x18*/ u8 *pokedex;
+    /*0x90*/ u8 filler_90[0x8];
+    /*0x98*/ u8 *localTimeOffset;
+    /*0xA0*/ u8 *lastBerryTreeUpdate;
+    /*0xA8*/ u32 *battleTower;
+};
+
+struct BagPocket
+{
+    struct ItemSlot *itemSlots;
+    u8 capacity;
+};
+
+struct ItemSlot
+{
+    u16 itemId;
+    u16 quantity;
 };

@@ -3,6 +3,10 @@ typedef     unsigned short int      u16;
 typedef     unsigned int            u32;
 typedef     unsigned long long int  u64;
 
+typedef u8  bool8;
+typedef u16 bool16;
+typedef u32 bool32;
+
 typedef     signed char             s8;
 typedef     signed short int        s16;
 typedef     signed int              s32;

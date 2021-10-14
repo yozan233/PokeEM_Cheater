@@ -1,31 +1,163 @@
 #include "header/funcs.h"
 
-void cb_execute(void);
-extern void task_loader(u8);
 extern void obj_callback();
+extern void task_loader(u8);
+void cb_execute(void);
+void initMonTempData();
+void loadMonName();
+void loadMonIconSprite();
+void loadMonIconTiles();
+void loadEggIconTiles();
+void loadMonIsShiny();
+void loadMonGender(u16 species);
+u32 getCurrentMonData(u8 request);
+u32 getCurrentPartyplayer();
+struct BaseStats* getSpeciesBaseStats(u16 species);
 
 void main_func()
 {
-	*malloc_pointer_loc = (u8 *) malloc_and_clear(0x1004);
-	obj_and_aux_reset_all();
-	pal_fade_control_and_dead_struct_reset();
-	gpu_pal_allocator_reset();
-	// reset_db();
-	task_add(task_loader,1);
-	set_callback2(cb_execute);
+	*malloc_pointer_loc = (u8 *) AllocZeroed(0x1004);
+	ResetSpriteData();
+	ResetPaletteFade();
+	FreeAllSpritePalettes();
+	CreateTask(task_loader,1);
+	SetMainCallback2(cb_execute);
 	return;
 }
 
 void cb_execute()
 {
-	task_exec();
-	objc_exec();
-	obj_sync_something();
-	fade_and_return_progress_probably();
+	RunTasks();
+	AnimateSprites();
+	BuildOamBuffer();
+	UpdatePaletteFade();
 	obj_callback();
 	return;
 }
 
-// void reset_db(){
-// 	asm("push {lr}\nsub sp, #4\nmov r1, #0\nlsl r0, r1,#0x18\nlsl r3, r1,#0x10\norr r0,r3\nlsl r3, r1,#0x8\norr r0, r3\norr r0, r1\nstr r0, [sp]\nmov r0, #0x80\nmov r2, #0xC0\nlsl r0, r0,#0x11\norr r2, r0\nmov r0, r13\nldr r1, clear_buffer2\nswi #0xC\nadd sp, #4\npop {pc}\n.align 2\nclear_buffer2:\n.word 0x02021DC4");
-// }
+void initMonTempData(){
+	myTempData->maxLvl = ((u8*)maxLvlOffset)[0];
+	myTempData->PID = getCurrentMonData(ATTR_PID);
+	myTempData->TID = getCurrentMonData(ATTR_TID);
+	myTempData->egg = getCurrentMonData(ATTR_IS_EGG);
+	myTempData->lvl = getCurrentMonData(ATTR_LEVEL);
+	myTempData->ability = getCurrentMonData(ATTR_ABILITY_BIT);
+	myTempData->happiness = getCurrentMonData(ATTR_HAPPINESS);
+
+	myTempData->nature = umodsi3(myTempData->PID,25);
+	u16 species = getCurrentMonData(ATTR_SPECIES);
+	myTempData->species = species;
+	loadMonGender(species);
+	loadMonIsShiny();
+	loadMonIconSprite();
+
+	loadMonName();
+	backupMonTempData();
+
+
+}
+
+void backupMonTempData(){
+	CpuSet(&myTempData->party,&myTempData->party_2,6);
+}
+
+void refreshMonTempData(){
+	CpuSet(&myTempData->party_2,&myTempData->party,6);
+}
+
+void loadMonName(){
+    u32 party =	getCurrentPartyplayer();
+	StringCopy(BUFFER_2,party+8);
+	u8* nameStr = (u8*)BUFFER_2;
+	nameStr[10] = 0xFF;
+	u8 len = 0;
+	while(nameStr[len] != 0xFF){
+		len++;
+	}
+	nameStr[len] = 0xBA;
+	u32 speciesNameTable = ((u32*)gSpeciesNames_Pointer)[0];
+	StringCopy(nameStr+len+1,speciesNameTable+0xB*myTempData->species);
+}
+
+void loadMonIconSprite(){
+	struct MySaveblock* saveblock = (struct MySaveblock*)VAR_8004;
+	struct Sprite* sprites = (struct Sprite*)(gSprites+0x44*saveblock->monIconId);
+	u8 monIconPaletteIndex;
+	if(myTempData->egg){
+		monIconPaletteIndex = 2;
+		loadEggIconTiles();
+	}
+	else{
+		u32 monIconPaletteIndices = ((u32*)gMonIconPaletteIndices_Pointer)[0];
+		monIconPaletteIndex = ((u8*)(myTempData->species+monIconPaletteIndices))[0];
+		monIconPaletteIndex += 1;
+		loadMonIconTiles();
+	}
+	sprites->oam.paletteNum = monIconPaletteIndex;
+}
+
+void loadMonIconTiles(){
+	u32 monIconTable = ((u32*)gMonIconTable_Pointer)[0];
+	u32 monIconOffset = ((u32*)(monIconTable+myTempData->species*4))[0];
+
+	CpuSet(monIconOffset,0x06010400,0x200);
+}
+
+void loadEggIconTiles(){
+	CpuSet(gMonIcon_Egg,0x06010400,0x200);
+}
+
+void loadMonIsShiny(){
+	u16* pid = (u16*)&myTempData->PID;
+	u16 pidXor = pid[0]^pid[1];
+	u16* tid = (u16*)&myTempData->TID;
+	u16 tidXor = tid[0]^tid[1];
+	if ((pidXor^tidXor) > 8){
+		myTempData->shiny = FALSE;
+	}
+	else{
+		myTempData->shiny = TRUE;
+	}
+}
+
+void loadMonGender(u16 species){
+	struct BaseStats* baseStats = getSpeciesBaseStats(species);
+	u8 genderRatio = baseStats->genderRatio;
+	u8 gender;
+	switch (genderRatio){
+		case 0xFF:
+			gender = GENDER_NONE;
+			break;
+		case 0xFE:
+			gender = GENDER_ALL_FEMALE;
+			break;
+		case 0:
+			gender = GENDER_ALL_MALE;
+			break;
+		
+		default:{
+			u8 flag = ((u8*)&myTempData->PID)[0];
+			if (flag > genderRatio){
+				gender = GENDER_MALE;
+			}
+			else{
+				gender = GENDER_FEMALE;
+			}
+		}break;
+	}
+	myTempData->sex = gender;	
+}
+
+u32 getCurrentMonData(u8 request){
+	return GetMonData(getCurrentPartyplayer(),request);
+}
+
+u32 getCurrentPartyplayer(){
+	return gPlayerParty+myTempData->party*0x64;
+}
+
+struct BaseStats* getSpeciesBaseStats(u16 species){
+	u32 gBaseStats = ((u32*)gBaseStats_Pointer)[0];
+	gBaseStats += (0x1C*species);
+	return (struct BaseStats*)gBaseStats;
+}

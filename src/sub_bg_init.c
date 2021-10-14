@@ -40,20 +40,20 @@ void sub_bg_init()
 	v2.DMACNT_S = (struct DMACNT){0x200,0,0,2,0,0,0,0,0,1};
 	*DMA3CNT = v2.DMACNT_D;
 	v3.DISPCNT_S = (struct DISPCNT){0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-	lcd_io_set(0,v3.DISPCNT_D);
-	gpu_tile_bg_drop_all_sets(0);
-	bg_vram_setup(0,bg_config_table,2);
+	SetGpuReg(0,v3.DISPCNT_D);
+	ResetBgsAndClearDma3BusyFlags(0);
+	InitBgsFromTemplates(0,bg_config_table,2);
 	for (u32 i=0;i<4;i++)
 	{
-		bgid_mod_x_offset(i,0,0);
-		bgid_mod_y_offset(i,0,0);
+		ChangeBgX(i,0,0);
+		ChangeBgY(i,0,0);
 	}
 	v3.DISPCNT_S = (struct DISPCNT){0,0,0,0,1,0,0,0,0,0,1,1,0,0};
-	lcd_io_set(0,v3.DISPCNT_D);
-	bgid_set_tilemap(1,*malloc_pointer_loc+4);
-	gpu_sync_bg_show(0);
-	gpu_sync_bg_show(1);
-	bg_config_2_something(0,0,0,0,0x1E,0x14);
-	bg_config_2_something(1,0,0,0,0x1E,0x14);
+	SetGpuReg(0,v3.DISPCNT_D);
+	SetBgTilemapBuffer(1,*malloc_pointer_loc+4);
+	ShowBg(0);
+	ShowBg(1);
+	FillBgTilemapBufferRect_Palette0(0,0,0,0,0x1E,0x14);
+	FillBgTilemapBufferRect_Palette0(1,0,0,0,0x1E,0x14);
 	return;
 }
