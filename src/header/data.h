@@ -22,6 +22,6 @@ extern struct superstate *super;
 extern struct MyDatastruct *myTempData;
 // extern struct MyBuffer *bfr;
 extern struct mouse *mouseXY;
-extern struct AllPokemons *pokeMax;
+
 // extern struct main8004 *main_8004;
 // extern u8 *pokemon_quanitity;

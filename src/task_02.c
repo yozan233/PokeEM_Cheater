@@ -11,10 +11,14 @@ extern u32 getAttackName(u16 atackNum);
 extern u16 get_ballNum();
 extern u32 getPlayerNameOffset();
 extern u32 lvl2exp();
-extern u16 getbuffer();
+extern u16 getbuffer(u8 index);
 extern void box_draw(u8,u8);
 extern void print_text0(u8 pos_x, u8 pos_y, u8 *str);
-extern u32 getCurrentPartyplayer();
+extern struct Pokemon *getCurrentPartyplayer();
+extern void setCurrentMonData(u8 request, void* value);
+extern struct BaseStats* getSpeciesBaseStats(u16 species);
+extern struct Sprite *getSprite(u8 id);
+extern u32 getMonSpeciesName(u16 species);
 void reLoadPid();
 void aborter(u8 task_id);
 void buttonbox_print(u32 str);
@@ -23,7 +27,13 @@ void button_right();
 void button_up();
 void button_down();
 void changeMouseColor();
-
+void set_poke_dex(u16 species);
+bool8 check_pos();
+bool8 check_802();
+bool8 check_Ultra_Emerald();
+u16 check_pw();
+bool32 check_font();
+void setvar(u16 id,u16 value);
 
 void task_02(u8 task_id)
 {
@@ -53,7 +63,9 @@ void task_02(u8 task_id)
 								myTempData->modebuffer = 1;
 								set_7();
 								initMonTempData();
-								showicon(0);
+								struct MySaveblock* saveblock = (struct MySaveblock*)VAR_8004;
+								showSprite(saveblock->monIconId);
+								// showicon(0);
 								buttonbox_print(text_table+0x13E);
 								select_page();
 								updatetext();
@@ -109,8 +121,8 @@ void task_02(u8 task_id)
 									u16 spe = myTempData->species;
 									if(spe == 0x19C)
 										spe = umodsi3(Random(),0xFB)+1;
-									struct get_a_u8 *egg_lvl = (struct get_a_u8 *)0x08070A38;
-									CreateMon(getCurrentPartyplayer(),spe,egg_lvl->bit,32,1,Random() | (Random() << 0x10),0,myTempData->TID);
+									u8 *egg_lvl = (u8 *)0x08070A38;
+									CreateMon(getCurrentPartyplayer(),spe,egg_lvl[0],32,1,Random() | (Random() << 0x10),0,myTempData->TID);
 									myTempData->Num = 0;
 									SetMonData(getCurrentPartyplayer(),0x24,&myTempData->Num);
 									initMonTempData();
@@ -193,9 +205,9 @@ void task_02(u8 task_id)
 									if(myTempData->page == PAGE_SPECIE){
 										checkNmae();
 										set_poke_dex(myTempData->attackBuffer);
-										SetMonData(getCurrentPartyplayer(),0xB,&myTempData->attackBuffer);
+										SetMonData(getCurrentPartyplayer(),ATTR_SPECIES,&myTempData->attackBuffer);
 										myTempData->Num = 2;
-										SetMonData(getCurrentPartyplayer(),0x3,&myTempData->Num);
+										SetMonData(getCurrentPartyplayer(),ATTR_FONT_LANG,&myTempData->Num);
 										initMonTempData();
 										updatetext();
 									}
@@ -282,8 +294,8 @@ void task_02(u8 task_id)
 									// FlagSet(0x888);
 									shiye();
 								}
-								struct get_a_u8 *cq = (struct get_a_u8 *)0x020322d6;
-								cq->bit = myTempData->SP_defence;
+								u8 *cq = (u8 *)0x020322d6;
+								cq[0] = myTempData->SP_defence;
 
 							}
 							
@@ -309,13 +321,17 @@ void task_02(u8 task_id)
 							}
 							else{
 								if(myTempData->page < 0x20){
-									showpokepic(8);
-									showicon(8);
+									hideSprite(myTempData->poke_pic_id);
+									struct MySaveblock* saveblock = (struct MySaveblock*)VAR_8004;
+									hideSprite(saveblock->monIconId);
+									// showpokepic(8);
+									// showicon(8);
 									mouseXY->pos_x = 0x2E;
 									myTempData->select = 0;
 								}
 								else if(myTempData->page == 0x20){
-									showitempic(8);
+									hideSprite(myTempData->item_pic_id);
+									// showitempic(8);
 									mouseXY->pos_x = 0x7A;
 									myTempData->select = 1;
 								}
@@ -419,7 +435,8 @@ void task_02(u8 task_id)
 								mouseXY->pos_y = 0x5E;
 							}
 							if(myTempData->page == 0x16){
-								showpokepic(8);
+								hideSprite(myTempData->poke_pic_id);
+								// showpokepic(8);
 								open_shuru();
 							}
 							
@@ -470,7 +487,8 @@ void task_02(u8 task_id)
 							if(myTempData->page == 0x14){
 								mouseXY->pos_x = 0x66;
 								get_attackN();
-								showpokepic(8);
+								hideSprite(myTempData->poke_pic_id);
+								// showpokepic(8);
 							}
 							if(myTempData->page == 0x15){
 								myTempData->attackBuffer = myTempData->species;
@@ -600,7 +618,7 @@ void button_left()
 		
 	}
 	else if(myTempData->page == 0x12 || myTempData->page == 0x13){
-			struct get_a_u8 *ivev = (struct get_a_u8 *)(&myTempData->hp);
+			u8 *ivev = (u8 *)(&myTempData->hp);
 			switch(myTempData->select){
 				// case 1:
 				// 	ivev+0;
@@ -621,11 +639,11 @@ void button_left()
 					ivev+=5;
 					break;
 			}
-			u8 temp = ivev->bit;
+			u8 temp = ivev[0];
 			if(temp>10)
-				ivev->bit-=10;
+				ivev[0]-=10;
 			else
-				ivev->bit = 0;
+				ivev[0] = 0;
 
 			if(temp)
 				updatetext();
@@ -751,7 +769,7 @@ void button_right()
 		
 	}
 	else if(myTempData->page == 0x12 || myTempData->page == 0x13){
-			struct get_a_u8 *ivev = (struct get_a_u8 *)(&myTempData->hp);
+			u8 *ivev = (u8 *)(&myTempData->hp);
 			switch(myTempData->select){
 				// case 1:
 				// 	ivev+0;
@@ -772,7 +790,7 @@ void button_right()
 					ivev+=5;
 					break;
 			}
-			u8 temp = ivev->bit;
+			u8 temp = ivev[0];
 			u8 max=31;
 			if(myTempData->page == 0x12)
 				max = 31;
@@ -808,9 +826,9 @@ void button_right()
 
 			u8 addnum = 10;
 			if(temp<max-addnum)
-				ivev->bit+=addnum;
+				ivev[0]+=addnum;
 			else if (max)
-				ivev->bit = max;
+				ivev[0] = max;
 			
 			if(temp<max)
 				updatetext();
@@ -855,7 +873,7 @@ void button_right()
 	else if (myTempData->page == 0x15){
 		u8 ft = 1;
 		while (ft<=4){
-			u16 pmax = pokeMax->max;
+			u16 pmax = gPokeMax;
 			if(check_802())
 				pmax-=2;
 			if(myTempData->attackBuffer+ft > pmax)
@@ -992,7 +1010,7 @@ void button_up()
 		
 	}
 	else if(myTempData->page == 0x12 || myTempData->page == 0x13){
-			struct get_a_u8 *ivev = (struct get_a_u8 *)(&myTempData->hp);
+			u8 *ivev = (u8 *)(&myTempData->hp);
 			switch(myTempData->select){
 				case 0:
 					set_pat_u();
@@ -1016,7 +1034,7 @@ void button_up()
 					ivev+=5;
 					break;
 			}
-			u8 temp = ivev->bit;
+			u8 temp = ivev[0];
 			u8 max;
 			if(myTempData->page == 0x12)
 				max = 31;
@@ -1049,9 +1067,9 @@ void button_up()
 			}
 
 			if(temp<max-1)
-				ivev->bit++;
+				ivev[0]++;
 			else if(max)
-				ivev->bit = max;
+				ivev[0] = max;
 
 			if(temp<max)
 				updatetext();
@@ -1274,7 +1292,7 @@ void button_down()
 		
 	}
 	else if(myTempData->page == 0x12 || myTempData->page == 0x13){
-			struct get_a_u8 *ivev = (struct get_a_u8 *)(&myTempData->hp);
+			u8 *ivev = (u8 *)(&myTempData->hp);
 			switch(myTempData->select){
 				case 0:
 					set_pat_d();
@@ -1298,10 +1316,10 @@ void button_down()
 					ivev+=5;
 					break;
 			}
-			u8 temp = ivev->bit;
+			u8 temp = ivev[0];
 			if (temp)
 			{
-				ivev->bit--;
+				ivev[0]--;
 				updatetext();
 			}
 	}
@@ -1397,7 +1415,7 @@ void button_down()
 		}
 		else if (myTempData->page == 0x15)
 		{
-			u16 pmax = pokeMax->max;
+			u16 pmax = gPokeMax;
 			if(check_802())
 				pmax-=2;
 			if(myTempData->attackBuffer < pmax){
@@ -1475,8 +1493,8 @@ void shuru_down_0(){
 	}
 }
 void shuru_down_1(){
-	struct get_a_u8 *Aa = (struct get_a_u8 *)&myTempData->attackN;
-	switch (Aa->bit)
+	u8 *Aa = (u8 *)&myTempData->attackN;
+	switch (Aa[0])
 	{
 	case 0xBB:
 		myTempData->hp = 0;
@@ -1579,9 +1597,9 @@ void shuru_down_1(){
 	default:
 		break;
 	}
-	if(Aa->bit == 0xBB)
+	if(Aa[0] == 0xBB)
 		myTempData->defence = 0;
-	if(Aa->bit != 0xA1)
+	if(Aa[0] != 0xA1)
 		updatetext();
 }
 void shuru_up_0(){
@@ -1605,8 +1623,8 @@ void shuru_up_0(){
 	}
 }
 void shuru_up_1(){
-	struct get_a_u8 *Aa = (struct get_a_u8 *)&myTempData->attackN;
-	switch (Aa->bit)
+	u8 *Aa = (u8 *)&myTempData->attackN;
+	switch (Aa[0])
 	{
 	case 0xA1:
 		myTempData->hp = 1;
@@ -1709,7 +1727,7 @@ void shuru_up_1(){
 		break;
 	}
 	myTempData->defence = 2;
-	if(Aa->bit != 0xB0)
+	if(Aa[0] != 0xB0)
 		updatetext();
 }
 void shuru_right_0(){
@@ -1860,10 +1878,10 @@ void shuru_A(){
 	}
 	if(myTempData->select == 8){
 		// mouse_wait();
-		struct get_a_u8 *name_text = (struct get_a_u8 *)0x02021DD4;
+		u8 *name_text = (u8 *)0x02021DD4;
 		if(myTempData->page == 0x16)
 		{
-			if(name_text->bit != 0xFF)
+			if(name_text[0] != 0xFF)
 				set_poke_name();
 			myTempData->Num = 2;
 			SetMonData(getCurrentPartyplayer(),0x3,&myTempData->Num);
@@ -1879,7 +1897,7 @@ void shuru_A(){
 		}
 		else
 		{
-			if(name_text->bit != 0xFF)
+			if(name_text[0] != 0xFF)
 				StringCopy(getPlayerNameOffset(),0x02021DD4);
 			// updatetext();
 			PlaySE(6);
@@ -1889,7 +1907,7 @@ void shuru_A(){
 		
 	}
 	if(myTempData->select > 8){
-		struct get_a_u8 *text_n = (struct get_a_u8 *)0x02021DD4;
+		u8 *text_n = (u8 *)0x02021DD4;
 		struct font *text_f = (struct font *)0x02021DF4;
 		u32 m = 2;
 		if(myTempData->defence < 2)
@@ -1904,12 +1922,12 @@ void shuru_A(){
 			text_f += (0xFF-myTempData->select);
 
 			if(m == 2){
-				text_n->bit = text_f->zi1;
+				text_n[0] = text_f->zi1;
 				text_n++;
-				text_n->bit = text_f->zi2;
+				text_n[0] = text_f->zi2;
 			}
 			else{
-				text_n->bit = text_f->zi2;
+				text_n[0] = text_f->zi2;
 			}
 
 			updatetext();
@@ -1922,14 +1940,14 @@ void shuru_A(){
 void delete_zi(){
 	if(myTempData->speed)
 	{
-		struct get_a_u8 *text_nd = (struct get_a_u8 *)0x02021DD4;
+		u8 *text_nd = (u8 *)0x02021DD4;
 		u32 dm = 0;
 		if(myTempData->speed > 1)
 			dm = myTempData->speed-2;
 		text_nd += dm;
 		
 		dm = 1;
-		if(text_nd->bit > 0&&text_nd->bit < 0x20)
+		if(text_nd[0] > 0&&text_nd[0] < 0x20)
 			dm = 2;
 		
 		if(myTempData->speed != 1)
@@ -1941,7 +1959,7 @@ void delete_zi(){
 		
 		while (dm)
 		{
-			text_nd->bit = 0xFF;
+			text_nd[0] = 0xFF;
 			text_nd--;
 			dm--;
 		}
@@ -1953,8 +1971,8 @@ void delete_zi(){
 }
 
 void open_p8(){
-	struct get_a_u8 *cq = (struct get_a_u8 *)0x020322d6;
-	cq->bit = 0;
+	u8 *cq = (u8 *)0x020322d6;
+	cq[0] = 0;
 	myTempData->page = 0x30;
 	myTempData->modebuffer = 2;
 	initMonTempData();
@@ -1978,8 +1996,8 @@ void set_7(){
 }
 
 void set_pat_d(){
-	struct get_a_u8 *partyMax = (struct get_a_u8 *)0x020244E9;
-	if(myTempData->party<partyMax->bit-1){
+	u8 partyMax = ((u8 *)gPlayerPartyCount)[0];
+	if(myTempData->party<partyMax-1){
 		myTempData->party++;
 		u8 t = myTempData->sex;
 		initMonTempData();
@@ -2102,30 +2120,65 @@ void reLoadPid(){
 }
 
 void set_att(){
-	asm("push {r4-r5,lr}\nldr r5, buffer3_showpic\nldrb r1, [r5]\ncmp r1,#0x10\nbeq mode1\ncmp r1,#0x12\nbeq mode2or3\ncmp r1,#0x13\nbeq mode2or3\nb endx\nmode1:\nbl get_party\nadd r0, #0x1E\nmov r1, #0\nstrb r1, [r0]\nldrb r1, [r5,#0x16]\nmov r2, r5\nadd r2, #0x28\nstrh r1, [r2]\nmov r0, #0x2E\nbl setattr\nldrb r1, [r5,#0x17]\nmov r2, r5\nadd r2, #0x28\nstrh r1, [r2]\nmov r0, #0x20\nbl setattr\nb endx\nmode2or3:\nsub r1, #0x12\nadd r5, #0x1A\nmov r2, #0xD\nmov r4, #0x27\nmul r2, r1\nsub r4, r2\nreturn1:\nmov r0, r4\nldrb r1, [r5]\nldr r2, buffer3_showpic\nadd r2, #0x28\nstrh r1, [r2]\nbl setattr\nadd r4, #0x1\nadd r5, #0x1\nldr r0, buffer3_showpic\nadd r0, #0x20\ncmp r5, r0\nbne return1\nendx:\npop {r4-r5,pc}\nsetattr:\npush {lr}\nmov r3, r0\nbl get_party\nmov r1, r3\nldr r3, set_attributesa\nbl BX_R3\npop {pc}\nBX_R3:\nbx r3\n.align 2\nset_attributesa:\n.word 0x0806ACAD");
+	switch (myTempData->page)
+	{
+		case PAGE_POKE_INFO:{
+			struct Pokemon* party = getCurrentPartyplayer();
+			party->padding = 0;
+			myTempData->Num = myTempData->ability;
+			setCurrentMonData(ATTR_ABILITY_BIT,&myTempData->Num);
+			myTempData->Num = myTempData->happiness;
+			setCurrentMonData(ATTR_HAPPINESS,&myTempData->Num);
+
+			
+
+		}break;
+		case PAGE_IVS:
+		case PAGE_EVS:{
+			u8 request;
+			if (myTempData->page == PAGE_IVS){
+				request = ATTR_HP_IV;
+			}
+			else{
+				request = ATTR_HP_EV;
+			}
+			u8 *eviv = (u8 *)&myTempData->hp;
+			for (u8 i = 0; i < 6; i++,request++){
+				setCurrentMonData(request,&eviv[i]);
+			}
+		}break;
+		default:
+			break;
+	}
 }
 void set_poke_name(){
-	asm("push {lr}\nbl get_party\nadd r0, #0x8\nmov r1, r0\nldr r0, buffer2_poke_name\nmov r2, #0x5\nswi #0xB\npop {pc}\n.align 2\nbuffer2_poke_name:\n.word 0x02021DD4");
+	CpuSet(BUFFER_2+0x10,&getCurrentPartyplayer()->nickname,5);
 }
-void get_party_offset(){
-	asm("get_party:\n\
-	push {lr}\n\
-	ldr r1, buffer3_showpic\n\
-	add r1, #0x10\n\
-	ldrb r1, [r1]\n\
-	mov r0, #0x64\n\
-	mul r1, r0\n\
-	ldr r0, party_playergt\n\
-	add r0, r1\n\
-	pop {pc}\n\
-	.align 2\n\
-	party_playergt:\n\
-	.word 0x020244EC");
-}
+
 void pause(){
-	asm("push {lr}\nmov r0, #0\nmov r1, #0xFF\nlsl r1, #0xA\npause_t:\nadd r0, #0x1\ncmp r0, r1\nbne pause_t\npop {pc}");
+	asm("push {lr}\nmov r0, #0\nmov r1, #0xFF\nlsl r1, #0xA\npause_t:\nadd r0, #0x1\ncmp r0, r1\nbne pause_t\npop {pc}\nBX_R3:\nbx r3");
 }
 void chck_PID(){
+	// if(myTempData->page == PAGE_POKE_INFO2){
+	// 	//changePID
+
+	// }
+	// if(myTempData->sex != myTempData->sex_2){
+	// 	//changePID
+
+	// }
+	// if(myTempData->shiny != myTempData->shiny_2){
+	// 	//changePID
+
+	// }
+
+	// u8 genderRatio = getSpeciesBaseStats(myTempData->species_2)->genderRatio;
+	// switch(myTempData->sex_2){
+	// 	case GENDER_FEMALE:
+
+	// }
+
+
 	asm("\
 	push {lr}\n\
 	ldr r3, buffer3_pid\n\
@@ -2194,62 +2247,164 @@ void chck_PID(){
 	.word 0x080001BC"
 	);
 }
-void showitempic(){
-	asm("push {lr}\nldr r2, buffer3_showpic\nadd r2, #0x2E\nldrb  r1, [r2]\nmov r2, #0x44\nmul r1, r2\nldr r2, obj_showicon\nadd r1, r2\nstrb r0, [r1,#0x1]\npop {pc}");
+
+void showSprite(u8 id){
+	u8 *sprite = getSprite(id);
+	sprite[1] = 0;
 }
-void showpokepic(){
-	asm("push {lr}\nldr r2, buffer3_showpic\nldrb  r1, [r2,#0xA]\nmov r2, #0x44\nmul r1, r2\nldr r2, obj_showicon\nadd r1, r2\nstrb r0, [r1,#0x1]\npop {pc}\n.align 2\nbuffer3_showpic:\n.word 0x02021EC4");
+
+void hideSprite(u8 id){
+	u8 *sprite = getSprite(id);
+	sprite[1] = 8;
 }
-void showicon(){
-	asm("push {lr}\nldr r2, v8004icon\nldrb  r1, [r2,#0x6]\nmov r2, #0x44\nmul r1, r2\nldr r2, obj_showicon\nadd r1, r2\nstrb r0, [r1,#0x1]\npop {pc}\n.align 2\nv8004icon:\n.word 0x020375E0\nobj_showicon:\n.word 0x02020630");
-}
+
 void checkNmae(){
-	asm("push {r4-r5,lr}\nldr r0, buffer2_changeName\nmov r1, #0x1\nctnChck:\nadd r0, r1\nldrb r2, [r0]\ncmp r2, #0xBA\nbne ctnChck\nmov r1, #0xFF\nstrb r1, [r0]\nadd r0, #0x1\nldr r1, buffer2_changeName\nldr r3, strcmp\nbl BX_R3\ncmp r0, #0x0\nbne end_changeName\nldr r0, buffer3_changeName\nldrb r0, [r0,#0x10]\nldr r1, party_player_changeName\nmov r2, #0x64\nmul r0,r2\nadd r1,r0 @;r1精灵昵称地址\nadd r1, #0x8\nldr r0, buffer3_changeName\nldrh r0, [r0,#0x2C]\nldr r3, poke_na\nldr r3, [r3]\nmov r2, #0xB\nmul r0, r2\nadd r0, r3\n@mov r2, #0x5\n@swi #0Xb\nmov r3, #0x0\nstrbr1:\nldrb r2, [r0,r3]\nstrb r2, [r1,r3]\nadd r3, #0x1\ncmp r3,#0xB\nbne strbr1\nend_changeName:\npop {r4-r5,pc}\n.align 2\nbuffer3_changeName:\n.word 0x02021EC4\nparty_player_changeName:\n.word 0x020244EC\nbuffer2_changeName:\n.word 0x02021DC4\npoke_na:\n.word 0x08000144\nstrcmp:\n.word 0x8008C45");
+	u8 *name = (u8 *)BUFFER_2;
+	u32 i = 0;
+	while(TRUE){
+		if (name[i] == 0xBA){
+			name[i] = 0xFF;
+			break;
+		}
+		i++;
+	}
+	if(StringCompare(BUFFER_2+i+1,BUFFER_2) != 0)
+		return;
+
+	u8 *speciesName = (u8 *) getMonSpeciesName(myTempData->attackBuffer);
+	struct Pokemon* party = getCurrentPartyplayer();
+	u8 *nickName = party->nickname;
+	for (u32 n = 0; n < 0xB; n++){
+		nickName[n] = speciesName[n];
+	}
 }
-void set_poke_dex(){
-	asm("push {r4,lr}\nldr r3, get_pokedex_num\nbl BX_R3\nmov r4, r0\nmov r1, #0x2\nldr r3, get_or_set_pokedex_flags\nbl BX_R3\nmov r0, r4\nmov r1, #0x3\nldr r3, get_or_set_pokedex_flags\nbl BX_R3\npop {r4,pc}\n.align 2\nget_or_set_pokedex_flags:\n.word 0x080C0665\nget_pokedex_num:\n.word 0x0806D4A5");
+
+void set_poke_dex(u16 species){
+	u16 index = SpeciesToNationalPokedexNum(species);
+	GetSetPokedexFlag(index,2); //图鉴设置已发现的标识
+	GetSetPokedexFlag(index,3); //图鉴设置已捕获的标识
 }
+
 void get_pos(){
-	asm("push {lr}\nldr r1, posoffset\nldr r0, [r1]\nldr r1, posbuffer\nstr r0, [r1]\npop {pc}\n.align 2\nposoffset:\n.word 0x02020650\nposbuffer:\n.word 0x02021ED0");
+	u32 *pos = (u32 *)(gSprites+0x20);
+	myTempData->pos_buffer = pos[0];
 }
-void check_pos(){
-	asm("push {lr}\nldr r1, posoffsetc\nldr r1, [r1]\nldr r2, posbufferc\nldr r2, [r2]\nmov r0, #0x1\ncmp r1, r2\nbne poscend\nmov r0, #0x0\nposcend:\npop {pc}\n.align 2\nposoffsetc:\n.word 0x02020650\nposbufferc:\n.word 0x02021ED0");
+
+bool8 check_pos(){
+	u32 *pos = (u32 *)(gSprites+0x20);
+	return pos[0] != myTempData->pos_buffer;
 }
+
 void del_last_keyitem(){
-	asm("push {lr}\nldr r3, item_sav\nldr r0, [r3]\nldrh r1, [r3,#0x4]\nmov r3, #0x0\nitem_check:\nlsl r2, r3,#0x2\nadd r2, r0\nldrh r2, [r2]\ncmp r2, #0x0\nbeq item_check_end\nadd r3, #0x1\ncmp r3, r1\nbne item_check\nsub r3, #0x1\nlsl r2, r3,#0x2\nadd r2, r0\nmov r1, #0\nstr r1, [r2]\nb del_keyitem_end\nitem_check_end:\ncmp r3, #0x0\nbeq del_keyitem_end\nsub r3, #0x1\nlsl r2, r3,#0x2\nadd r2, r0\nldr r1, [r2,#0x4]\nstr r1, [r2]\ndel_keyitem_end:\npop {pc}\n.align 2\nitem_sav:\n.word 0x02039DD8+0x20");
+	struct BagPocket *keyitemsPocket = (struct BagPocket*)gBagPockets;
+	keyitemsPocket += KEYITEMS_POCKET;
+	u16 n = 0;
+	while (n < keyitemsPocket->capacity){
+		if (keyitemsPocket->itemSlots[n].itemId == 0)
+			break;
+		n++;
+	}
+	SetBagItemQuantity(&keyitemsPocket->itemSlots[n-1].quantity,0);
+	keyitemsPocket->itemSlots[n-1].itemId = 0;
 }
-void check_802(){
-	asm("push {lr}\nmov r0, #0\nldr r1, basestat_table_802\nldr r1, [r1]\nldr r2, Emerald_802_ver\ncmp r1, r2\nbne check_802_end\nmov r0, #0x1\ncheck_802_end:\npop {pc}\n.align 2\nEmerald_802_ver:\n.word 0x08F186E0\nbasestat_table_802:\n.word 0x080001BC");
+
+bool8 check_802(){
+	u32 gBaseStats = ((u32*)gBaseStats_Pointer)[0];
+	return gBaseStats == 0x08F186E0;
+
+	// asm("push {lr}\n\
+	// mov r0, #0\n\
+	// ldr r1, basestat_table_802\n\
+	// ldr r1, [r1]\n\
+	// ldr r2, Emerald_802_ver\n\
+	// cmp r1, r2\n\
+	// bne check_802_end\n\
+	// mov r0, #0x1\n\
+	// check_802_end:\n\
+	// pop {pc}\n\
+	// .align 2\n\
+	// Emerald_802_ver:\n\
+	// .word 0x08F186E0\n\
+	// basestat_table_802:\n\
+	// .word 0x080001BC");
 }
-void check_Ultra_Emerald(){
-	asm("push {lr}\nmov r0, #0x1\nldr r1, Ultra_Emerald\nldr r1, [r1]\nldr r2, Ultra_Emerald_ver\ncmp r1, r2\nbeq is_Ultra_Emerald\nmov r0, #0\nis_Ultra_Emerald:\npop {pc}\n.align 2\nUltra_Emerald:\n.word 0x080BB100\nUltra_Emerald_ver:\n.word 0x09E0FF80");
+bool8 check_Ultra_Emerald(){
+	u32 ultraEmerald = ((u32*)0x080BB100)[0];
+	return ultraEmerald == 0x09E0FF80;
+
+	// asm("push {lr}\n\
+	// mov r0, #0x1\n\
+	// ldr r1, Ultra_Emerald\n\
+	// ldr r1, [r1]\n\
+	// ldr r2, Ultra_Emerald_ver\n\
+	// cmp r1, r2\n\
+	// beq is_Ultra_Emerald\n\
+	// mov r0, #0\n\
+	// is_Ultra_Emerald:\n\
+	// pop {pc}\n\
+	// .align 2\n\
+	// Ultra_Emerald:\n\
+	// .word 0x080BB100\n\
+	// Ultra_Emerald_ver:\n\
+	// .word 0x09E0FF80");
 }
-/* void party_max(){
-	asm("push {lr}\nldr r0, pt_max\nldrb r0, [r0]\nsub r0,#1\npop {pc}\n.align 2\npt_max:\n.word  0x020244E9");
-} */
+
 void reset_IVs_buffer(){
-	asm("push {lr}\nmov r0, #0\nldr r1, buffer3_IVs\nstrh r0, [r1]\nstrh r0, [r1,#0x2]\nstrh r0, [r1,#0x4]\npop {pc}\n.align 2\nbuffer3_IVs:\n.word 0x02021EC4+0x1A");
+	u16 *eviv = (u16 *)&myTempData->hp;
+	eviv[0] = 0;
+	eviv[1] = 0;
+	eviv[2] = 0;
 }
+
 void select_set_p(){
-	asm("push {lr}\nldr r3, buffer3_select_p\nldrb r0, [r3,#0x1]\nadd r3, r0\nadd r3, #0x19\nldrb r0, [r3]\nmov r1, #1\nneg r1, r0\nadc r0, r1\nstrb r0, [r3]\npop {pc}\n.align 2\nbuffer3_select_p:\n.word 0x02021EC4");
+	u8 *option = &myTempData->hp;
+	option[myTempData->select-1] = !option[myTempData->select-1];
 }
-void setvar(){
-	asm("push {r4,lr}\nmov r4, r1\nldr r3, get_var_address\nbl BX_R3\nstrh r4, [r0]\npop {r4,pc}\nbx r3\n.align 2\nget_var_address:\n.word  0x0809D649");
+
+void setvar(u16 id,u16 value){
+    u16 *varPointer = GetVarPointer(id);
+    varPointer[0] = value;
 }
+
 void set_bingdu(){
-	asm("push {r4-r6,lr}\nldr r4, buffer3_bd\nmov r0, #0xF\nstrh r0, [r4]\nldr r5, party_playerbd\nmov r6,#0x0\nctn_set_bingdu:\nmov r0, r5\nmov r1,#0x22\nmov r2, r4\nldr r3, set_att_bd\nbl BX_R3\nadd r5, #0x64\nadd r6,#0x1\ncmp r6, #0x6\nbne ctn_set_bingdu\nmov r0, #0x1\npop {r4-r6,pc}\n.align 2\nbuffer3_bd:\n.word 0x02021EC4+0x28\nparty_playerbd:\n.word 0x020244EC\nset_att_bd:\n.word 0x0806ACAD");
+    myTempData->Num = 0xF;
+    u8 partyMax = ((u8 *)gPlayerPartyCount)[0];
+    struct Pokemon *party = (struct Pokemon *)gPlayerParty;
+    for (u8 i=0;i<partyMax;i++){
+		SetMonData(party,ATTR_POKERUS,&myTempData->Num);
+		party++;
+    }
 }
+
 void shiye(){
-	asm("push {lr}\nldr r2, sav1\nldr r0, [r2]\nadd r0, #0x30\nmov r1, #0x0\nstrb r1, [r0]\nldr r0, [r2,#0x4]\nmov r1, #0xE\nlsl r1, #0x8\nadd r0, r1\nadd r0, #0x68\nmov r1, #0\nldrb r2, [r0]\ncmp r2, #0\nbeq not_jin\nmov r1, #0xC0\nnot_jin:\nstrb r1, [r0]\npop {pc}\n.align 2\nsav1:\n.word 0x03005D8C");
+	 struct SaveBlock1 *sav1 = (struct SaveBlock1*)((u32*)gSaveBlock1Ptr)[0];
+	 sav1->flashLevel = 0;
+	 u8 *pyramidFlag = (u8 *)(((u32*)gSaveBlock2Ptr)[0]+0x0E68);
+	 if(pyramidFlag[0] != 0){
+         pyramidFlag[0] = 0xC0;
+	 }
 }
-void check_font(){
-	asm("push {lr}\nldr r0, buffer3_check_font\nldrb r1, [r0,#0x1A]\nlsl r1, #0x8\nldrb r2, [r0,#0x1B]\nadd r1, r2\nmov r2, #0x1E\nlsl r2, #0x8\nadd r2, #0x2B\nmov r0, #1\ncmp r1, r2\nbcc check_font_end\nmov r0, #0\ncheck_font_end:\npop {pc}\n.align 2\nbuffer3_check_font:\n.word 0x02021EC4");
+
+bool32 check_font(){
+    u16 flag = myTempData->hp*0x100+myTempData->attack;
+    return flag < 0x1E28;
+
+//	asm("push {lr}\nldr r0, buffer3_check_font\nldrb r1, [r0,#0x1A]\nlsl r1, #0x8\nldrb r2, [r0,#0x1B]\nadd r1, r2\nmov r2, #0x1E\nlsl r2, #0x8\nadd r2, #0x2B\nmov r0, #1\ncmp r1, r2\nbcc check_font_end\nmov r0, #0\ncheck_font_end:\npop {pc}\n.align 2\nbuffer3_check_font:\n.word 0x02021EC4");
 }
 
 void reset_ff_buffer2_add10(){
-	asm("push {lr}\nldr r0, buffer2_add10\nmov r1, #0\nsub r1, #1\nstr r1, [r0,#0x0]\nstr r1, [r0,#0x4]\nstr r1, [r0,#0x8]\nstr r1, [r0,#0xC]\npop {pc}\n.align 2\nbuffer2_add10:\n.word 0x02021DD4");
+    u32 *buffer2_0x10 = (u32 *)(BUFFER_2+0x10);
+    for (u8 i=0;i<4;i++){
+        buffer2_0x10[i] = -1;
+    }
 }
 
-void check_pw(){
-	asm("push {lr}\nmov r0, #0xFF\nldr r1, check_penw_f\nldrb r1, [r1]\ncmp r1, #0x6\nbeq check_penw_end\nlsl r0, #0x8\nadd r0, #0xFF\ncheck_penw_end:\npop {pc}\n.align 2\ncheck_penw_f:\n.word 0x080FE0CB");
+u16 check_pw(){
+	u8 penWuFlag = ((u8 *)0x080FE0CB)[0];
+	if(penWuFlag == 6){
+		return 0xFF;
+	}
+	else{
+		return 0xFFFF;
+	}
 }

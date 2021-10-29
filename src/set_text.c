@@ -2,19 +2,24 @@
 extern u32 check_802();
 // extern void set_zi();
 extern u32 check_pw();
-extern u32 getCurrentPartyplayer();
+extern struct Pokemon *getCurrentPartyplayer();
 extern u32 getCurrentMonData(u8 request);
 extern struct BaseStats* getSpeciesBaseStats(u16 species);
+extern u32 getMonSpeciesName(u16 species);
 u8 getMapId(u16 mapGroup, u16 mapNum);
 u32 getPlayerNameOffset();
 u16 get_ballNum(u8 index);
 u16 get_attackN0(u8 n);
 u8 getMoveAttr(u8 n);
 u32 get_type_name(u8 type);
-u32 getMonSpeciesName(u16 species);
 bool8 checkString(u8 *str,u32 length);
 u32 getAttackName(u16 atackNum);
 u32 getAbilityName();
+bool8 checkPicLZ(struct LZData *data);
+bool8 checkLZ(struct LZData *data);
+u32 getItemName(u16 itemId);
+u8 checkString2(u8 *str,u32 length);
+u16 getbuffer(u8 index);
 
 void set_text(u8 page)
 {
@@ -210,14 +215,15 @@ void set_text(u8 page)
 		}return;
 		case PAGE_SPECIE:{
 			set_poke_tile();
-			showpokepic(0);
+			showSprite(myTempData->poke_pic_id);
+			// showpokepic(0);
 			// print_public_text();
 			loadSpecieData();
 				
 			u32 text5 = &myTempData->numTextBuff;
-			struct get_a_u8 *Gh = (struct get_a_u8 *)&myTempData->hp;
+			u8 *Gh = (u8 *)&myTempData->hp;
 			for(int k = 0; k < 6; k++){
-				ConvertUIntToDecimalStringN(text5,Gh->bit,2,3);
+				ConvertUIntToDecimalStringN(text5,Gh[0],2,3);
 				update_string0(42,28+k*14,text5,3);//HPs
 				Gh++;
 			}
@@ -241,7 +247,7 @@ void set_text(u8 page)
 			u32 b5 = 0;
 			while(b5 < 2){
 				pokeN++;
-				u16 pmax = pokeMax->max;
+				u16 pmax = gPokeMax;
 				if(check_802())
 					pmax-=2;
 				if(pokeN > pmax)
@@ -278,7 +284,8 @@ void set_text(u8 page)
 			return;
 		case PAGE_ITEMS:{
 			set_item_tile();
-			showitempic(0);
+			showSprite(myTempData->item_pic_id);
+			// showitempic(0);
 			// print_public_text();
 			u32 text6 = text_table+0x180;
 			ConvertUIntToDecimalStringN(0x02021EC8,myTempData->Num,2,2);
@@ -604,9 +611,9 @@ void set_zi0(){
 
 }
 void getset_start_A(){
-	struct get_a_u8 *Aa = (struct get_a_u8 *)&myTempData->attackN;
+	u8 *Aa = (u8 *)&myTempData->attackN;
 	Aa ++;
-	Aa->bit = 0xFF;
+	Aa[0] = 0xFF;
 	Aa --;
 	u16 a = myTempData->hp*0x100+myTempData->attack;
 	u8 b = 0;
@@ -738,27 +745,27 @@ void getset_start_A(){
 	}
 	
 	
-	Aa->bit = b;
+	Aa[0] = b;
 
 }
 
 void print_text_000(u32 a, u32 b){
 	
 	b = b-a;
-	struct get_a_u8 *text_g = (struct get_a_u8 *)0x02021DE4;
+	u8 *text_g = (u8 *)0x02021DE4;
 	while (a)
 	{
-		text_g->bit = 0xB0;
+		text_g[0] = 0xB0;
 		text_g++;
 		a--;
 	}
 	while (b)
 	{
-		text_g->bit = 0xAE;
+		text_g[0] = 0xAE;
 		text_g++;
 		b--;
 	}
-	text_g->bit = 0xFF;
+	text_g[0] = 0xFF;
 	print_text(46,20,0x02021DE4);
 
 }
@@ -939,75 +946,112 @@ u32 get_type_name(u8 type){
 	return typeNames + (type*7);
 }
 
-u32 getMonSpeciesName(u16 species){
-	u32 speciesNames = ((u32*)gSpeciesNames_Pointer)[0];
-	return speciesNames + 0xB*species;
-}
-
 void set_item_tile(){
-
+	struct ItemIcon *itemIconTableBase = (struct ItemIcon *)((u32*)gItemIconTable_Pointer)[0];
+	struct ItemIcon *itemIcon = itemIconTableBase + myTempData->attackBuffer;
 	
-	asm("push {r4,lr}\n\
-	ldr r0, buffer3_title\n\
-	ldrh r0, [r0,#0x2C]\n\
-	lsl r0, #3\n\
-	ldr r2, item_pic_table\n\
-	ldr r2, [r2]\n\
-	add r4, r0,r2\n\
-	ldr r0, [r4]\n\
-	ldrb r1, [r0]\n\
-	cmp r1, #0x10\n\
-	beq isLz77i\n\
-	ldr r0, [r2]\n\
-	isLz77i:\n\
-	ldr r1, item_obj_base\n\
-	mov r2, #4\n\
-	lsl r2, #8\n\
-	add r1, r2\n\
-	swi 0x12\n\
-	ldr r1, item_obj_base\n\
-	mov r0, #4\n\
-	lsl r0, #8\n\
-	add r0, r1\n\
-	ldr r3, CopyItemIconPicTo4x4Buffer\n\
-	bl BX_R3_itemIcon\n\
-	add r0, r4, #0x4\n\
-	ldr r0, [r0]\n\
-	ldrb r1, [r0]\n\
-	cmp r1, #0x10\n\
-	beq islz77pi\n\
-	ldr r0, [r3]\n\
-	islz77pi:\n\
-	ldr r1, OBJ_PaletteMemt\n\
-	swi 0x12\n\
-	pop {r4,pc}\n\
-	BX_R3_itemIcon:\n\
-	bx r3\n\
-	.align 2\n\
-	item_pic_table:\n\
-	.word 0x081B0034\n\
-	item_obj_base:\n\
-	.word 0x06012000\n\
-	CopyItemIconPicTo4x4Buffer:\n\
-	.word 0x081afe45");
+	if(!checkPicLZ(itemIcon->tiles))
+		itemIcon = itemIconTableBase;
+	
+	LZ77UnCompVram(itemIcon->tiles,itemTilesArm+0x400);
+	CopyItemIconPicTo4x4Buffer(itemTilesArm+0x400,itemTilesArm);
+
+	if(!checkLZ(itemIcon->pal))
+		itemIcon = itemIconTableBase;
+	LZ77UnCompVram(itemIcon->pal,OBJ_PaletteMem2+0x80);
 }
+
 void set_poke_tile(){
-	asm("push {r4,lr}\nldr r4, buffer3_title\nldrh r0, [r4,#0x2C]\nmov r1, #0x8\nmul r0, r1\nldr r2, front_sprites\nldr r2, [r2]\nadd r0, r2\nldr r0, [r0]\nldrb r1, [r0]\ncmp r1, #0x10\nbeq isLz77\nldr r0, [r2]\nisLz77:\nldr r1, obj_base\nswi 0x12\nmov r1, r4\nadd r1, #0x38\nldrb r1, [r1]\nmov r2, #0x4\nmul r1, r2\nldr r0, sprites_pal\nadd r0, r1\nldr r0, [r0]\nldr r3, [r0]\nldrh r1, [r4,#0x2C]\nmov r2, #0x8\nmul r1, r2\nadd r0, r1\nldr r0, [r0]\nldrb r1, [r0]\ncmp r1, #0x10\nbeq islz77p\nmov r0, r3\nislz77p:\nldr r1, OBJ_PaletteMemt\nswi 0x12\npop {r4,pc}\n.align 2\nbuffer3_title:\n.word 0x02021EC4\nfront_sprites:\n.word 0x08000128\nobj_base:\n.word 0x06010C00\nsprites_pal:\n.word 0x08000130\nOBJ_PaletteMemt:\n.word 0x02037D14+0x80");
+	struct CompressedSpriteSheet *monFrontPicTable = (struct CompressedSpriteSheet *)((u32*)gMonFrontPicTable_Pointer)[0];
+	struct CompressedSpriteSheet *monFrontPic = monFrontPicTable + myTempData->attackBuffer;
+	if(!checkPicLZ(monFrontPic->data))
+		monFrontPic = monFrontPicTable;
+	
+	LZ77UnCompVram(monFrontPic->data,monTilesArm);
+	
+	struct CompressedSpritePalette *monPaletteTable = (struct CompressedSpritePalette *)((u32*)gMonPaletteTable_Pointer)[myTempData->shiny_2];
+	struct CompressedSpritePalette *monPalette = monPaletteTable + myTempData->attackBuffer;
+
+	if (!checkLZ(monPalette->data))
+		monPalette = monPaletteTable;
+		
+	LZ77UnCompVram(monPalette->data,OBJ_PaletteMem2+0x80);
 }
-void getItemName(){
-	asm("push {lr}\nldr r3, item_table\nldr r3, [r3]\nmov r1, #0x2C\nmul r0, r1\nadd r0, r3\nldrb r1, [r0]\ncmp r1, #0x3D\nbeq go_what\ncmp r1, #0xAC\nbeq go_what\ncmp r1, #0xFF\nbeq go_FF1\nmov r2, #0x1\nchck_item:\nmov r3, r0\nadd r3, r2\nldrb r1, [r3]\ncmp r1, #0xFF\nbeq haveFF2\nadd r2, #0x1\ncmp r2, #0xE\nbne chck_item\nnotFF2:\nmov r0, #0x0\nb end_getItemName\nhaveFF2:\ncmp r2, #0x1\nbeq notFF2\nb end_getItemName\ngo_FF1:\nldr r1, [r0]\nmov r2, #0x0\nsub r2, #0x1\ncmp r1, r2\nbeq notFF2\ngo_what:\nmov r0, #0x1\nend_getItemName:\npop {pc}\n.align 2\nitem_table:\n.word 0x80001C8");
+
+bool8 checkPicLZ(struct LZData *data){
+	if(data->flag != 0x10 || data->size < 8*8 || data->size > 256*256){
+		return FALSE;
+	}
+	return umodsi3(data->size,8) == 0;
 }
-void setbuffer(){
-	asm("push {lr}\nlsl r0, #0x1\nldr r2, buffer3_buffer\nadd r2, r0\nstrh r1, [r2]\npop {pc}\n.align 2\nbuffer3_buffer:\n.word 0x02021EC4+0x40");
+
+bool8 checkLZ(struct LZData *data){
+	if(data->flag != 0x10 || umodsi3(data->size,8) != 0){
+		return FALSE;
+	}
+	return TRUE;
 }
-void bufferMove(){
-	asm("push {lr}\nmov r3, #0x7\nsub r3,r0\nldr r1, buffer3_movem\nlsl r0, #0x1\nsub r0, r1, r0\nctnMove:\nldrh r2, [r0]\nstrh r2, [r1]\nsub r1, #0x2\nsub r0, #0x2\nsub r3, #0x1\ncmp r3, #0x0\nbne ctnMove\nmov r0, #0x0\npop {pc}\n.align 2\nbuffer3_movem:\n.word 0x02021F10");
+
+u32 getItemName(u16 itemId){
+	struct Item *itemTable = (struct Item *)((u32*)gItems_Pointer)[0];
+	struct Item *item = itemTable + itemId;
+
+	u8 check = checkString2(item->name,14);
+
+	switch (check){
+		case 1:
+			return 1;
+		case 2:
+			return item->name;
+		default:
+			return 0;
+	}
 }
-void getbuffer(){
-	asm("push {lr}\nlsl r0, #0x1\nldr r1, buffer3_getbuffer\nadd r1, r0\nldrh r0, [r1]\npop {pc}\n.align 2\nbuffer3_getbuffer:\n.word 0x02021EC4+0x40");
+
+//检查文本 返回值 0错误文本 1?文本 2正确文本
+u8 checkString2(u8 *str,u32 len){
+	if(str[0] == 0x3D || str[0] == 0xAC)
+		return 1;
+	if(str[0] == 0xFF){
+		if(((u32 *)str)[0] == -1)
+			return 0;
+		else
+			return 1;
+	}
+		
+	for (u32 i = 1; i < len; i++){
+		if(str[i] == 0xFF)
+			return 2;
+	}
+	return 0;	
 }
-void sortA(){
-	asm("push {lr}\nldr r1, buffer3_sort\ncmp r0, #0x2\nbeq sort2\ncmp r0, #0x3\nbeq sort2\nb end_sort\nsort2:\nsub r0, #0x1\nlsl r0, #0x1\nadd r2, r1,r0\nldrh r0, [r1]\nldrh r3, [r2]\nstrh r0, [r2]\nstrh r3, [r1]\nend_sort:\npop {pc}\n.align 2\nbuffer3_sort:\n.word 0x02021EC4+0x40");
+
+void setbuffer(u8 index,u16 value){
+	u16 *buffer = (u16 *)(BUFFER_3+0x40);
+	buffer[index] = value;
+}
+
+u16 getbuffer(u8 index){
+	u16 *buffer = (u16 *)(BUFFER_3+0x40);
+	return buffer[index];
+}
+
+void bufferMove(u8 index){
+	u16 *buffer = (u8 *)(BUFFER_3+0x40);
+
+	for (u32 i = 0; i < 7-index; i++){
+		buffer[6-i] = buffer[6-i-index];
+	}
+}
+void sortA(u8 index){
+	u16 *buffer = (u8 *)(BUFFER_3+0x40);
+	
+	if (index == 2 || index == 3){
+		u16 temp = buffer[0];
+		buffer[0] = buffer[index-1];
+		buffer[index-1] = temp;
+	
+	}
 }
 
 

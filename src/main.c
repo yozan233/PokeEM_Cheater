@@ -11,8 +11,10 @@ void loadEggIconTiles();
 void loadMonIsShiny();
 void loadMonGender(u16 species);
 u32 getCurrentMonData(u8 request);
-u32 getCurrentPartyplayer();
+struct Pokemon *getCurrentPartyplayer();
 struct BaseStats* getSpeciesBaseStats(u16 species);
+struct Sprite *getSprite(u8 id);
+u32 getMonSpeciesName(u16 species);
 
 void main_func()
 {
@@ -66,8 +68,8 @@ void refreshMonTempData(){
 }
 
 void loadMonName(){
-    u32 party =	getCurrentPartyplayer();
-	StringCopy(BUFFER_2,party+8);
+    struct Pokemon *party =	getCurrentPartyplayer();
+	StringCopy(BUFFER_2,party->nickname);
 	u8* nameStr = (u8*)BUFFER_2;
 	nameStr[10] = 0xFF;
 	u8 len = 0;
@@ -75,13 +77,17 @@ void loadMonName(){
 		len++;
 	}
 	nameStr[len] = 0xBA;
-	u32 speciesNameTable = ((u32*)gSpeciesNames_Pointer)[0];
-	StringCopy(nameStr+len+1,speciesNameTable+0xB*myTempData->species);
+	StringCopy(nameStr+len+1,getMonSpeciesName(myTempData->species));
+}
+
+u32 getMonSpeciesName(u16 species){
+	u32 speciesNames = ((u32*)gSpeciesNames_Pointer)[0];
+	return speciesNames + 0xB*species;
 }
 
 void loadMonIconSprite(){
 	struct MySaveblock* saveblock = (struct MySaveblock*)VAR_8004;
-	struct Sprite* sprites = (struct Sprite*)(gSprites+0x44*saveblock->monIconId);
+	struct Sprite* sprites = getSprite(saveblock->monIconId);
 	u8 monIconPaletteIndex;
 	if(myTempData->egg){
 		monIconPaletteIndex = 2;
@@ -94,6 +100,10 @@ void loadMonIconSprite(){
 		loadMonIconTiles();
 	}
 	sprites->oam.paletteNum = monIconPaletteIndex;
+}
+
+struct Sprite *getSprite(u8 id){
+	return (struct Sprite*)(gSprites+0x44*id);
 }
 
 void loadMonIconTiles(){
@@ -152,7 +162,11 @@ u32 getCurrentMonData(u8 request){
 	return GetMonData(getCurrentPartyplayer(),request);
 }
 
-u32 getCurrentPartyplayer(){
+void setCurrentMonData(u8 request, void* value){
+	SetMonData(getCurrentPartyplayer(),request,value);
+}
+
+struct Pokemon *getCurrentPartyplayer(){
 	return gPlayerParty+myTempData->party*0x64;
 }
 

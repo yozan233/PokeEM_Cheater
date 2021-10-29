@@ -25,6 +25,7 @@ HealPlayerParty = 0x080F9180|1;
 ItemId_GetSecondaryId = 0x080D7644|1;
 VarGet = 0x0809D694|1;
 LZ77UnCompWram = 0x082E7090|1;
+LZ77UnCompVram = 0x82e708c|1;
 ResetSpriteData = 0x8006974|1;
 ResetPaletteFade = 0x80A1A74|1;
 FreeAllSpritePalettes = 0x800870C|1;
@@ -79,6 +80,14 @@ ResetInitialPlayerAvatarState = 0x08085268|1;
 FillWindowPixelRect = 0x08003b64|1;
 CpuSet = 0x082e7084|1;
 GetMapHeaderByGroupAndId = 0x08084a90|1;
+CopyItemIconPicTo4x4Buffer = 0x81afe44|1;
+StringCompare = 0x08008c44|1;
+SpeciesToNationalPokedexNum = 0x0806d4a4|1;
+GetSetPokedexFlag = 0x080c0664|5;
+SetBagItemQuantity = 0x080D656C|1;
+GetVarPointer = 0x0809d648|1;
+
+
 
 party_player = 0x020244EC;
 

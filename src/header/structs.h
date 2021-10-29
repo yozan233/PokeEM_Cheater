@@ -33,7 +33,12 @@
 #define GENDER_ALL_FEMALE 3 //全雌性
 #define GENDER_NONE 4 //无性别
 
-#define BALLS_POCKET 1
+#define ITEMS_POCKET       0
+#define BALLS_POCKET       1
+#define TMHM_POCKET        2
+#define BERRIES_POCKET     3
+#define KEYITEMS_POCKET    4
+#define POCKETS_COUNT      5
 
 #define VAR_8004 0x020375E0
 #define gSprites 0x02020630
@@ -41,14 +46,19 @@
 #define OBJ_PaletteMem2 0x02037D14
 #define gSpeciesNames_Pointer 0x08000144 //精灵种族名字
 #define gBaseStats_Pointer 0x080001BC //精灵种族值
+#define gMonFrontPicTable_Pointer 0x8000128 //精灵正面图
+#define gMonPaletteTable_Pointer 0x8000130 //精灵普通调色板
+#define gMonShinyPaletteTable_Pointer 0x8000134 //精灵闪光调色板
 #define gMonIconTable_Pointer 0x8000138 //精灵小图标
 #define gMoveNames_Pointer 0x08000148 //技能名称
 #define gMonIconPaletteIndices_Pointer 0x800013C //精灵小图标调色板编号
 #define gExperienceTables_Pointer 0x0806DFF0 //经验值表
 #define gAbilityNames_Pointer 0x080001C0 //特性名字
 #define qhAbilityNames 0x082E99F8 //漆黑特性名字2
+#define gItems_Pointer 0x080001C8 //道具表
 #define gBattleMoves_Pointer 0x080001CC //技能表
 #define gTypeNames_Pointer 0x080166F4 //属性名称
+#define gItemIconTable_Pointer 0x081B0034 //道具图标
 #define gPlayerParty 0x020244EC //精灵队伍
 #define gText_ThreeDashes 0x85e8d45 //文本"---"
 
@@ -56,11 +66,18 @@
 #define gmaxLvlOffsetFlag 0x0806DFB2
 #define gFlightPointCount 0x08122C88
 #define gMonIcon_Egg 0x08d8fc74
+#define gSaveBlock1Ptr 0x03005D8C
 #define gSaveBlock2Ptr 0x03005d90
 #define gBagPockets 0x02039dd8
+#define gPlayerPartyCount 0x020244E9
+
+#define itemTilesArm 0x06012000
+#define monTilesArm  0x06010C00
 
 #define BUFFER_2 0x02021DC4
 #define BUFFER_3 0x02021EC4
+
+#define gPokeMax ((u16 *)0x080DE860)[0]
 
 /* structs */
 struct SpriteFrameImage
@@ -292,6 +309,10 @@ struct MyDatastruct
 	u16 species_2;		//0x32
 	u8 lvl_2;			//0x34
 	u8 nature_2;		//0x35
+	u8 ability_2;		//0x36
+	u8 happiness_2;		//0x37
+	u8 shiny_2;			//0x38
+	u8 sex_2;			//0x39
 	
 };
 
@@ -299,16 +320,6 @@ struct mouse
 {
 	u16 pos_x;
 	u16 pos_y;
-};
-
-struct AllPokemons
-{
-	u16 max;
-};
-
-struct get_a_u8
-{
-	u8 bit;
 };
 
 struct font
@@ -330,27 +341,31 @@ struct MyBuffer
 	u16 buffer7;
 };
 
-struct pokemon
+struct Pokemon
 {
-	u32 personality_value;
-	u32 OTID;
-	u8 nickname[10];
-	u16 language;
-	u8 OT_name[7];
-	u8 markings;
-	u16 checksum;
-	u16 padding;
-	u8 enc_data[48];
-	u32 status;
-	u8 level;
-	u8 pokerus;
-	u16 cur_hp;
-	u16 tot_hp;
-	u16 attack;
-	u16 defense;
-	u16 speed;
-	u16 sattack;
-	u16 sdefense;
+/* 0x00 */  u32 personality;
+/* 0x04 */  u32 OTID;
+/* 0x08 */  u8 nickname[10];
+/* 0x12 */  u8 language;
+/* 0x13 */  u8 isBadEgg:1;
+            u8 hasSpecies:1;
+            u8 isEgg:1;
+            u8 unused:5;
+/* 0x14 */  u8 OT_name[7];
+/* 0x1B */  u8 markings;
+/* 0x1C */  u16 checksum;
+/* 0x1E */	u16 padding;
+/* 0x20 */	u8 enc_data[48];
+/* 0x50 */	u32 status;
+/* 0x54 */	u8 level;
+/* 0x55 */	u8 pokerus;
+/* 0x56 */	u16 curHp;
+/* 0x58 */	u16 maxHP;
+/* 0x5A */	u16 attack;
+/* 0x5C */	u16 defense;
+/* 0x5E */	u16 speed;
+/* 0x60 */	u16 spAttack;
+/* 0x62 */	u16 spDefense;
 };
 
 struct task
@@ -504,6 +519,29 @@ struct MapEvents
     u32 *bgEvents;
 };
 
+struct WarpData
+{
+    s8 mapGroup;
+    s8 mapNum;
+    s8 warpId;
+    s16 x, y;
+};
+
+struct SaveBlock1
+{
+    /*0x00*/ struct Coords16 pos;
+    /*0x04*/ struct WarpData location;
+    /*0x0C*/ struct WarpData continueGameWarp;
+    /*0x14*/ struct WarpData dynamicWarp;
+    /*0x1C*/ struct WarpData lastHealLocation; // used by white-out and teleport
+    /*0x24*/ struct WarpData escapeWarp; // used by Dig and Escape Rope
+    /*0x2C*/ u16 savedMusic;
+    /*0x2E*/ u8 weather;
+    /*0x2F*/ u8 weatherCycleStage;
+    /*0x30*/ u8 flashLevel;
+    /*0x32*/ u16 mapLayoutId;
+};
+
 struct SaveBlock2
 {
     /*0x00*/ u8 playerName[8];
@@ -538,4 +576,48 @@ struct ItemSlot
 {
     u16 itemId;
     u16 quantity;
+};
+
+struct ItemIcon
+{
+    struct LZData *tiles;
+    struct LZData *pal;
+};
+
+struct LZData
+{
+    u32 flag:8;
+    u32 size:24;
+    u8 *data;
+};
+
+struct CompressedSpriteSheet
+{
+    struct LZData *data;  // LZ77 compressed pixel data
+    u16 size;        // Uncompressed size of pixel data
+    u16 tag;
+};
+
+struct CompressedSpritePalette
+{
+    struct LZData *data;  // LZ77 compressed palette data
+    u16 tag;
+};
+
+struct Item
+{
+    u8 name[14];
+    u16 itemId;
+    u16 price;
+    u8 holdEffect;
+    u8 holdEffectParam;
+    u8 *description;
+    u8 importance;
+    u8 unk19;
+    u8 pocket;
+    u8 type;
+    u32 *fieldUseFunc;
+    u8 battleUsage;
+    u32 *battleUseFunc;
+    u8 secondaryId;
 };

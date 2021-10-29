@@ -12,7 +12,6 @@ struct superstate *super = (struct superstate *)0x030022C0;
 struct MyDatastruct *myTempData = (struct MyDatastruct *)0x02021EC4;
 // struct MyBuffer *bfr = (struct MyBuffer *)0x02021EC4+0x40;
 struct mouse *mouseXY = (struct mouse *)0x02020650;
-struct AllPokemons *pokeMax = (struct AllPokemons *)0x080DE860;
 struct task *tasks = (struct task *)0x3005E00;
 struct fade_ctrl *pal_fade_control = (struct fade_ctrl *)0x2037FD4;
 

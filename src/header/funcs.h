@@ -26,7 +26,10 @@ void HealPlayerParty(void);
 // u8 ItemId_GetSecondaryId(u16 itemId);
 u8 ItemId_GetSecondaryId();
 u16 VarGet(u16 varID);
+//swi 11
 void LZ77UnCompWram(const void* src, const void* dst);
+//swi 12
+void LZ77UnCompVram(const void *src, void *dest);
 void ResetSpriteData(void);
 void ResetPaletteFade(void);
 void FreeAllSpritePalettes(void);
@@ -82,7 +85,10 @@ void SetWarpDestination(s8 mapGroup, s8 mapNum, s8 warpId, s8 x, s8 y);
 void FillWindowPixelRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height);
 void CpuSet(void *src, void *dest, u32 control);
 struct MapHeader *GetMapHeaderByGroupAndId(u16 mapGroup, u16 mapNum);
-
-
-
+void CopyItemIconPicTo4x4Buffer(void *src, void *dest);
+s32 StringCompare(const u8 *str1, const u8 *str2);
+u16 SpeciesToNationalPokedexNum(u16 species);
+s8 GetSetPokedexFlag(u16 nationalNum, u8 caseId);
+void SetBagItemQuantity(u16 *quantity, u16 newValue);
+u16 *GetVarPointer(u16 id);
 
