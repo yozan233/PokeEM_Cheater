@@ -1,4 +1,5 @@
 #include "types.h"
+#include "rom_offset.h"
 
 /* define */
 #define BUTTONS_A 1
@@ -27,11 +28,100 @@
 #define PAGE_OTHER 0x30
 #define PAGE_PLAYER_NAME 0x31
 
+#define PAGETYPE_MAIN 0
+#define PAGETYPE_POKEMON 1
+#define PAGETYPE_BAG 2
+#define PAGETYPE_OTHER 3
+
+#define SELECT_PARTY 0
+#define SELECT_CANCEL 7
+#define SELECT_SURE 8
+
+#define FONT_UPPERCASE 0    //大写字母
+#define FONT_LOWERCASE 1    //小写字母
+#define FONT_CHINESE 2      //中文
+
+
 #define GENDER_ALL_MALE 0 //全雄性
 #define GENDER_FEMALE 1 //雌性
 #define GENDER_MALE 2 //雄性
 #define GENDER_ALL_FEMALE 3 //全雌性
 #define GENDER_NONE 4 //无性别
+
+#define	TEXT_BUTTON_PROMPT1	0
+#define	TEXT_BUTTON_PROMPT2	1
+#define	TEXT_BUTTON_PROMPT3	2
+#define	TEXT_BUTTON_PROMPT4	3
+#define	TEXT_MON	4
+#define	TEXT_BAG	5
+#define	TEXT_OTHER	6
+#define	TEXT_LEVEL	7
+#define	TEXT_NATURES	8
+#define	TEXT_ABILITY	9
+#define	TEXT_HAPPINESS	10
+#define	TEXT_SHINY	11
+#define	TEXT_GENDER	12
+#define	TEXT_SURE	13
+#define	TEXT_CANCEL	14
+#define	TEXT_UNKNOWN_ABILITY 	15
+#define	TEXT_NATURES_TABLE	16
+#define	TEXT_NOTSHINY	17
+#define	TEXT_GENDER_TABLE	18
+#define	TEXT_HP	19
+#define	TEXT_ATTACK	20
+#define	TEXT_DEFENSE	21
+#define	TEXT_SPEED	22
+#define	TEXT_SP_ATTACK	23
+#define	TEXT_SP_DEFENSE	24
+#define	TEXT_IV             25
+#define	TEXT_EV         	26
+#define	TEXT_MOVE_POWER	27
+#define	TEXT_MOVE_TYPE	28
+#define	TEXT_MOVE_ACCURACY	29
+#define	TEXT_PP         	30
+#define	TEXT_NONE	31
+#define	TEXT_QUANTITY	32
+#define	TEXT_ADD_ITEM	33
+#define	TEXT_THROW_KEYITEM	34
+#define	TEXT_CIRCLE_DOT	35
+#define	TEXT_ADD_SUCCESS	36
+#define	TEXT_INSUFFICIENT_SPACE	37
+#define	TEXT_AUTHOR	38
+#define	TEXT_VERSION	39
+#define	TEXT_EGG	40
+#define	TEXT_HATCH_NOW      	41
+#define	TEXT_POKEDEX_UPGRADE	42
+#define	TEXT_POKERUS	43
+#define	TEXT_MIRAGE_SHOW	44
+#define	TEXT_THROUGH_WALL	45
+#define	TEXT_VISUAL_RANGE_MAX	46
+#define	TEXT_SPRAY	47
+#define	TEXT_LIMIT510	48
+#define	TEXT_PAGELOCK	49
+#define	TEXT_INITIALS	50
+#define	TEXT_DELETE	51
+#define	TEXT_BALL_TYPE	52
+#define	TEXT_CATCH_LOCATION	53
+#define	TEXT_TELEPORT	54
+#define	TEXT_COMING_SOON	55
+#define	TEXT_SOMEWHERE	56
+#define	TEXT_FATEFUL_ENCOUNTER	57
+#define	TEXT_FLIGHT_POINT	58
+#define	TEXT_TIME	59
+#define	TEXT_HOUR	60
+#define	TEXT_MON_COPY	61
+#define	TEXT_COPY_SUCCESS	62
+#define	TEXT_SEND_TO_PC	63
+#define	TEXT_COPY_FAILED	64
+#define	TEXT_MON_OBEDIENCE	65
+#define	TEXT_CURSOR	66
+
+#define MOUSE_POS_INFO 0
+#define MOUSE_POS_MAIN 1
+#define MOUSE_POS_ATTACK 2
+#define MOUSE_POS_SPECIE 3
+#define MOUSE_POS_ITEM 4
+#define MOUSE_POS_OTHER 5
 
 #define ITEMS_POCKET       0
 #define BALLS_POCKET       1
@@ -40,44 +130,11 @@
 #define KEYITEMS_POCKET    4
 #define POCKETS_COUNT      5
 
-#define VAR_8004 0x020375E0
-#define gSprites 0x02020630
+#define ITEM_TEXT_CURSOR_INDEX 7
 
-#define OBJ_PaletteMem2 0x02037D14
-#define gSpeciesNames_Pointer 0x08000144 //精灵种族名字
-#define gBaseStats_Pointer 0x080001BC //精灵种族值
-#define gMonFrontPicTable_Pointer 0x8000128 //精灵正面图
-#define gMonPaletteTable_Pointer 0x8000130 //精灵普通调色板
-#define gMonShinyPaletteTable_Pointer 0x8000134 //精灵闪光调色板
-#define gMonIconTable_Pointer 0x8000138 //精灵小图标
-#define gMoveNames_Pointer 0x08000148 //技能名称
-#define gMonIconPaletteIndices_Pointer 0x800013C //精灵小图标调色板编号
-#define gExperienceTables_Pointer 0x0806DFF0 //经验值表
-#define gAbilityNames_Pointer 0x080001C0 //特性名字
-#define qhAbilityNames 0x082E99F8 //漆黑特性名字2
-#define gItems_Pointer 0x080001C8 //道具表
-#define gBattleMoves_Pointer 0x080001CC //技能表
-#define gTypeNames_Pointer 0x080166F4 //属性名称
-#define gItemIconTable_Pointer 0x081B0034 //道具图标
-#define gPlayerParty 0x020244EC //精灵队伍
-#define gText_ThreeDashes 0x85e8d45 //文本"---"
-
-#define maxLvlOffset 0x0804A5BE
-#define gmaxLvlOffsetFlag 0x0806DFB2
-#define gFlightPointCount 0x08122C88
-#define gMonIcon_Egg 0x08d8fc74
-#define gSaveBlock1Ptr 0x03005D8C
-#define gSaveBlock2Ptr 0x03005d90
-#define gBagPockets 0x02039dd8
-#define gPlayerPartyCount 0x020244E9
-
-#define itemTilesArm 0x06012000
-#define monTilesArm  0x06010C00
-
-#define BUFFER_2 0x02021DC4
-#define BUFFER_3 0x02021EC4
-
-#define gPokeMax ((u16 *)0x080DE860)[0]
+#define SOUND_DELETE 3 
+#define SOUND_SELECT 5
+#define SOUND_PAGE 6
 
 /* structs */
 struct SpriteFrameImage
@@ -230,7 +287,7 @@ struct superstate
 /*0x18*/	u32 field_18;
 /*0x1C*/	u32 bits_to_wait_for;
 /*0x20*/	u32 ptr_vblank_counter;
-/*0x24*/	u32 field_24;
+/*0x24*/	u32 ptr_vblank_counter2;
 /*0x28*/	u16 buttons0_held;
 /*0x2A*/	u16 buttons1_new;
 /*0x2C*/	u16 buttons2_held_remapped;
@@ -251,7 +308,7 @@ struct Time
     s8 seconds;
 };
 
-struct fly
+struct FlightPoint
 {
 	u8 bank;
 	u8 map;
@@ -264,24 +321,33 @@ struct fly
 struct MySaveblock
 {
 	u32 malloc; 	//0x00
-	u8 nop;			//0x04
-	u8 cursorPicId; //0x05
-	u8 monIconId;	//0x06
+	u8 task_id;     //0x04
+    u8 boxId;       //0x05
+	u8 cursorPicId; //0x06
+	u8 monIconId;	//0x07
+    u8 monPicId;    //0x08
+    u8 itemPicId;   //0x09
 };
 
+struct TextBuffer{
+    u8 monName[0x20];
+    u8 newName[0x10];
+    u8 temp[0x10];
+    u8 wordList[100];
+};
 
 struct MyDatastruct
 {
 	u8 page;			//0x00
 	u8 select;			//0x01
-	u8 over;			//0x02
-	u8 boxid;			//0x03
+	u8 cursorState;		//0x02
+	bool8 pageLock;		//0x03
 	u32 numTextBuff;	//0x04
 	u8 maxLvl;			//0x08
 	u8 attackSelect;	//0x09
-	u8 poke_pic_id;		//0x0A
-	u8 modebuffer;		//0x0B
-	u32 pos_buffer;		//0x0C
+	u8 mouseMode;		//0x0A
+	u8 soundMute;		//0x0B
+	u16 posBuffer[2];	//0x0C
 	u8 party;			//0x10
 	u8 egg;				//0x11
 	u16 species;		//0x12
@@ -302,8 +368,8 @@ struct MyDatastruct
 	u16 Num;			//0x28
 	u16 attackN;		//0x2A
 	u16 attackBuffer;	//0x2C
-	u8 item_pic_id;		//0x2E
-	u8 aa;				//0x2F
+	u8 fontType;		//0x2E
+	u8 obedience;		//0x2F
 	u8 party_2;			//0x30
 	u8 egg_2;			//0x31
 	u16 species_2;		//0x32
@@ -313,10 +379,32 @@ struct MyDatastruct
 	u8 happiness_2;		//0x37
 	u8 shiny_2;			//0x38
 	u8 sex_2;			//0x39
-	
+    u8 location;        //0x3A
+    u8 obedienceTemp;   //0x3B
+    u8 time;           //0x3C
+    bool8 limit510;     //0x3D
+    u8 flightPointCount;//0x3E
+    u8 selectedflightPoint;//0x3F
+    u16 ballCount;     //0x40
+    u8 selectedBall;    //0x42
+    bool8 monCopy;      //0x43
+    u16 itemBuffer;     //0x44
+    bool8 addItemEnable:1; //0x46
+    bool8 throwKeyItemEnable:1;
+    bool8 pokedexUpgrade:1;
+    bool8 pokerus:1;
+    bool8 visualRangeMax:1;
+    bool8 mirageShow:1;
+    bool8 throughWall:1;
+    bool8 fill1;
+    bool8 fill2;         //0x47
+    u8 fontBit1;        //0x48
+    u8 fontBit2;        //0x49
+    u8 fontPage[2];     //0x4A
+    u8 inputCursorIndex;//0x4C
 };
 
-struct mouse
+struct MousePos
 {
 	u16 pos_x;
 	u16 pos_y;
@@ -620,4 +708,10 @@ struct Item
     u8 battleUsage;
     u32 *battleUseFunc;
     u8 secondaryId;
+};
+
+struct TilesPal
+{
+    const u8 *tiles;
+    const u16 *pal;
 };

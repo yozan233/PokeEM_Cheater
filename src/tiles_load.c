@@ -6,8 +6,8 @@ u8 tiles_load()
 	{
 		case 0:
 			ResetTempTileDataBuffers();
-			DecompressAndCopyTileDataToVram(1,/*bg_tiles*/0x085E7804,0,0,0);
-			CopyToBgTilemapBuffer(1,/*raw*/0x085E70C8,0,0);
+			DecompressAndCopyTileDataToVram(1,sDiplomaTiles,0,0,0);
+			CopyToBgTilemapBuffer(1,sDiplomaTilemap,0,0);
 			break;
 		case 1:
 			if(FreeTempTileDataBuffersIfPossible())
@@ -15,7 +15,7 @@ u8 tiles_load()
 			else break;
 		case 2:
 			ItemId_GetSecondaryId();
-			LoadPalette(/*bgpal*/0x085E7088,0,0x40);
+			LoadPalette(sDiplomaPalettes,0,0x40);
 			return 1;
 		default:
 			return 1;

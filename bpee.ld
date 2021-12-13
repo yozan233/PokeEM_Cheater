@@ -86,7 +86,11 @@ SpeciesToNationalPokedexNum = 0x0806d4a4|1;
 GetSetPokedexFlag = 0x080c0664|5;
 SetBagItemQuantity = 0x080D656C|1;
 GetVarPointer = 0x0809d648|1;
-
+ZeroMonData = 0x08067a8c|1;
+GetMonIconTiles = 0x080d3020|1;
+UpdateMonIconFrame = 0x080d30dc|1;
+udivsi3 = 0x082e7b68|1;
+CpuFastSet = 0x82e7080|1;
 
 
 party_player = 0x020244EC;

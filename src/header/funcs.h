@@ -68,7 +68,7 @@ u8 LoadSpritePalette(struct pal_graphic *uncomped_pal);
 u8 CreateSprite(struct SpriteTemplate *template, s16 x, s16 y, u8 subpriority);
 u8 CreateSpriteAtEnd(struct SpriteTemplate *,u16 x,u16 y,u8 field_43);
 u8 AddTextPrinterParameterized(u8 rbox_id, u8 font, u8 *str, u8 x_in_box, u8 y_in_box, u8 text_speed, u32 field_10_in_remo);
-void AddTextPrinterParameterized3(u8 foo, u8 font, u8 x_in_pixel_inbox, u8 y_in_pixel_inbox, int bar, u8 baz, u8 *str);
+void AddTextPrinterParameterized3(u8 foo, u8 font, u8 x_in_pixel_inbox, u8 y_in_pixel_inbox, u8* bar, u8 baz, u8 *str);
 void PutWindowTilemap(u8 rbox_id);
 void FillWindowPixelBuffer(u8 rbox_id,u8 filler);
 void LoadBgTiles(u8 bgid, u8 *src, u16 size, u16 offset);
@@ -91,4 +91,6 @@ u16 SpeciesToNationalPokedexNum(u16 species);
 s8 GetSetPokedexFlag(u16 nationalNum, u8 caseId);
 void SetBagItemQuantity(u16 *quantity, u16 newValue);
 u16 *GetVarPointer(u16 id);
-
+void ZeroMonData(struct Pokemon *mon);
+s16 udivsi3(s16 a, s16 b);
+void CpuFastSet(const void *src, void *dest, u32 control);

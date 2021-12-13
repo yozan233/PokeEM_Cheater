@@ -22,7 +22,7 @@ void main_func()
 	ResetSpriteData();
 	ResetPaletteFade();
 	FreeAllSpritePalettes();
-	CreateTask(task_loader,1);
+	mySav->task_id = CreateTask(task_loader,1);
 	SetMainCallback2(cb_execute);
 	return;
 }
@@ -33,12 +33,11 @@ void cb_execute()
 	AnimateSprites();
 	BuildOamBuffer();
 	UpdatePaletteFade();
-	obj_callback();
 	return;
 }
 
 void initMonTempData(){
-	myTempData->maxLvl = ((u8*)maxLvlOffset)[0];
+	myTempData->maxLvl = ((u8*)maxLvl_Pointer)[0];
 	myTempData->PID = getCurrentMonData(ATTR_PID);
 	myTempData->TID = getCurrentMonData(ATTR_TID);
 	myTempData->egg = getCurrentMonData(ATTR_IS_EGG);
@@ -55,8 +54,6 @@ void initMonTempData(){
 
 	loadMonName();
 	backupMonTempData();
-
-
 }
 
 void backupMonTempData(){
@@ -69,14 +66,15 @@ void refreshMonTempData(){
 
 void loadMonName(){
     struct Pokemon *party =	getCurrentPartyplayer();
-	StringCopy(BUFFER_2,party->nickname);
-	u8* nameStr = (u8*)BUFFER_2;
+	StringCopy(textBuffer->monName,party->nickname);
+	u8* nameStr = textBuffer->monName;
 	nameStr[10] = 0xFF;
 	u8 len = 0;
 	while(nameStr[len] != 0xFF){
 		len++;
 	}
 	nameStr[len] = 0xBA;
+	nameStr[0x1F] = len;
 	StringCopy(nameStr+len+1,getMonSpeciesName(myTempData->species));
 }
 
@@ -86,8 +84,7 @@ u32 getMonSpeciesName(u16 species){
 }
 
 void loadMonIconSprite(){
-	struct MySaveblock* saveblock = (struct MySaveblock*)VAR_8004;
-	struct Sprite* sprites = getSprite(saveblock->monIconId);
+	struct Sprite* sprites = getSprite(mySav->monIconId);
 	u8 monIconPaletteIndex;
 	if(myTempData->egg){
 		monIconPaletteIndex = 2;
@@ -166,6 +163,10 @@ void setCurrentMonData(u8 request, void* value){
 	SetMonData(getCurrentPartyplayer(),request,value);
 }
 
+void RefreshCurrentMonData(){
+	CalculateMonStats(getCurrentPartyplayer());
+}
+
 struct Pokemon *getCurrentPartyplayer(){
 	return gPlayerParty+myTempData->party*0x64;
 }
@@ -174,4 +175,18 @@ struct BaseStats* getSpeciesBaseStats(u16 species){
 	u32 gBaseStats = ((u32*)gBaseStats_Pointer)[0];
 	gBaseStats += (0x1C*species);
 	return (struct BaseStats*)gBaseStats;
+}
+
+void CpuFastFill(u32 value, u32 dest, u32 size)                             
+{                                                                  
+    u32 tmp = (u32)(value);                                     
+    CpuFastSet(&tmp,dest,0x01000000 | ((size)/(32/8) & 0x1FFFFF));
+}
+
+void PlaySound(u16 soundID){
+	if(myTempData->soundMute){
+		myTempData->soundMute = FALSE;
+	}
+	else
+		PlaySE(soundID);
 }

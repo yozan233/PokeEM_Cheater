@@ -2,9 +2,11 @@
 extern void sub_bg_init(void);
 extern u8 tiles_load(void);
 extern void string_print(void);
-extern void box_draw(u8,u8);
 extern void load_icons(void);
 extern void task_02(u8 task_id);
+extern void CpuFastFill(u32 value, u32 dest, u32 size) ;
+void box_draw(u8,u8);
+
 const struct rbox_short rbox_table[] __attribute__((align(4))) = 
 {
 	// {0x00, 0x01, 0x01, 0x1C, 0xF, 0x0F, 0x57},{0x00, 0x01, 0x11, 0x1C, 0x02, 0x0F, 0x00}
@@ -21,44 +23,38 @@ void task_loader(u8 task_id)
 	{
 		case 0:
 			SetVBlankCallback((void*)0);
-			myTempData->page=0;
-			myTempData->select=0;
-			myTempData->over=0;
-			myTempData->party=0;
+			CpuFastFill(0,BUFFER_3,0x40);
 			sub_bg_init();
-			load_icons();
+			CreateSprites();
 			break;
 		case 1:
 			if(!tiles_load())
 				return;
 			else break;
 		case 2:
-			LoadBgTiles(0,0x0850E87C,0x120,0x2FF);//box_title
-			box_palxE();
-			
 			//内容盒子
 			InitWindows(rbox_table);
 			DeactivateAllTextPrinters();
-			set_text(0);
 			PutWindowTilemap(0);
-			
 			
 			//活动盒子
 			temp = AddWindow(rbox_table+2);
-			myTempData->boxid = temp;
+			mySav->boxId = temp;
 			box_draw(temp,0xE);
-			AddTextPrinterParameterized(temp,1,text_table,6,0,0,0); //按键提示盒子
 			
-			u16 crc = CalcCRC16WithTable(text_table+0x1C9,0x17);
-			//(text_table+0x1E0) - (text_table+0x1C9)
-			// x+1E0-x-1C9
-			// 0x1E0-0x1C9
-			// 0x17
-			// MyTest();
-						
-			if (crc != 0x97AB){
-				DoSoftReset();
-			}
+			InitPage(PAGE_MAIN);
+
+			//TODO CRC
+			// u16 crc = CalcCRC16WithTable(text_table[TEXT_AUTHOR],0x17);
+			// if (crc != 0x97AB){
+			// 	DoSoftReset();
+			// }
+
+			//TODO 不显示背景图片
+			SetGpuReg(0,0x3140);
+			u8* bgPal = (u8 *)BG_PaletteMem;
+			bgPal[0]= 0xFF;
+			bgPal[1] = 0x5F;
 			
 			SetGpuReg(0xA,0x1E07);
 			SetGpuReg(0x48,0x1F3F);
@@ -67,7 +63,7 @@ void task_loader(u8 task_id)
 			CopyBgTilemapBufferToVram(1);
 			break;
 		case 3:
-			BeginNormalPaletteFade(0xFFFFFFFF,0,0x10,0,0); //make it come back to bright
+			BeginNormalPaletteFade(-1,0,0x10,0,0); //make it come back to bright
 			SetVBlankCallback(VBlankCB_SelectScreen); //will update the fade_ctrl
 			break;
 		default:
@@ -76,12 +72,21 @@ void task_loader(u8 task_id)
 			tasks[task_id].priv[2] = 0;
 			tasks[task_id].priv[3] = 0;
 			tasks[task_id].fptr = task_02;
+			PlaySE(31);
 			break;
 	}
 	(*(*malloc_pointer_loc+2))++;
 	return;
 }
 
-void box_palxE(){
-	asm("push {lr}\nldr r0, box_p\nldr r1, box_bg_palette\nmov r2, #0x10\nswi #0xB\nmov r0, #0x0\npop {pc}\n.align 2\nbox_p:\n.word 0x0850FEFC\nbox_bg_palette:\n.word 0x020378D4");
+void box_draw(u8 box_id, u8 pal)
+{
+	struct TilesPal tilesPal = ((struct TilesPal *)sWindowFrames_offset)[0];
+	LoadBgTiles(0, tilesPal.tiles, 0x120, 0x2FF);
+    LoadPalette(tilesPal.pal, pal*0x10, 0x20);
+
+	FillWindowPixelBuffer(box_id,0);
+	PutWindowTilemap(box_id);
+	DrawStdFrameWithCustomTileAndPalette(box_id,0,0x300,pal);
+	return;
 }

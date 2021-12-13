@@ -12,13 +12,14 @@ change_pid:
 	mov r4, r8
 	push {r4-r7}
 	mov r5, #0x64
-	@ldr r3, [pc, 170h]    ;[00FF0D50]=0x08FF0EF0(150933232)
+	
 	ldr r1, =0x02021EC4
 	ldrb r2, [r1, #0x10]
 	lsl r3, r2, #0
 	mul r3, r5
 	ldr r5, =0x020244EC
 	add r5, r3, r5
+	
 	ldrh r3, [r1, #0x12]
 	lsl r2, r3, #0x0
 	sub sp, #0x2C

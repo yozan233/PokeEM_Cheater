@@ -1,7 +1,9 @@
 build
 .idea
+.vscode
 *.gba
 *.sav
 *.bin
 *.exe
 *.map
+test_01.png
