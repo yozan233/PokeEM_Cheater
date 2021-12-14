@@ -305,113 +305,6 @@ void pause(){
 	asm("push {lr}\nmov r0, #0\nmov r1, #0xFF\nlsl r1, #0xA\npause_t:\nadd r0, #0x1\ncmp r0, r1\nbne pause_t\npop {pc}\nBX_R3:\nbx r3");
 }
 
-bool8 chck_PID(){
-	// if(myTempData->page == PAGE_POKE_INFO2){
-	// 	//changePID
-
-	// }
-	// if(myTempData->sex != myTempData->sex_2){
-	// 	//G_PID
-
-	// }
-	// if (myTempData->nature != myTempData->nature_2){
-	// 	//changePID
-		
-	// }
-	// if(myTempData->shiny != myTempData->shiny_2){
-	// 	//changePID
-
-	// }
-
-	// //G_PID:
-	// u8 genderRatio = getSpeciesBaseStats(myTempData->species_2)->genderRatio;
-	// switch(myTempData->sex_2){
-	// 	case GENDER_FEMALE:
-	// 		genderRatio -= 5;
-	// 		break;
-	// 	case GENDER_MALE:
-	// 		genderRatio += 5;
-	// 		break;
-	// 	default:
-	// 		//changePID
-	// 		break;
-	// }
-
-
-
-	// return FALSE;
-
-	asm("\
-	push {lr}\n\
-	ldr r3, buffer3_pid\n\
-	ldrb r2, [r3]\n\
-	cmp r2, #0x11\n\
-	beq changePID\n\
-	mov r2, r3\n\
-	add r2, #0x10\n\
-	add r3, #0x30\n\
-	ldrb r0, [r2,#0x9]\n\
-	ldrb r1, [r3,#0x9]\n\
-	cmp r0, r1\n\
-	bne G_PID\n\
-	ldrb r0, [r2,#0x5]\n\
-	ldrb r1, [r3,#0x5]\n\
-	cmp r0, r1\n\
-	bne changePID\n\
-	ldrb r0, [r2,#0x8]\n\
-	ldrb r1, [r3,#0x8]\n\
-	cmp r0, r1\n\
-	bne changePID\n\
-	mov r0, #0x0\n\
-	b notChange\n\
-	G_PID:\n\
-	ldrh r0, [r3,#0x2]\n\
-	ldr r2, basestat_table_pid\n\
-	ldr r2, [r2]\n\
-	mov r1, #0x1C\n\
-	mul r0, r1\n\
-	add r0, r2\n\
-	add r0, #0x10\n\
-	ldrb r0, [r0]\n\
-	ldrb r1, [r3,#0x9]\n\
-	cmp r1, #0x1\n\
-	beq gXY\n\
-	cmp r1, #0x2\n\
-	beq gXY\n\
-	b changePID\n\
-	gXY:\n\
-	sub r0, #0x5\n\
-	cmp r1, #0x2\n\
-	beq isXX\n\
-	add r0, #0xA\n\
-	isXX:\n\
-	sub r3, #0x10\n\
-	strb r0, [r3]\n\
-	\
-	changePID:\n\
-	ldr r3, buffer3_pid\n\
-	mov r2, r3\n\
-	add r2, #0x10\n\
-	add r3, #0x40\n\
-	mov r0, #0xFF\n\
-	strh r0, [r3,#0x4]\n\
-	ldrb r0, [r2,#0x5]\n\
-	strh r0, [r3,#0x2]\n\
-	ldrb r0, [r2,#0x8]\n\
-	strh r0, [r3,#0x6]\n\
-	ldrb r0, [r2]\n\
-	strh r0, [r3]\n\
-	mov r0, #0x1\n\
-	notChange:\n\
-	pop {pc}\n\
-	.align 2\n\
-	buffer3_pid:\n\
-	.word 0x02021EC4\n\
-	basestat_table_pid:\n\
-	.word 0x080001BC"
-	);
-}
-
 void SetText_MsgBox(u32 str)
 {
 	u8 boxid_t = mySav->boxId;
@@ -482,12 +375,13 @@ void OnSureClick(){
         setCurrentMonData(ATTR_ABILITY_BIT,&myTempData->Num);
         myTempData->Num = myTempData->happiness;
         setCurrentMonData(ATTR_HAPPINESS,&myTempData->Num);
-        if(myTempData->nature != myTempData->nature_2){
-            if (chck_PID()){
-                change_pid();
-                reLoadPid();
-            }
+        if(myTempData->nature != myTempData->nature_2
+            || myTempData->shiny != myTempData->shiny_2
+            || myTempData->sex != myTempData->sex_2
+        ){
+            ChangePid(myTempData->nature,myTempData->sex,myTempData->shiny);
         }
+        
         RefreshCurrentMonData();
         backupMonTempData();
     }
@@ -497,26 +391,23 @@ void OnSureClick(){
             myTempData->obedienceTemp = myTempData->obedienceTemp;
             setCurrentMonData(ATTR_OBEDIENCE, &myTempData->obedience);
             u32 mTid = GetPlayerIDAsU32();
+            u32 tidTemp = myTempData->TID;
             if (myTempData->obedience == 0xFF)
             {
-                if (myTempData->TID == mTid)
-                {
-                    myTempData->TID -= 10;
-                    chck_PID();
-                    change_pid();
-                    reLoadPid();
+                if (myTempData->TID == mTid){
+                    tidTemp = myTempData->TID ^ 0xFF;
                 }
             }
             else
             {
-                if (myTempData->TID != mTid)
-                {
-                    myTempData->TID = mTid;
-                    chck_PID();
-                    change_pid();
-                    reLoadPid();
+                if (myTempData->TID != mTid){
+                    tidTemp = mTid;
                 }
                 setCurrentMonData(ATTR_OT_NAME, getPlayerNameOffset());
+            }
+            if (myTempData->TID != tidTemp){
+                myTempData->TID = tidTemp;
+                SetMonPidTid(getCurrentPartyplayer(),myTempData->PID,tidTemp);
             }
         }
         
@@ -1333,8 +1224,8 @@ void ButtonUpEvent(){
                     UpdateCurrentPageTextAndPlaySound();
                     break;
                 case 6:
-                    if(myTempData->sex == 1 || myTempData->sex == 2){
-                        myTempData->sex = !(myTempData->sex-1)+1;
+                    if(myTempData->sex < 2){
+                        myTempData->sex = !myTempData->sex;
                         UpdateCurrentPageTextAndPlaySound();
                     }
                     break;
@@ -1568,8 +1459,8 @@ void ButtonDownEvent(){
                     UpdateCurrentPageTextAndPlaySound();
                     break;
                 case 6:
-                    if(myTempData->sex == 1 || myTempData->sex == 2){
-					    myTempData->sex = !(myTempData->sex-1)+1;
+                    if(myTempData->sex < 2){
+					    myTempData->sex = !myTempData->sex;
                         UpdateCurrentPageTextAndPlaySound();
                     }
                     break;

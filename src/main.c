@@ -2,6 +2,7 @@
 
 extern void obj_callback();
 extern void task_loader(u8);
+extern u32 GetMonData(struct Pokemon* poke_address, u8 request);
 void cb_execute(void);
 void initMonTempData();
 void loadMonName();
@@ -143,7 +144,7 @@ void loadMonGender(u16 species){
 			break;
 		
 		default:{
-			u8 flag = ((u8*)&myTempData->PID)[0];
+			u8 flag = myTempData->PID & 0xFF;
 			if (flag > genderRatio){
 				gender = GENDER_MALE;
 			}

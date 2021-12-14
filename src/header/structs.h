@@ -42,10 +42,10 @@
 #define FONT_CHINESE 2      //中文
 
 
-#define GENDER_ALL_MALE 0 //全雄性
-#define GENDER_FEMALE 1 //雌性
-#define GENDER_MALE 2 //雄性
-#define GENDER_ALL_FEMALE 3 //全雌性
+#define GENDER_FEMALE 0 //雌性
+#define GENDER_MALE 1 //雄性
+#define GENDER_ALL_FEMALE 2 //全雌性
+#define GENDER_ALL_MALE 3 //全雄性
 #define GENDER_NONE 4 //无性别
 
 #define	TEXT_BUTTON_PROMPT1	0

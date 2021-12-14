@@ -91,7 +91,9 @@ GetMonIconTiles = 0x080d3020|1;
 UpdateMonIconFrame = 0x080d30dc|1;
 udivsi3 = 0x082e7b68|1;
 CpuFastSet = 0x82e7080|1;
-
+EncryptBoxMon = 0x806a228|1;
+DecryptBoxMon = 0x0806a24c|1;
+CalculateBoxMonChecksum = 0x8068c78|1;
 
 party_player = 0x020244EC;
 
