@@ -21,6 +21,8 @@ u32 getItemName(u16 itemId);
 u8 checkString2(u8 *str,u32 length);
 u16 GetItembuffer(u8 index);
 void UpdatePageValue(u8 page);
+u32 GetAuthorText();
+u32 GetVersionText();
 
 const u8 sTrainerCardTextColors[] = {0, 2, 3};
 
@@ -413,9 +415,9 @@ void SetPageTxet(u8 page){
 		PrintText(24,56,text_table[TEXT_MON]); //精灵
 		PrintText(96,56,text_table[TEXT_BAG]); //背包
 		PrintText(168,56,text_table[TEXT_OTHER]); //其它
-		PrintSmallText(0,0,text_table[TEXT_AUTHOR]);//作者
-		PrintSmallText(176,0,text_table[TEXT_VERSION]);//版本号
 		SetText_MsgBox(text_table[TEXT_BUTTON_PROMPT1]);//按键提示
+		PrintSmallText(0,0,GetAuthorText());//作者
+		PrintSmallText(176,0,GetVersionText());//版本号
 		break;
 	case PAGE_POKE_INFO:
 		PrintText(24, 28, text_table[TEXT_LEVEL]);		 //等级
@@ -503,6 +505,33 @@ void SetShowNickNameOnly(bool8 b){
 	textBuffer->monName[nickLength] = b?0xFF:0xBA;
 }
 
+void AnalysisText(u8 *src, u8 *dest,u32 len){
+	for (int i = 0; i < len; i++){
+		dest[i] = src[i] ^ 0xAB;
+	}
+}
+
+u32 GetAuthorText(){
+	u8* authorText = text_table[TEXT_AUTHOR];
+	int len = 10;
+	AnalysisText(authorText,textBuffer->temp,len);
+	u16 authorCrc = CalcCRC16WithTable(textBuffer->temp,len);
+	if(authorCrc != 0xD34A){
+		DoSoftReset();
+	}
+	return textBuffer->temp;
+}
+
+u32 GetVersionText(){
+	u8 *versionText = text_table[TEXT_VERSION];
+	int len = 13;
+	AnalysisText(versionText,textBuffer->temp,len);
+	u16 versionCrc = CalcCRC16WithTable(textBuffer->temp,len);
+	if(versionCrc != 0x83A2){
+		DoSoftReset();
+	}
+	return textBuffer->temp;
+}
 
 void PrintSmallText(u8 x, u8 y, u8 *str){
 	AddTextPrinterParameterized3(0,0,x,y,sTrainerCardTextColors,0,str);

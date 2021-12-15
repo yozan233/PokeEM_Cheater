@@ -22,7 +22,6 @@ void SetMonPidTid(struct Pokemon *mon,u32 pid,u32 tid){
     memcpy(changed, mon, 0x64);
     SetMonData(changed, ATTR_PID, &pid);
     DecryptBoxMon(changed);
-    MyTest();
     if(changed->checksum == 0 || changed->checksum == CalculateBoxMonChecksum(changed)){
         EncryptBoxMon(changed);
         memcpy(mon, changed, 0x64);

@@ -43,12 +43,6 @@ void task_loader(u8 task_id)
 			
 			InitPage(PAGE_MAIN);
 
-			//TODO CRC
-			// u16 crc = CalcCRC16WithTable(text_table[TEXT_AUTHOR],0x17);
-			// if (crc != 0x97AB){
-			// 	DoSoftReset();
-			// }
-
 			//TODO 不显示背景图片
 			SetGpuReg(0,0x3140);
 			u8* bgPal = (u8 *)BG_PaletteMem;
