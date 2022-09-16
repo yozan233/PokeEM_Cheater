@@ -16,7 +16,7 @@ bx r1
 .word exit_asm+1
 
 //这里填所用的空位地址
-.org 0x9297c00
+.org 0x8F20000
 .pool
 .importobj "build/linked.o"
 .close
