@@ -2,9 +2,10 @@ AS=arm-none-eabi-as
 LD=arm-none-eabi-ld
 OBJCOPY=arm-none-eabi-objcopy
 CC=arm-none-eabi-gcc
-
+YH?=-O2
 ASFLAGS=-mthumb
-CFLAGS= -std=gnu11 -mthumb -mthumb-interwork -mcpu=arm7tdmi -fno-inline -mlong-calls -march=armv4t -Wall -Wextra -Wconversion -O0 -w
+CFLAGS= -std=gnu11 -mthumb -mthumb-interwork -mcpu=arm7tdmi -fno-inline -mlong-calls -march=armv4t -Wall -Wextra -Wconversion -w
+CFLAGS+= $(YH)
 LDFLAGS=-z muldefs --relocatable
 
 .PHONY: clean,objects

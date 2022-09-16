@@ -1,0 +1,9 @@
+make后跟 YH=“优化等级”可以调整优化等级
+有-O0、-O1、-O2、-O3、-Og、-Os
+如，make YH=-O1将会以优化等级01编译
+默认的等级为02
+之前一直编译不出来，错误信息armips insert.asm
+insert.asm(21) error: Undefined external symbol memset in file /linked.o
+Aborting.
+make: *** [makefile:15: all] Error 1
+后来发现用优化等级O1可以编译出来，猜测可能跟devkitarm版本有关
