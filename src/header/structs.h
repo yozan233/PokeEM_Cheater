@@ -1,5 +1,4 @@
 #include "types.h"
-#include "rom_offset.h"
 
 /* define */
 #define BUTTONS_A 1
@@ -16,26 +15,26 @@
 #define TRUE 1
 #define FALSE 0
 
-#define PAGE_MAIN 0
-#define PAGE_POKE_INFO 0x10
-#define PAGE_POKE_INFO2 0x11
-#define PAGE_IVS 0x12
-#define PAGE_EVS 0x13
-#define PAGE_MOVES 0x14
-#define PAGE_SPECIE 0x15
-#define PAGE_POKE_NAME 0x16
-#define PAGE_ITEMS 0x20
-#define PAGE_OTHER 0x30
-#define PAGE_PLAYER_NAME 0x31
+#define PAGE_MAIN 0 //主页
+#define PAGE_POKE_INFO 0x10 //精灵信息
+#define PAGE_POKE_INFO2 0x11 //精灵信息2
+#define PAGE_IVS 0x12 //个体值
+#define PAGE_EVS 0x13 //努力值
+#define PAGE_MOVES 0x14 //招式
+#define PAGE_SPECIE 0x15 //物种
+#define PAGE_POKE_NAME 0x16 //精灵名字
+#define PAGE_ITEMS 0x20 //物品
+#define PAGE_OTHER 0x30 //其他
+#define PAGE_PLAYER_NAME 0x31 //玩家名字
 
-#define PAGETYPE_MAIN 0
-#define PAGETYPE_POKEMON 1
-#define PAGETYPE_BAG 2
-#define PAGETYPE_OTHER 3
+#define PAGETYPE_MAIN 0 //主页面
+#define PAGETYPE_POKEMON 1 //子页面-精灵
+#define PAGETYPE_BAG 2 //子页面-背包
+#define PAGETYPE_OTHER 3 //子页面-其他
 
-#define SELECT_PARTY 0
-#define SELECT_CANCEL 7
-#define SELECT_SURE 8
+#define SELECT_PARTY 0 //选中精灵名字
+#define SELECT_CANCEL 7 //选中取消键
+#define SELECT_SURE 8 //选中确定键
 
 #define FONT_UPPERCASE 0    //大写字母
 #define FONT_LOWERCASE 1    //小写字母
@@ -150,7 +149,7 @@ struct pal_graphic
 	u16 filler;
 };
 
-struct AffineAnimCmd
+union AffineAnimCmd
 {
     s16 type;
     u32* frame;
@@ -159,7 +158,7 @@ struct AffineAnimCmd
     u32* end;
 };
 
-struct AnimCmd
+union AnimCmd
 {
 	u16 type;
 	u32* frame;
@@ -191,18 +190,18 @@ struct SpriteTemplate
     /*0x00*/ u16 tileTag;
     /*0x02*/ u16 paletteTag;
     /*0x04*/ struct OamData *oam;
-    /*0x08*/ struct AnimCmd **anims;
+    /*0x08*/ union AnimCmd **anims;
     /*0x0C*/ struct SpriteFrameImage *images;
-    /*0x10*/ struct AffineAnimCmd **affineAnims;
+    /*0x10*/ union AffineAnimCmd **affineAnims;
     /*0x14*/ void (*callback)(void*);
 };
 
 struct Sprite
 {
     /*0x00*/ struct OamData oam;
-    /*0x08*/ struct AnimCmd **anims;
+    /*0x08*/ union AnimCmd **anims;
     /*0x0C*/ struct SpriteFrameImage *images;
-    /*0x10*/ struct AffineAnimCmd **affineAnims;
+    /*0x10*/ union AffineAnimCmd **affineAnims;
     /*0x14*/ struct SpriteTemplate *template;
     /*0x18*/ struct SubspriteTable *subspriteTables;
     /*0x1C*/ void (*callback)(void*);
@@ -308,14 +307,12 @@ struct Time
     s8 seconds;
 };
 
-struct FlightPoint
+struct HealLocation
 {
-	u8 bank;
-	u8 map;
-	u16 pos_x;
-	u16 pos_y;
-	u16 fill;
-
+    s8 group;
+    s8 map;
+    u16 x;
+    u16 y;
 };
 
 struct MySaveblock
@@ -369,7 +366,7 @@ struct MyDatastruct
 	u16 attackN;		//0x2A
 	u16 attackBuffer;	//0x2C
 	u8 fontType;		//0x2E
-	u8 obedience;		//0x2F
+	u8 obedience;		//0x2F //精灵听话
 	u8 party_2;			//0x30
 	u8 egg_2;			//0x31
 	u16 species_2;		//0x32
@@ -383,7 +380,7 @@ struct MyDatastruct
     u8 obedienceTemp;   //0x3B
     u8 time;           //0x3C
     bool8 limit510;     //0x3D
-    u8 flightPointCount;//0x3E
+    u8 fill3;//0x3E
     u8 selectedflightPoint;//0x3F
     u16 ballCount;     //0x40
     u8 selectedBall;    //0x42

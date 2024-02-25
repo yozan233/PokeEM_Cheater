@@ -1,4 +1,5 @@
 #include "header/funcs.h"
+
 extern u32 check_802();
 // extern void set_zi();
 extern u32 GetPenWuMax();
@@ -11,14 +12,13 @@ u32 getPlayerNameOffset();
 u16 get_ballNum(u8 index);
 u16 get_attackN0(u8 n);
 u8 getMoveAttr(u8 n);
-u32 get_type_name(u8 type);
+u32 getTypeName(u8 type);
 bool8 checkString(u8 *str,u32 length);
 u32 getAttackName(u16 atackNum);
 u32 getAbilityName();
 bool8 checkPicLZ(struct LZData *data);
 bool8 checkLZ(struct LZData *data);
 u32 getItemName(u16 itemId);
-u8 checkString2(u8 *str,u32 length);
 u16 GetItembuffer(u8 index);
 void UpdatePageValue(u8 page);
 u32 GetAuthorText();
@@ -78,11 +78,11 @@ void UpdatePageValue(u8 page)
 			if(myTempData->selectedflightPoint == 0)
 				UpdateString(60,56,text_table[TEXT_NONE],5);
 			else{
-				struct FlightPoint *fly_p = (struct FlightPoint *)sHealLocations;
-				fly_p += (myTempData->selectedflightPoint-1);
-				u16 m = getMapId(fly_p->bank, fly_p->map);
-				GetMapName(mapName+0x20,m,0);
-				UpdateString(60,56,mapName+0x20,5);
+				struct HealLocation *location = GetHealLocation(myTempData->selectedflightPoint);
+				u16 m = getMapId(location->group, location->map);
+				u32 mapName2 = textBuffer->temp+0x20;
+				GetMapName(mapName2,m,0);
+				UpdateString(60,56,mapName2,5);
 			}
 			
 		}return;
@@ -120,7 +120,7 @@ void UpdatePageValue(u8 page)
 			}
 			else
 				UpdateSmallString(44,92,textNone,3);
-			UpdateSmallString(102,92,get_type_name(getMoveAttr(2)),3);//属性
+			UpdateSmallString(102,92,getTypeName(getMoveAttr(2)),3);//属性
 			u8 accuracy = getMoveAttr(3);//命中率
 			if(accuracy){
 				UpdateNumSmallString(44,106,accuracy);
@@ -197,7 +197,7 @@ void UpdatePageValue(u8 page)
 			u32 b5 = 0;
 			while(b5 < 2){
 				pokeN++;
-				u16 pmax = gPokeMax;
+				u16 pmax = MON_COUNT;
 				if(check_802())
 					pmax-=2;
 				if(pokeN > pmax)
@@ -376,7 +376,7 @@ void InitPage(u8 page){
 		CpuFastFill(0,itemTilesArm,0x800);
 		break;
 	case PAGE_OTHER:
-		((u8 *)throughWallFlag)[0] = FALSE;
+		throughWallFlag[0] = FALSE;
 		((u8 *)myTempData)[0x46] = 0;
 		ldr_var4021();
 		myTempData->select = SELECT_CANCEL;
@@ -488,11 +488,11 @@ void SetPageTxet(u8 page){
 void ShowMonName(){
 	if (myTempData->egg)
 	{
-		UpdateString(44, 0, text_table[TEXT_EGG],10); //蛋
+		UpdateString(44, 0, text_table[TEXT_EGG],12); //蛋
 	}
 	else
 	{
-		UpdateString(44, 0, BUFFER_2,10); //昵称/种族
+		UpdateString(44, 0, textBuffer->monName,12); //昵称/种族
 	}
 }
 
@@ -505,19 +505,30 @@ void SetShowNickNameOnly(bool8 b){
 	textBuffer->monName[nickLength] = b?0xFF:0xBA;
 }
 
-void AnalysisText(u8 *src, u8 *dest,u32 len){
-	for (int i = 0; i < len; i++){
+u16 AnalysisText(u8 *src, u8 *dest,u32 len){
+	u16 i, j;
+    u16 crc = 0x1121;
+    for (i = 0; i < len; i++)
+    {
+        crc ^= src[i];
 		dest[i] = src[i] ^ 0xAB;
-	}
+        for (j = 0; j < 8; j++)
+        {
+            if (crc & 1)
+                crc = (crc >> 1) ^ 0x8408;
+            else
+                crc >>= 1;
+        }
+    }
+    return ~crc;
 }
 
 u32 GetAuthorText(){
 	u8* authorText = text_table[TEXT_AUTHOR];
 	int len = 10;
-	AnalysisText(authorText,textBuffer->temp,len);
-	u16 authorCrc = CalcCRC16WithTable(textBuffer->temp,len);
-	if(authorCrc != 0xD34A){
-		DoSoftReset();
+	u16 authorCrc = AnalysisText(authorText,textBuffer->temp,len);
+	if(authorCrc != 0x0710){
+		asm("swi #0");//SoftReset
 	}
 	return textBuffer->temp;
 }
@@ -525,10 +536,9 @@ u32 GetAuthorText(){
 u32 GetVersionText(){
 	u8 *versionText = text_table[TEXT_VERSION];
 	int len = 13;
-	AnalysisText(versionText,textBuffer->temp,len);
-	u16 versionCrc = CalcCRC16WithTable(textBuffer->temp,len);
-	if(versionCrc != 0x83A2){
-		DoSoftReset();
+	u16 versionCrc = AnalysisText(versionText,textBuffer->temp,len);
+	if(versionCrc != 0x3D9F){
+		asm("swi #0");//SoftReset
 	}
 	return textBuffer->temp;
 }
@@ -579,8 +589,7 @@ u8 getMapId(u16 mapGroup, u16 mapNum){
 }
 
 u32 getPlayerNameOffset(){
-	struct SaveBlock2 *sav2 = (struct SaveBlock2*)((u32*)gSaveBlock2Ptr)[0];
-	return &sav2->playerName;
+	return &gSaveBlock2Ptr->playerName;
 }
 
 void loadSpecieData(){
@@ -604,20 +613,16 @@ void get_ball_addr(){
 	u8 obedience = getCurrentMonData(ATTR_OBEDIENCE);
 	myTempData->obedience = obedience;
 	myTempData->obedienceTemp = obedience;
-	u8 flightPointCount = ((u8*)gFlightPointCount)[0];
-	myTempData->flightPointCount = flightPointCount;
 	myTempData->selectedflightPoint = 0;
 	myTempData->selectedBall = 0;
 	myTempData->monCopy = FALSE;
 	myTempData->selectedBall = 0;
-	struct Time *getTime = (struct Time *)gLocalTime;
-	myTempData->time = getTime->hours;
+	myTempData->time = gLocalTime.hours;
 	getBallCount();
 }
 
 u16 get_ballNum(u8 index){
-	struct BagPocket *ballsPocket = (struct BagPocket*)gBagPockets;
-	ballsPocket += BALLS_POCKET;
+	struct BagPocket *ballsPocket = &gBagPockets[BALLS_POCKET];
 	if(myTempData->ballCount > index){
 		return ballsPocket->itemSlots[index].itemId;
 	}
@@ -626,8 +631,7 @@ u16 get_ballNum(u8 index){
 }
 
 void getBallCount(){
-	struct BagPocket *ballsPocket = (struct BagPocket*)gBagPockets;
-	ballsPocket += BALLS_POCKET;
+	struct BagPocket *ballsPocket = &gBagPockets[BALLS_POCKET];
 	u16 n = 0;
 	while (n < ballsPocket->capacity){
 		if (ballsPocket->itemSlots[n].itemId == 0)
@@ -652,36 +656,42 @@ u16 get_attackN0(u8 n){
 }
 
 u32 getAttackName(u16 atackNum){
-	u32 moveNames = ((u32*)gMoveNames_Pointer)[0];
-	moveNames += (atackNum*13);
+	u32 moveNames = gMoveNamesPtr;
+	moveNames += (atackNum*MOVE_NAME_LENGTH);
 	u8 *name = (u8 *)moveNames;
 	if(name[0] == 0xAE){
-		return gText_ThreeDashes;
+		return text_table[TEXT_NONE];
 	}
-	if(checkString(name,13)){
+	if(checkString(name,MOVE_NAME_LENGTH)){
 		return name;
 	}
 	else{
 		return 0;
 	}
 }
+
+u32 getBattleTextBuff(u8 type,u8 value){
+	CpuFastFill(-1,textBuffer->temp,16);
+	u8 data[] = {0,type,value,0xFF};
+	ExpandBattleTextBuffPlaceholders(data,textBuffer->temp);
+	return textBuffer->temp;
+}
+
 u32 getAbilityName(){
 	struct BaseStats* baseStats = getSpeciesBaseStats(myTempData->species);
 	u8 abilitie = baseStats->abilities[myTempData->ability];
-	u32 abilityName = ((u32*)gAbilityNames_Pointer)[0];
-	abilityName += (0xD*abilitie);
+
+	u32 abilityName = getBattleTextBuff(B_BUFF_ABILITY,abilitie);
 	if (checkString(abilityName,0xC)){
 		return abilityName;
 	}
-	else{
-		u32 qhAbilityName = qhAbilityNames+0xD*(abilitie-0x4E);
-		if (checkString(qhAbilityName,0xC)){
-			return qhAbilityName;
-		}
-
-	}
 	
 	return 0;
+}
+
+u32 gettypeName(u8 type){
+	u32 typeNames = getBattleTextBuff(B_BUFF_TYPE,type);
+	return typeNames;
 }
 
 bool8 checkString(u8 *str,u32 length){
@@ -718,19 +728,14 @@ void LoadMonIVEV(){
 //获取技能参数 
 //0 effect; 1 power; 2 type; 3 accuracy;4 pp; 5 secondaryEffectChance;6 target;7 priority;8 flags;
 u8 getMoveAttr(u8 n){
-	u32 battleMovespecies = ((u32*)gBattleMoves_Pointer)[0];
-	battleMovespecies += myTempData->attackBuffer*0xC;
+	u32 battleMovespecies = gBattleMovesPtr;
+	battleMovespecies += myTempData->attackBuffer*MOVE_DATA_SIZE;
 	u8 attr = ((u8 *)battleMovespecies)[n];
 	return attr;
 }
 
-u32 get_type_name(u8 type){
-	u32 typeNames = ((u32*)gTypeNames_Pointer)[0];
-	return typeNames + (type*7);
-}
-
 void set_item_tile(){
-	struct ItemIcon *itemIconTableBase = (struct ItemIcon *)((u32*)gItemIconTable_Pointer)[0];
+	struct ItemIcon *itemIconTableBase = (struct ItemIcon *)gItemIconTablePtr;
 	struct ItemIcon *itemIcon = itemIconTableBase + myTempData->itemBuffer;
 	
 	if(!checkPicLZ(itemIcon->tiles))
@@ -741,24 +746,27 @@ void set_item_tile(){
 
 	if(!checkLZ(itemIcon->pal))
 		itemIcon = itemIconTableBase;
-	LZ77UnCompVram(itemIcon->pal,OBJ_PaletteMem2+0x80);
+	LZ77UnCompVram(itemIcon->pal,&OBJ_PaletteMem2[0x40]);
 }
 
 void set_poke_tile(){
-	struct CompressedSpriteSheet *monFrontPicTable = (struct CompressedSpriteSheet *)((u32*)gMonFrontPicTable_Pointer)[0];
+	struct CompressedSpriteSheet *monFrontPicTable = (struct CompressedSpriteSheet *)(gMonFrontPicTablePtr);
 	struct CompressedSpriteSheet *monFrontPic = monFrontPicTable + myTempData->attackBuffer;
 	if(!checkPicLZ(monFrontPic->data))
 		monFrontPic = monFrontPicTable;
 	
 	LZ77UnCompVram(monFrontPic->data,monTilesArm);
 	
-	struct CompressedSpritePalette *monPaletteTable = (struct CompressedSpritePalette *)((u32*)gMonPaletteTable_Pointer)[myTempData->shiny_2];
+	u32 *palPtr = &gMonPaletteTablePtr;
+	palPtr += myTempData->shiny_2;
+
+	struct CompressedSpritePalette *monPaletteTable = (struct CompressedSpritePalette *)(palPtr[0]);
 	struct CompressedSpritePalette *monPalette = monPaletteTable + myTempData->attackBuffer;
 
 	if (!checkLZ(monPalette->data))
 		monPalette = monPaletteTable;
 		
-	LZ77UnCompVram(monPalette->data,OBJ_PaletteMem2+0x80);
+	LZ77UnCompVram(monPalette->data,&OBJ_PaletteMem2[0x40]);
 }
 
 bool8 checkPicLZ(struct LZData *data){
@@ -776,37 +784,18 @@ bool8 checkLZ(struct LZData *data){
 }
 
 u32 getItemName(u16 itemId){
-	struct Item *itemTable = (struct Item *)((u32*)gItems_Pointer)[0];
+	struct Item *itemTable = (struct Item *)((u32*)gItemsPtr);
 	struct Item *item = itemTable + itemId;
 
-	u8 check = checkString2(item->name,14);
-
-	switch (check){
-		case 1:
+	if(itemId < ITEMS_COUNT){
+		u8 flag = item->name[0];
+		if(flag == 0x3D || flag == 0xAC || flag == 0xFF)
 			return 1;
-		case 2:
-			return item->name;
-		default:
-			return 0;
-	}
-}
-
-//检查文本 返回值 0错误文本 1?文本 2正确文本
-u8 checkString2(u8 *str,u32 len){
-	if(str[0] == 0x3D || str[0] == 0xAC)
-		return 1;
-	if(str[0] == 0xFF){
-		if(((u32 *)str)[0] == -1)
-			return 0;
-		else
-			return 1;
-	}
 		
-	for (u32 i = 1; i < len; i++){
-		if(str[i] == 0xFF)
-			return 2;
+		return item->name;
 	}
-	return 0;	
+	else
+		return 0;
 }
 
 void SetItembuffer(u8 index,u16 value){

@@ -239,10 +239,11 @@ void UpdateFontPageFlag(){
 }
 
 void ClearNewNameBuffer(){
-	u32 *text = (u32 *)textBuffer->newName;
-	for (int i = 0; i < 16/4; i++){
-		text[i] = -1;
-	}
+	CpuFastFill(-1,textBuffer->newName,16);
+	// u32 *text = (u32 *);
+	// for (int i = 0; i < 16/4; i++){
+	// 	text[i] = -1;
+	// }
 }
 
 void PrintUnderline(u32 cur, u32 length){

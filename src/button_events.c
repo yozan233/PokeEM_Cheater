@@ -1,9 +1,15 @@
 #include "header/funcs.h"
 
 extern struct Pokemon *getCurrentPartyplayer();
+extern void PlaySound(u16 soundID);
 
 const u8 ivevMap[] = {0,0,3,1,4,2,5};
 
+/**
+ * 设置光标位置
+ * @param x x坐标
+ * @param y y坐标
+*/
 void SetMousePos(u16 x,u16 y){
     if(x != 0)
         mouseXY->pos_x = x;
@@ -11,15 +17,24 @@ void SetMousePos(u16 x,u16 y){
         mouseXY->pos_y = y;
 }
 
+/**
+ * 缓存光标位置
+*/
 void BufferPos(){
 	myTempData->posBuffer[0] = mouseXY->pos_x;
 	myTempData->posBuffer[1] = mouseXY->pos_y;
 }
 
+/**
+ * 判断光标位置是否改变
+*/
 bool8 IsPosChange(){
 	return myTempData->posBuffer[0] != mouseXY->pos_x || myTempData->posBuffer[1] != mouseXY->pos_y;
 }
 
+/**
+ * 输入文字模式时，更新键盘光标位置
+*/
 void UpdateKeyboardMousePos(){
     u16 x,y;
     BufferPos();
@@ -47,6 +62,9 @@ void UpdateKeyboardMousePos(){
         PlaySound(SOUND_SELECT);
 }
 
+/**
+ * 更新选择光标位置
+*/
 void UpDateSelectedMousePos()
 {
     BufferPos();
@@ -55,12 +73,6 @@ void UpDateSelectedMousePos()
 		case PAGE_MAIN:
 			mode = MOUSE_POS_MAIN;
 			break;
-		// case PAGE_POKE_INFO:
-		// case PAGE_POKE_INFO2:
-		// case PAGE_IVS:
-		// case PAGE_EVS:
-		// 	mode = MOUSE_POS_INFO;
-		//	break;
 		case PAGE_MOVES:
 			mode = MOUSE_POS_ATTACK;
 			break;
@@ -89,8 +101,11 @@ void UpDateSelectedMousePos()
         PlaySound(SOUND_SELECT);
 };
 
-void SelectNextMon(){
-	u8 partyMax = ((u8 *)gPlayerPartyCount)[0];
+/**
+ * 选择下一个队伍精灵
+*/
+void SelectNextPartyMon(){
+	u8 partyMax = gPlayerPartyCount;
 	if(myTempData->party<partyMax-1){
 		myTempData->party++;
 		u8 t = myTempData->sex;
@@ -103,7 +118,10 @@ void SelectNextMon(){
 		InitCurrentPage();
 	}
 }
-void SelectPreviousMon(){
+/**
+ * 选择上一个队伍精灵
+*/
+void SelectPreviousPartyMon(){
 	if(myTempData->party){
 		myTempData->party--;
 		u8 t = myTempData->sex;
@@ -117,13 +135,16 @@ void SelectPreviousMon(){
 	}
 }
 
-bool8 checkMonNmae(){
-	u8 *name = (u8 *)BUFFER_2;
+/**
+ * 检查精灵名字和种族是否相同
+*/
+bool8 checkMonNmaeAndSpecies(){
 	u8 nickLength = textBuffer->monName[0x1F];
 	textBuffer->monName[nickLength] = 0xFF;
 	bool8 res;
+    u32 buffer = textBuffer;
 
-	if(StringCompare(BUFFER_2+nickLength+1,BUFFER_2) != 0){
+	if(StringCompare(buffer+nickLength+1,buffer) != 0){
 		res = FALSE;
 	}
 	else
@@ -131,6 +152,9 @@ bool8 checkMonNmae(){
 	return res;
 }
 
+/**
+ * 精灵重命名为种族名称
+*/
 bool8 MonRenameBySpecies(){
 	u8 *speciesName = (u8 *) getMonSpeciesName(myTempData->attackBuffer);
 	struct Pokemon* party = getCurrentPartyplayer();
@@ -139,23 +163,31 @@ bool8 MonRenameBySpecies(){
 		nickName[n] = speciesName[n];
 	}
 }
-
+/**
+ * 设置图鉴flag
+*/
 void SetPokedexFlag(u16 species){
 	u16 index = SpeciesToNationalPokedexNum(species);
 	GetSetPokedexFlag(index,2); //图鉴设置已发现的标识
 	GetSetPokedexFlag(index,3); //图鉴设置已捕获的标识
 }
-
+/**
+ * 是否为绿宝石802
+*/
 bool8 check_802(){
-	u32 gBaseStats = ((u32*)gBaseStats_Pointer)[0];
-	return gBaseStats == 0x08F186E0;
+	return gBaseStatsPtr == 0x08F186E0;
 }
+/**
+ * 是否为究极绿宝石
+*/
 bool8 check_Ultra_Emerald(){
 	u32 ultraEmerald = ((u32*)0x080BB100)[0];
 	return ultraEmerald == 0x09E0FF80;
 }
 
-
+/**
+ * 刷新当前页面
+*/
 void RefreshCurrentPage(){
 	switch (myTempData->page)
 	{
@@ -200,7 +232,8 @@ void RefreshCurrentPage(){
 }
 
 u16 GetPenWuMax(){
-	u8 penWuFlag = ((u8 *)(fun_ItemUseOutOfBattle_Repel+0xF))[0];
+    int fun = ItemUseOutOfBattle_Repel;
+	u8 penWuFlag = ((u8 *)(fun+0xE))[0];
 	if(penWuFlag == 6){
 		return 0xFF;
 	}
@@ -218,14 +251,13 @@ void ldr_var4021(){
 }
 
 void changeMouseColor(){
-	u16 *pal = (u16 *)OBJ_PaletteMem2;
-	u16 color = pal[11];
+	u16 color = OBJ_PaletteMem2[11];
 	u16 red = 0x109F;
 	if(color == red){
-		pal[11] = 0x6546;
+		OBJ_PaletteMem2[11] = 0x6546;
 	}
 	else{
-		pal[11] = red;
+		OBJ_PaletteMem2[11] = red;
 	}
 }
 
@@ -245,52 +277,32 @@ void SetMonNikename(){
 	CpuSet(&textBuffer->newName,&getCurrentPartyplayer()->nickname,5);
 }
 
-u32 lvl2exp(u8 lvl){
-	u8 flag = ((u8*)gmaxLvlOffsetFlag)[0];
-	u32 size;
-	if(flag == 0xCA){
-		size = 0xCA<<1;
-	}
-	else{
-		size = 0x20<<5;
-	}
-	u16 species = getCurrentMonData(ATTR_SPECIES);
-	struct BaseStats* baseStats = getSpeciesBaseStats(species);
-	u8 growthRate = baseStats->growthRate;
-	u32 experienceTable = ((u32*)gExperienceTables_Pointer)[0];
-	experienceTable += (growthRate*size);
-	experienceTable += (lvl<<2);
-
-	return experienceTable;
+void SetCurrentMonLevel(u8 lvl){
+	struct Pokemon* temp = Alloc(MON_DATA_SIZE);
+    CreateMon(temp,myTempData->species, lvl, 0, 0, 0, 0, 0);
+    u32 exp = GetMonData(temp,ATTR_EXP);
+    setCurrentMonData(ATTR_EXP,&exp);
+    Free(temp);
 }
 
 void shiye(){
-	 struct SaveBlock1 *sav1 = (struct SaveBlock1*)((u32*)gSaveBlock1Ptr)[0];
-	 sav1->flashLevel = 0;
-	 u8 *pyramidFlag = (u8 *)(((u32*)gSaveBlock2Ptr)[0]+0x0E68);
+	 gSaveBlock1Ptr->flashLevel = 0;
+	 u8 *pyramidFlag = (u8 *)(((u32*)&gSaveBlock2Ptr)[0]+0x0E68);
 	 if(pyramidFlag[0] != 0){
          pyramidFlag[0] = 0xC0;
 	 }
 }
 
-void setvar(u16 id,u16 value){
-    u16 *varPointer = GetVarPointer(id);
-    varPointer[0] = value;
-}
-
 void set_bingdu(){
     myTempData->Num = 0xF;
-    u8 partyMax = ((u8 *)gPlayerPartyCount)[0];
-    struct Pokemon *party = (struct Pokemon *)gPlayerParty;
+    u8 partyMax = gPlayerPartyCount;
     for (u8 i=0;i<partyMax;i++){
-		SetMonData(party,ATTR_POKERUS,&myTempData->Num);
-		party++;
+		SetMonData(&gPlayerParty[i],ATTR_POKERUS,&myTempData->Num);
     }
 }
 
 void DelLastKeyitem(){
-	struct BagPocket *keyitemsPocket = (struct BagPocket*)gBagPockets;
-	keyitemsPocket += KEYITEMS_POCKET;
+	struct BagPocket *keyitemsPocket = &gBagPockets[KEYITEMS_POCKET];
 	u16 n = 0;
 	while (n < keyitemsPocket->capacity){
 		if (keyitemsPocket->itemSlots[n].itemId == 0)
@@ -367,7 +379,7 @@ void OnSureClick(){
     {
     case PAGE_POKE_INFO:{
         if (myTempData->lvl != myTempData->lvl_2){
-            setCurrentMonData(ATTR_EXP, lvl2exp(myTempData->lvl));
+            SetCurrentMonLevel(myTempData->lvl);
         }
         struct Pokemon* party = getCurrentPartyplayer();
         party->padding = 0;
@@ -411,8 +423,7 @@ void OnSureClick(){
             }
         }
         
-        struct Time *getTime = (struct Time *)gLocalTime;
-        u8 t = getTime->hours;
+        u8 t = gLocalTime.hours;
         if (t != myTempData->time)
         {
             RtcInitLocalTimeOffset(myTempData->time, 0); //设置时间
@@ -428,7 +439,7 @@ void OnSureClick(){
         if (myTempData->monCopy)
         {
             u32 r = GiveMonToPlayer(getCurrentPartyplayer());
-            if (r != 2)
+            if (r != MON_CANT_GIVE)
             {
                 PrintSmallText(26, 100, text_table[TEXT_COPY_SUCCESS]);
                 if (r == 1)
@@ -447,9 +458,8 @@ void OnSureClick(){
             DestroyTask(mySav->task_id);
             FreeAllWindowBuffers();
             Free(*malloc_pointer_loc);
-            struct FlightPoint *fly_p = (struct FlightPoint *)sHealLocations;
-            fly_p += (myTempData->selectedflightPoint-1);
-            SetWarpDestination(fly_p->bank, fly_p->map, -1, fly_p->pos_x, fly_p->pos_y);
+            struct HealLocation *location = GetHealLocation(myTempData->selectedflightPoint);
+            SetWarpDestination(location->group, location->map, -1, location->x, location->y);
             DoWarp();
             ResetInitialPlayerAvatarState();
         }
@@ -474,7 +484,7 @@ void OnSureClick(){
         UpdateCurrentPageText();
         break;
     case PAGE_SPECIE:{
-        if(checkMonNmae()){
+        if(checkMonNmaeAndSpecies()){
             MonRenameBySpecies();
         }
         SetPokedexFlag(myTempData->attackBuffer);
@@ -522,10 +532,10 @@ void OnSureClick(){
             EnableNationalPokedex();
         }
         if (myTempData->mirageShow){
-            setvar(0x4024, getCurrentMonData(ATTR_PID) & 0xFFFF);
+            VarSet(0x4024, getCurrentMonData(ATTR_PID) & 0xFFFF);
         }
         else{
-            setvar(0x4024, Random());
+            VarSet(0x4024, Random());
         }
         if (myTempData->pokerus){
             set_bingdu();
@@ -533,9 +543,8 @@ void OnSureClick(){
         if (myTempData->visualRangeMax){
             shiye();
         }
-        u8 *cq = (u8 *)throughWallFlag;
-        cq[0] = myTempData->throughWall;
-        setvar(0x4021, myTempData->species);
+        throughWallFlag[0] = myTempData->throughWall;
+        VarSet(0x4021, myTempData->species);
     }
     break;
     default:
@@ -550,7 +559,7 @@ void EggHatchNow(){
     u16 spe = myTempData->species;
     if (spe == 0x19C)
         spe = umodsi3(Random(), 0xFB) + 1;
-    u8 eggLvl = ((u8 *)eggHatchLevel_Pointer)[0];
+    u8 eggLvl = 5;
     CreateMon(getCurrentPartyplayer(), spe, eggLvl, 32, 1, Random() | (Random() << 0x10), 0, myTempData->TID);
     myTempData->Num = 0;
     SetMonData(getCurrentPartyplayer(), 0x24, &myTempData->Num);
@@ -827,16 +836,21 @@ void ButtonLeftEvent()
         }
         break;
         case PAGE_MOVES:
-        case PAGE_SPECIE:
-            if(myTempData->select == 4 && myTempData->attackBuffer > 1){
-                if(myTempData->attackBuffer > 4){
-                    myTempData->attackBuffer -= 4;
-                }
+        case PAGE_SPECIE:{
+            u8 rt = 1;
+            while (rt<=4)
+            {
+                if(myTempData->attackBuffer-rt < 1)
+                    break;
                 else
-                    myTempData->attackBuffer = 1;
+                    rt++;
+                
+            }
+            if(rt != 1){
+                myTempData->attackBuffer-=(rt-1);
                 UpdateCurrentPageTextAndPlaySound();
             }
-            break;
+        }break;
         case PAGE_ITEMS:{
             if(myTempData->select == 2){
                 u16 numt = myTempData->Num;
@@ -1034,7 +1048,7 @@ void ButtonRightEvent()
         break;
         case PAGE_SPECIE:
             if(myTempData->select == 4){
-                u16 pmax = gPokeMax;
+                u16 pmax = MON_COUNT;
                 if(check_802())
                     pmax-=2;
                 if(myTempData->attackBuffer < pmax-4){
@@ -1190,7 +1204,7 @@ void ButtonUpEvent(){
     else
     {
         if(myTempData->select == 0 && myTempData->page > PAGE_MAIN && myTempData->page < PAGE_POKE_NAME){
-            SelectPreviousMon();
+            SelectPreviousPartyMon();
             return;
         }
         switch (myTempData->page)
@@ -1425,7 +1439,7 @@ void ButtonDownEvent(){
     else
     {
         if(myTempData->select == 0 && myTempData->page > PAGE_MAIN && myTempData->page < PAGE_POKE_NAME){
-            SelectNextMon();
+            SelectNextPartyMon();
             return;
         }
         switch(myTempData->page){
@@ -1485,12 +1499,14 @@ void ButtonDownEvent(){
                         UpdateCurrentPageTextAndPlaySound();
                     }
                     break;
-                case 3:
-                    if(myTempData->selectedflightPoint <= myTempData->flightPointCount){
-                        myTempData->selectedflightPoint ++;
+                case 3:{
+                    u8 temp = myTempData->selectedflightPoint + 1;
+                    struct HealLocation *location = GetHealLocation(temp);
+                    if(location){
+                        myTempData->selectedflightPoint = temp;
                         UpdateCurrentPageTextAndPlaySound();
                     }
-                    break;
+                }break;
                 case 4:
                     if(myTempData->time == 0){
                         myTempData->time = 23;
@@ -1531,7 +1547,7 @@ void ButtonDownEvent(){
                 }
                 break;
             case PAGE_SPECIE:{
-                u16 pmax = gPokeMax;
+                u16 pmax = MON_COUNT;
                 if(check_802())
                     pmax-=2;
                 if(myTempData->attackBuffer < pmax){

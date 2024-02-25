@@ -1,14 +1,41 @@
 #include "header/funcs.h"
+#include "header/sprite.h"
 
 extern struct Sprite *getSprite(u8 id);
 
-u32 **gMonIconPalettes = (u32 **)gMonIconPalettes_Pointer;
+static const union AnimCmd sAnim_MonPic_0[] =
+{
+    {.frame = {0}},
+    {.type = -1},
+};
+const union AnimCmd *const gAnims_MonPic[] = { sAnim_MonPic_0 };
+
+static const union AffineAnimCmd sDummyAffineAnim = { AFFINE_ANIM_END };
+const union AffineAnimCmd * const gDummySpriteAffineAnimTable[] = { &sDummyAffineAnim };
+
+const struct OamData gDummyOamData = 
+{
+    .y = 0,
+    .affineMode = ST_OAM_AFFINE_OFF,
+    .objMode = ST_OAM_OBJ_NORMAL,
+    .bpp = ST_OAM_4BPP,
+    .shape = SPRITE_SHAPE(16x16),
+    .x = 0,
+    .size = SPRITE_SIZE(16x16),
+    .tileNum = 0,
+    .priority = 2,
+    .paletteNum = 0,
+};
+
+void SpriteCallbackDummy(){
+
+}
 
 struct SpriteTemplate sNormalSpriteTemplate =
 {
     .tileTag = 0,
     .paletteTag = 0,
-    .oam = gOamData_AffineOff_ObjNormal_16x16,
+    .oam = &gDummyOamData,
     .anims = gAnims_MonPic,
     .images = 0,
     .affineAnims = gDummySpriteAffineAnimTable,
@@ -33,7 +60,8 @@ u8 CreateNormalSprite(s16 x, s16 y){
 }
 
 void CreateSprites(){
-    CpuSet(*gMonIconPalettes,OBJ_PaletteMem+0x20,16*3);
+    u32 gMonIconPaletteTable = gMonIconPaletteTablePtr;
+    CpuSet(((u32*)gMonIconPaletteTable)[0],&OBJ_PaletteMem[0x10],16*3);
     u8 curId = CreateNormalSprite(0x2E,0x4C);
     mySav->cursorPicId = curId;
     struct Sprite *sprite = getSprite(curId);
@@ -47,14 +75,14 @@ void CreateSprites(){
     sprite->oam.paletteNum = 4;
     sprite->oam.tileNum = 96;
     sprite->oam.matrixNum = 0x8;
-    sprite->oam.size = 3;
+    sprite->oam.size = SPRITE_SIZE(64x64);
     sprite->oam.mosaic = TRUE;
 
     u8 monIconId = CreateNormalSprite(0x1A,0x4);
     mySav->monIconId = monIconId;
     sprite = getSprite(monIconId);
     sprite->oam.tileNum = 32;
-    sprite->oam.size = 2;
+    sprite->oam.size = SPRITE_SIZE(32x32);
     sprite->oam.mosaic = TRUE;
     sprite->callback = MonIconSpriteCallback;
 
@@ -63,10 +91,10 @@ void CreateSprites(){
     sprite = getSprite(itemPicId);
     sprite->oam.paletteNum = 4;
     sprite->oam.tileNum = 256;
-    sprite->oam.size = 2;
+    sprite->oam.size = SPRITE_SIZE(32x32);
     sprite->oam.mosaic = TRUE;
     
-    LZ77UnCompVram(sCursorGfx,0x06010000);
+    LZ77UnCompVram(sCursor_Gfx,0x06010000);
     CpuSet(gFrontierPassCursor_Pal,OBJ_PaletteMem,16);
 
 }

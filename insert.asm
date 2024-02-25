@@ -4,7 +4,7 @@
 .close
 .open "bpee0.gba","test.gba", 0x8000000
 
-.org 0x808AF0C
+.org 0x808AF0C /* PlayerNotOnBikeMoving+0xC */
 ldr r1, =Chuan+1
 bx r1
 .pool
@@ -20,3 +20,4 @@ bx r1
 .pool
 .importobj "build/linked.o"
 .close
+

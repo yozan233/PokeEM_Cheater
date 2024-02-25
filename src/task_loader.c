@@ -4,7 +4,6 @@ extern u8 tiles_load(void);
 extern void string_print(void);
 extern void load_icons(void);
 extern void task_02(u8 task_id);
-extern void CpuFastFill(u32 value, u32 dest, u32 size) ;
 void box_draw(u8,u8);
 
 const struct rbox_short rbox_table[] = 
@@ -22,7 +21,7 @@ void task_loader(u8 task_id)
 	{
 		case 0:
 			SetVBlankCallback((void*)0);
-			CpuFastFill(0,BUFFER_3,0x40);
+			CpuFastFill(0,myTempData,0x40);
 			sub_bg_init();
 			CreateSprites();
 			break;
@@ -43,11 +42,7 @@ void task_loader(u8 task_id)
 			
 			InitPage(PAGE_MAIN);
 
-			//TODO 不显示背景图片
-			SetGpuReg(0,0x3140);
-			u8* bgPal = (u8 *)BG_PaletteMem;
-			bgPal[0]= 0xFF;
-			bgPal[1] = 0x5F;
+			SetGpuReg(0,0x3341);
 			
 			SetGpuReg(0xA,0x1E07);
 			SetGpuReg(0x48,0x1F3F);

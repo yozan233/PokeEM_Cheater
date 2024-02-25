@@ -70,4 +70,24 @@
 #define ATTR_SKY_RIBBON 0x4A
 #define ATTR_OBEDIENCE 0x50
 
+#define B_BUFF_STRING                   0
+#define B_BUFF_NUMBER                   1
+#define B_BUFF_MOVE                     2
+#define B_BUFF_TYPE                     3
+#define B_BUFF_MON_NICK_WITH_PREFIX     4
+#define B_BUFF_STAT                     5
+#define B_BUFF_SPECIES                  6
+#define B_BUFF_MON_NICK                 7
+#define B_BUFF_NEGATIVE_FLAVOR          8
+#define B_BUFF_ABILITY                  9
+#define B_BUFF_ITEM                     10
+
+#define MON_GIVEN_TO_PARTY      0
+#define MON_GIVEN_TO_PC         1
+#define MON_CANT_GIVE           2
+
+#define MON_DATA_SIZE 0x64
+#define MOVE_NAME_LENGTH 13
+#define MOVE_DATA_SIZE 0xC
+
 

@@ -1,5 +1,4 @@
 #include "data.h"
-void DoSoftReset(void);
 void SetMainCallback2(void(*func)(void));
 void * AllocZeroed(u32 size);
 void * Alloc(u32 size);
@@ -10,31 +9,23 @@ u32 umodsi3(u32 numerator, u32 denumerator);
 u8 AddBagItem(u16 item, u16 num);
 //080B3964
 void MyTest(void);
-void RtcCalcLocalTime(void);
 void RtcInitLocalTimeOffset(s32 hour, s32 minute);
 u16 Random(void);
-u16 CalcCRC16(const u8 *data, s32 length);
-u16 CalcCRC16WithTable(const u8 *data, u32 length);
 void CreateMon(struct Pokemon* poke, u16 species, u8 lvl, u8 IVs, u8 pid_set, u32 PiD, u8 tid_set, u32 TiD);
 void SetMonData(struct Pokemon* poke_address, u8 request, const void* new_value);
 void CalculateMonStats(struct Pokemon* poke_address);
+u8* GetMonIconTiles(u16 species, bool32 handleDeoxys);
 void FlagSet(u16 flag);
 //special_0x1F3
 void EnableNationalPokedex(void);
 void HealPlayerParty(void);
-// u8 ItemId_GetSecondaryId(u16 itemId);
-u8 ItemId_GetSecondaryId();
 u16 VarGet(u16 varID);
-//swi 11
-void LZ77UnCompWram(const void* src, const void* dst);
-//swi 12
-void LZ77UnCompVram(const void *src, void *dest);
+bool8 VarSet(u16 id, u16 value);
 void memcpy(void *destdst,void *src,u32 len);
 void ResetSpriteData(void);
 void ResetPaletteFade(void);
 void FreeAllSpritePalettes(void);
 void LoadPalette(void *src, u16 dst_index, u16 num_bytes);
-void ResetTasks(void);
 u8 CreateTask(void(*func)(u8),u8 priority);
 void DestroyTask(u8 task_id);
 u32 GiveMonToPlayer(struct Pokemon*);
@@ -45,8 +36,6 @@ void UpdatePaletteFade(void);
 void SetVBlankCallback(void(*)(void));
 //lcd_io_set
 void SetGpuReg(u8 reg, u16 value);
-//lcd_io_get
-u16 GetGpuReg(u8 reg);
 void ResetBgsAndClearDma3BusyFlags(u32);
 void InitBgsFromTemplates(u8 bg_mode, struct bg_cfg *config_data, u8 config_num_entries);
 u32 ChangeBgX(u8 bg_id, u32 delta, u8 mode);
@@ -63,10 +52,7 @@ void CopyToBgTilemapBuffer(u8 bg_id, void *src, u16 mode, u16 offset_in_block);
 void *DecompressAndCopyTileDataToVram(u8 bg_id, void *src, u16 size, u16 offset, u8 mode);
 u8 BeginNormalPaletteFade(u32 bitmask, u8, u8, u8, u16 color);
 void VBlankCB_SelectScreen(void);
-u16 LoadSpriteSheet(struct SpriteFrameImage *uncomped_graphic);
-u8 LoadSpritePalette(struct pal_graphic *uncomped_pal);
 u8 CreateSprite(struct SpriteTemplate *template, s16 x, s16 y, u8 subpriority);
-u8 CreateSpriteAtEnd(struct SpriteTemplate *,u16 x,u16 y,u8 field_43);
 u8 AddTextPrinterParameterized(u8 rbox_id, u8 font, u8 *str, u8 x_in_box, u8 y_in_box, u8 text_speed, u32 field_10_in_remo);
 void AddTextPrinterParameterized3(u8 foo, u8 font, u8 x_in_pixel_inbox, u8 y_in_pixel_inbox, u8* bar, u8 baz, u8 *str);
 void PutWindowTilemap(u8 rbox_id);
@@ -83,14 +69,74 @@ void Free(void *);
 void CB2_ReturnToFieldContinueScript(void);
 void SetWarpDestination(s8 mapGroup, s8 mapNum, s8 warpId, s8 x, s8 y);
 void FillWindowPixelRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height);
-void CpuSet(void *src, void *dest, u32 control);
 struct MapHeader *GetMapHeaderByGroupAndId(u16 mapGroup, u16 mapNum);
 void CopyItemIconPicTo4x4Buffer(void *src, void *dest);
 s32 StringCompare(const u8 *str1, const u8 *str2);
 u16 SpeciesToNationalPokedexNum(u16 species);
 s8 GetSetPokedexFlag(u16 nationalNum, u8 caseId);
 void SetBagItemQuantity(u16 *quantity, u16 newValue);
-u16 *GetVarPointer(u16 id);
 void ZeroMonData(struct Pokemon *mon);
 s16 udivsi3(s16 a, s16 b);
-void CpuFastSet(const void *src, void *dest, u32 control);
+u8 GetBattleEntryLevelCap(void);
+extern void CpuFastSet(const void *src, void *dest, int control);
+//swi 0x12
+extern void LZ77UnCompVram(const void *src, void *dest);
+//swi 0xB
+extern void CpuSet(void *src, void *dest, int control);
+extern void CpuFastFill(int value, void *dest, int size);
+extern void ItemUseOutOfBattle_Repel(u8 taskId);
+
+extern u8 throughWallFlag[];
+extern struct fade_ctrl *gPaletteFade;
+extern u16 *gSpecialVar_0x8004;
+extern struct Sprite gSprites[];
+extern u16 gPlttBufferUnfaded[];
+extern u16 BG_PaletteMem[];
+extern u16 OBJ_PaletteMem[];
+extern u16 gPlttBufferFaded[];
+extern u16 BG_PaletteMem2[];
+extern u16 OBJ_PaletteMem2[];
+
+extern u8 *gPlayerPartyCount;
+extern struct Pokemon gPlayerParty[];
+extern struct BagPocket gBagPockets[];
+
+extern u8 gStringVar2[0x100];
+extern u8 gStringVar3[0x100];
+
+extern struct SaveBlock1 *gSaveBlock1Ptr;
+extern struct SaveBlock2 *gSaveBlock2Ptr;
+
+extern struct Time gLocalTime;
+extern struct Main gMain;
+extern struct Task *gTasks;
+
+extern u32 *gMonIconTablePtr;
+extern u32 *gSpeciesNamesPtr;
+extern u32 *gMonFrontPicTablePtr;
+extern u32 *gMonPaletteTablePtr;
+extern u32 *gBaseStatsPtr;
+extern u32 *gMonIconPaletteIndicesPtr;
+extern u32 *gMonIconPaletteTablePtr;
+extern u32 *gMoveNamesPtr;
+extern u32 *gItemsPtr;
+extern u32 *gAbilityNamesPtr;
+extern u32 *gBattleMovesPtr;
+extern u32 *gItemIconTablePtr;
+
+extern u16 sItemsCount[];
+#define ITEMS_COUNT sItemsCount[0]
+
+extern u16 sMonCount[];
+#define MON_COUNT sMonCount[0]
+#define NUM_SPECIES (MON_COUNT+1)
+
+extern u8 sCursor_Gfx[];
+extern u8 gFrontierPassCursor_Pal[];
+extern u8 sDiplomaPalettes[];
+extern u8 sDiplomaTilemap[];
+extern u8 sDiplomaTiles[];
+extern u8 sWindowFrames_offset[];
+
+
+

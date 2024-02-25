@@ -1,31 +1,15 @@
-#include "header/structs.h"
+#include "header/funcs.h"
 
-/*偏移量*/
-// void *VRAM = (void *)0x6000000;
-// void *PRAM = (void *)0x5000000;
-// void *OAM = (void *)0x7000000;
-// void *volatile*DMA3SAD = (void *volatile*)0x40000D4;
-// void *volatile*DMA3DAD = (void *volatile*)0x40000D8;
-// vu32 *DMA3CNT = (vu32 *)0x40000DC;
+struct superstate *super = (struct superstate *)&gMain;
+struct TextBuffer *textBuffer = (struct TextBuffer *)&gStringVar2;
+struct MyDatastruct *myTempData = (struct MyDatastruct *)&gStringVar3;
+struct MousePos *mouseXY = (struct MousePos *)(&gSprites[0].pos1);
+struct task *tasks = (struct task *)&gTasks;
+struct fade_ctrl *pal_fade_control = &gPaletteFade;
 
-struct superstate *super = (struct superstate *)gMain;
-struct TextBuffer *textBuffer = (struct TextBuffer *)BUFFER_2;
-struct MyDatastruct *myTempData = (struct MyDatastruct *)BUFFER_3;
-// struct MyBuffer *bfr = (struct MyBuffer *)0x02021EC4+0x40;
-struct MousePos *mouseXY = (struct MousePos *)(gSprites+0x20);
-struct task *tasks = (struct task *)gTasks;
-struct fade_ctrl *pal_fade_control = (struct fade_ctrl *)gPaletteFade;
+struct MySaveblock *mySav = (struct MySaveblock *)&gSpecialVar_0x8004;
+u8 **malloc_pointer_loc = (u8 **)&gSpecialVar_0x8004;
 
-// struct saveblock1 **sav1 = (struct saveblock1 **)0x03005D8C;
-
-// struct pokemon *partypokemon = (struct pokemon *)0x020244EC;
-// u8 *pokemon_quanitity = (u8 *)0x20244E9;
-
-// char *fcode_buffer2 = (char *)0x2021CC4;
-// char *displayed_string = (char *)0x2021FC4;
-struct MySaveblock *mySav = (struct MySaveblock *)VAR_8004;
-u8 **malloc_pointer_loc = (u8 **)VAR_8004;
-// struct main8004 *main_8004 = (struct main8004 *)0x020375E0;
 
 const u8 textButtonPrompt1[] = 
     {0x7B,0x7C,0x0E,0x8A,0x10,0x06,0x3B,0xF8,0x00,0x0B,0x37,0x03,0x4D,0x3B,0xF8,0x01,

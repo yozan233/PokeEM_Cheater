@@ -14,7 +14,6 @@ u8 tiles_load()
 				return 0;
 			else break;
 		case 2:
-			ItemId_GetSecondaryId();
 			LoadPalette(sDiplomaPalettes,0,0x40);
 			return 1;
 		default:

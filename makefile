@@ -7,11 +7,28 @@ ASFLAGS=-mthumb
 CFLAGS= -std=gnu11 -mthumb -mthumb-interwork -mcpu=arm7tdmi -fno-inline -mlong-calls -march=armv4t -Wall -Wextra -Wconversion -O2 -w
 LDFLAGS=-z muldefs --relocatable
 MAPFILE=-Map test.map
+GAME_VERSION = bpee
 
 .PHONY: clean,objects
 
 all: objects
-	$(LD) $(LDFLAGS) $(MAPFILE) -T linker.lsc -T bpee.ld -o "build\linked.o" "build\exit_asm.o" "build\main.o" "build\sub_bg_init.o" "build\task_loader.o" "build\change_pid_2.o" "build\tiles_load.o" "build\create_sprites.o" "build\Chuan.o" "build\task_02.o" "build\button_events.o" "build\set_text.o" "build\keyboard.o" "build\resource.o"
+	$(LD) $(LDFLAGS) $(MAPFILE) \
+-T linker.lsc \
+-T ${GAME_VERSION}.ld \
+-o "build\linked.o" \
+"build\exit_asm.o" \
+"build\sys_function.o" \
+"build\main.o" \
+"build\sub_bg_init.o" \
+"build\task_loader.o" \
+"build\change_pid_2.o" \
+"build\tiles_load.o" \
+"build\create_sprites.o" \
+"build\Chuan.o" "build\task_02.o" \
+"build\button_events.o" \
+"build\set_text.o" \
+"build\keyboard.o" \
+"build\resource.o"
 	armips insert.asm
 	@echo "Compile Successfully."
 		
@@ -19,6 +36,7 @@ all: objects
 objects:
 	mkdir -p build
 	$(CC) $(CFLAGS) -c "src\main.c" -o "build\main.o"
+	$(CC) $(CFLAGS) -c "src\sys_function.c" -o "build\sys_function.o"
 	$(CC) $(CFLAGS) -c "src\create_sprites.c" -o "build\create_sprites.o"
 	$(CC) $(CFLAGS) -c "src\set_text.c" -o "build\set_text.o"
 	$(CC) $(CFLAGS) -c "src\keyboard.c" -o "build\keyboard.o"
@@ -34,3 +52,9 @@ objects:
 	
 clean:
 	rm build//*
+
+bpee:              ; @$(MAKE) GAME_VERSION=bpee
+bpee_legend:       ; @$(MAKE) GAME_VERSION=bpee_legend
+bpre:              ; @$(MAKE) GAME_VERSION=bpre
+
+

@@ -1,17 +1,13 @@
 #include "structs.h"
 #include "get_attr.h"
 
-/*offsets*/
-extern void *VRAM;
-extern void *PRAM;
-extern void *OAM;
-extern void *volatile*DMA3SAD;
-extern void *volatile*DMA3DAD;
-extern vu32 *DMA3CNT;
+
 extern struct task *tasks;
-extern struct saveblock1 **sav1;
 extern u8 **malloc_pointer_loc;
 extern struct fade_ctrl *pal_fade_control;
+
+#define itemTilesArm 0x06012000
+#define monTilesArm  0x06010C00
 
 extern const u8 *text_table[];
 extern const u8 *mouse_pos_table[];

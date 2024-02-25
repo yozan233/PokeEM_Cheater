@@ -7,8 +7,7 @@ void cb_execute(void);
 void initMonTempData();
 void loadMonName();
 void loadMonIconSprite();
-void loadMonIconTiles();
-void loadEggIconTiles();
+void loadMonIconTiles(u16 species);
 void loadMonIsShiny();
 void loadMonGender(u16 species);
 u32 getCurrentMonData(u8 request);
@@ -37,8 +36,22 @@ void cb_execute()
 	return;
 }
 
+/**
+ * 获取精灵最大等级
+*/
+u8 getMonMaxLevel(){
+    myTempData->Num = VarGet(0x40CF);
+	VarSet(0x40CF,9);
+	u8 maxLvl = GetBattleEntryLevelCap();
+	VarSet(0x40CF,myTempData->Num);
+	return maxLvl;
+}
+
+/**
+ * 初始化精灵临时数据
+*/
 void initMonTempData(){
-	myTempData->maxLvl = ((u8*)maxLvl_Pointer)[0];
+	myTempData->maxLvl = getMonMaxLevel();
 	myTempData->PID = getCurrentMonData(ATTR_PID);
 	myTempData->TID = getCurrentMonData(ATTR_TID);
 	myTempData->egg = getCurrentMonData(ATTR_IS_EGG);
@@ -56,15 +69,21 @@ void initMonTempData(){
 	loadMonName();
 	backupMonTempData();
 }
-
+/**
+ * 备份精灵临时数据
+*/
 void backupMonTempData(){
 	CpuSet(&myTempData->party,&myTempData->party_2,6);
 }
-
+/**
+ * 刷新精灵临时数据
+*/
 void refreshMonTempData(){
 	CpuSet(&myTempData->party_2,&myTempData->party,6);
 }
-
+/**
+ * 加载精灵名字
+*/
 void loadMonName(){
     struct Pokemon *party =	getCurrentPartyplayer();
 	StringCopy(textBuffer->monName,party->nickname);
@@ -78,41 +97,35 @@ void loadMonName(){
 	nameStr[0x1F] = len;
 	StringCopy(nameStr+len+1,getMonSpeciesName(myTempData->species));
 }
-
+/**
+ * 获取种族名字
+*/
 u32 getMonSpeciesName(u16 species){
-	u32 speciesNames = ((u32*)gSpeciesNames_Pointer)[0];
+	u32 speciesNames = gSpeciesNamesPtr;
 	return speciesNames + 0xB*species;
 }
-
+/**
+ * 加载精灵小图标
+*/
 void loadMonIconSprite(){
+	u16 species = getCurrentMonData(ATTR_SPECIES_2);
+	u32 monIconPaletteIndices = gMonIconPaletteIndicesPtr;
+	u32 monIconPaletteIndex = ((u8*)(myTempData->species+monIconPaletteIndices))[0];
+	monIconPaletteIndex += 1;
+	
+	loadMonIconTiles(species);
 	struct Sprite* sprites = getSprite(mySav->monIconId);
-	u8 monIconPaletteIndex;
-	if(myTempData->egg){
-		monIconPaletteIndex = 2;
-		loadEggIconTiles();
-	}
-	else{
-		u32 monIconPaletteIndices = ((u32*)gMonIconPaletteIndices_Pointer)[0];
-		monIconPaletteIndex = ((u8*)(myTempData->species+monIconPaletteIndices))[0];
-		monIconPaletteIndex += 1;
-		loadMonIconTiles();
-	}
 	sprites->oam.paletteNum = monIconPaletteIndex;
 }
 
 struct Sprite *getSprite(u8 id){
-	return (struct Sprite*)(gSprites+0x44*id);
+	return &gSprites[id];
 }
 
-void loadMonIconTiles(){
-	u32 monIconTable = ((u32*)gMonIconTable_Pointer)[0];
-	u32 monIconOffset = ((u32*)(monIconTable+myTempData->species*4))[0];
-
+void loadMonIconTiles(u16 species){
+	u32* gMonIconTable = gMonIconTablePtr;
+	u32 monIconOffset = gMonIconTable[species];//GetMonIconTiles(myTempData->species,FALSE);
 	CpuSet(monIconOffset,0x06010400,0x200);
-}
-
-void loadEggIconTiles(){
-	CpuSet(gMonIcon_Egg,0x06010400,0x200);
 }
 
 void loadMonIsShiny(){
@@ -168,22 +181,26 @@ void RefreshCurrentMonData(){
 	CalculateMonStats(getCurrentPartyplayer());
 }
 
+/**
+ * 获取当前精灵数据
+*/
 struct Pokemon *getCurrentPartyplayer(){
-	return gPlayerParty+myTempData->party*0x64;
+	return &gPlayerParty[myTempData->party];
 }
 
+/**
+ * 获取种族值数据
+*/
 struct BaseStats* getSpeciesBaseStats(u16 species){
-	u32 gBaseStats = ((u32*)gBaseStats_Pointer)[0];
+	u32 gBaseStats = gBaseStatsPtr;
 	gBaseStats += (0x1C*species);
 	return (struct BaseStats*)gBaseStats;
 }
 
-void CpuFastFill(u32 value, u32 dest, u32 size)                             
-{                                                                  
-    u32 tmp = (u32)(value);                                     
-    CpuFastSet(&tmp,dest,0x01000000 | ((size)/(32/8) & 0x1FFFFF));
-}
-
+/**
+ * 播放声音
+ * @param soundID 声音ID
+*/
 void PlaySound(u16 soundID){
 	if(myTempData->soundMute){
 		myTempData->soundMute = FALSE;
