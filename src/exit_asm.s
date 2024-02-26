@@ -17,7 +17,7 @@ BX_R4:
 Main:
 	push {r0-r3, lr}
 	ldr r0, =script_adress
-	ldr r3, =ScriptContext1_SetupScript
+	ldr r3, =ScriptContext_SetupScript
 	bl BX_R3
 	pop {r0-r3, pc}
 

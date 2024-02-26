@@ -2,6 +2,10 @@
 #include "header/sprite.h"
 
 extern struct Sprite *getSprite(u8 id);
+#ifdef BPRE0
+extern const u8 mouse_tile[];
+extern const u8 mouse_pal[];
+#endif
 
 static const union AnimCmd sAnim_MonPic_0[] =
 {
@@ -43,7 +47,7 @@ struct SpriteTemplate sNormalSpriteTemplate =
 };
 
 void MonIconSpriteCallback(struct Sprite* sprite){
-    u8 flag = super->ptr_vblank_counter & 0xF;
+    u8 flag = super->ptr_vblank_counter2 & 0xF;
     
     if(flag == 0x0)
         sprite->oam.tileNum = 0x30;
@@ -93,8 +97,12 @@ void CreateSprites(){
     sprite->oam.tileNum = 256;
     sprite->oam.size = SPRITE_SIZE(32x32);
     sprite->oam.mosaic = TRUE;
-    
+    #ifdef BPRE0
+    CpuSet(&mouse_tile,0x06010000,0x40);
+    CpuSet(&mouse_pal,OBJ_PaletteMem,0x10);
+    #else
     LZ77UnCompVram(sCursor_Gfx,0x06010000);
-    CpuSet(gFrontierPassCursor_Pal,OBJ_PaletteMem,16);
+    CpuSet(gFrontierPassCursor_Pal,OBJ_PaletteMem,0x10);
+    #endif
 
 }

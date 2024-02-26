@@ -30,7 +30,6 @@ FreeAllSpritePalettes = 0x800870C|1;
 StringCopy = 0x8008BA0|1;
 StringCompare = 0x08008c44|1;
 ConvertIntToDecimalStringN = 0x8008CC0|1;
-ConvertUIntToDecimalStringN = 0x08008D70|1;
 ConvertIntToHexStringN = 0x08008e20|1;
 VBlankCB_SelectScreen = 0x80096BC|1;
 RtcInitLocalTimeOffset = 0x0802f5b4|1;
@@ -49,7 +48,7 @@ GetMapHeaderByGroupAndId = 0x08084a90|1;
 SetWarpDestination = 0x08084bec|1;
 ResetInitialPlayerAvatarState = 0x08085268|1;
 CB2_ReturnToFieldContinueScript = 0x80861B0|1;
-ScriptContext1_SetupScript = 0x08098ef8|1;
+ScriptContext_SetupScript = 0x08098ef8|1;
 EnableNationalPokedex = 0x0809D3E8|1;
 VarGet = 0x0809D694|1;
 VarSet = 0x0809d6b0|1;
@@ -85,7 +84,7 @@ umodsi3 = 0x082E7BE0|1;
 memcpy = 0x082E93D4|1;
 GetHealLocation = 0x08122cbc|1;
 ExpandBattleTextBuffPlaceholders = 0x0814f648|1;
-GetBattleEntryLevelCap = 0x081b8888|1;
+ItemUseCB_RareCandy = 0x081b7404|1;
 
 
 throughWallFlag = 0x020322d6;
@@ -106,8 +105,7 @@ gPlayerPartyCount = 0x020244E9; /*精灵数量*/
 
 gBagPockets = 0x02039dd8;
 
-gStringVar2 = 0x02021DC4;
-gStringVar3 = 0x02021EC4;
+gStringVar4 = 0x02021fc4;
 
 gSaveBlock1Ptr = 0x03005D8C;
 gSaveBlock2Ptr = 0x03005d90;
@@ -141,4 +139,6 @@ sDiplomaTilemap = 0x085e70c8;
 sDiplomaTiles = 0x085e7804;
 sWindowFrames_offset = 0x851021c;
 
+sStartMenuItems = 0x08510540;
+HandleStartMenuInput = 0x0809fac4|1;
 

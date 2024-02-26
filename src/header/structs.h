@@ -40,7 +40,6 @@
 #define FONT_LOWERCASE 1    //小写字母
 #define FONT_CHINESE 2      //中文
 
-
 #define GENDER_FEMALE 0 //雌性
 #define GENDER_MALE 1 //雄性
 #define GENDER_ALL_FEMALE 2 //全雌性
@@ -102,7 +101,7 @@
 #define	TEXT_BALL_TYPE	52
 #define	TEXT_CATCH_LOCATION	53
 #define	TEXT_TELEPORT	54
-#define	TEXT_COMING_SOON	55
+#define	TEXT_COMING_SOON	55 //敬请期待
 #define	TEXT_SOMEWHERE	56
 #define	TEXT_FATEFUL_ENCOUNTER	57
 #define	TEXT_FLIGHT_POINT	58
@@ -380,7 +379,7 @@ struct MyDatastruct
     u8 obedienceTemp;   //0x3B
     u8 time;           //0x3C
     bool8 limit510;     //0x3D
-    u8 fill3;//0x3E
+    u8 optionsButtonMode;//0x3E
     u8 selectedflightPoint;//0x3F
     u16 ballCount;     //0x40
     u8 selectedBall;    //0x42
@@ -391,7 +390,7 @@ struct MyDatastruct
     bool8 pokedexUpgrade:1;
     bool8 pokerus:1;
     bool8 visualRangeMax:1;
-    bool8 mirageShow:1;
+    bool8 mirageShow:1; //0x47 幻影岛
     bool8 throughWall:1;
     bool8 fill1;
     bool8 fill2;         //0x47

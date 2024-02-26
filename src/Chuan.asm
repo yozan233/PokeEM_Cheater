@@ -17,7 +17,11 @@
 	
 	this_end:
 	lsl r0, r0,#0x18
+	.ifdef BPRE0
+	lsr r0, r0,#0x18
+	.else
 	lsr r4, r0,#0x18
+	.endif
 	ldr r3, =PlayerNotOnBikeMoving
 	add r3, #0x14
 	

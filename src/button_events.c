@@ -5,6 +5,12 @@ extern void PlaySound(u16 soundID);
 
 const u8 ivevMap[] = {0,0,3,1,4,2,5};
 
+#ifdef BPRE0
+#define VAR_REPEL_STEP_COUNT 0x4020
+#else
+#define VAR_REPEL_STEP_COUNT 0x4021
+#endif
+
 /**
  * 设置光标位置
  * @param x x坐标
@@ -32,35 +38,6 @@ bool8 IsPosChange(){
 	return myTempData->posBuffer[0] != mouseXY->pos_x || myTempData->posBuffer[1] != mouseXY->pos_y;
 }
 
-/**
- * 输入文字模式时，更新键盘光标位置
-*/
-void UpdateKeyboardMousePos(){
-    u16 x,y;
-    BufferPos();
-    switch(myTempData->select){
-        case 1:
-            x = 0xE2;y = 0x4C;
-            break;
-        case 2:
-            x = 0xE2;y = 0x5C;
-            break;
-        default:{
-            u8 select = ~myTempData->select;
-            x = 0x1C;
-            y = 0x40 + udivsi3(select,10)*16;
-            select = umodsi3(select,10);
-            if(myTempData->fontType == FONT_CHINESE)
-                x += (15*select);
-            else
-                x += (12*select);
-        }
-        break;
-    }
-    SetMousePos(x,y);
-    if(IsPosChange())
-        PlaySound(SOUND_SELECT);
-}
 
 /**
  * 更新选择光标位置
@@ -174,6 +151,7 @@ void SetPokedexFlag(u16 species){
 /**
  * 是否为绿宝石802
 */
+#ifdef BPEE0
 bool8 check_802(){
 	return gBaseStatsPtr == 0x08F186E0;
 }
@@ -184,6 +162,7 @@ bool8 check_Ultra_Emerald(){
 	u32 ultraEmerald = ((u32*)0x080BB100)[0];
 	return ultraEmerald == 0x09E0FF80;
 }
+#endif
 
 /**
  * 刷新当前页面
@@ -220,7 +199,7 @@ void RefreshCurrentPage(){
 		break;
 	case PAGE_OTHER:
 		((u8 *)myTempData)[0x46] = 0;
-		ldr_var4021();
+		loadRepelStepCount();
 		myTempData->select = SELECT_CANCEL;
 		break;
 	default:
@@ -233,7 +212,12 @@ void RefreshCurrentPage(){
 
 u16 GetPenWuMax(){
     int fun = ItemUseOutOfBattle_Repel;
-	u8 penWuFlag = ((u8 *)(fun+0xE))[0];
+    #ifdef BPRE0
+    fun += 0xC;
+    #else
+    fun += 0xE;
+    #endif
+	u8 penWuFlag = ((u8 *)(fun))[0];
 	if(penWuFlag == 6){
 		return 0xFF;
 	}
@@ -242,12 +226,12 @@ u16 GetPenWuMax(){
 	}
 }
 
-void ldr_var4021(){
-	u16 var4021 = VarGet(0x4021);
+void loadRepelStepCount(){
+	u16 var = VarGet(VAR_REPEL_STEP_COUNT);
 	if(GetPenWuMax() == 0xFF){
-		var4021 = (u8)var4021;
+		var = (u8)var;
 	}
-	myTempData->species = var4021;
+	myTempData->species = var;
 }
 
 void changeMouseColor(){
@@ -285,14 +269,22 @@ void SetCurrentMonLevel(u8 lvl){
     Free(temp);
 }
 
+/**
+ * 视野最大化
+*/
 void shiye(){
 	 gSaveBlock1Ptr->flashLevel = 0;
+     #ifdef BPEE0
 	 u8 *pyramidFlag = (u8 *)(((u32*)&gSaveBlock2Ptr)[0]+0x0E68);
 	 if(pyramidFlag[0] != 0){
          pyramidFlag[0] = 0xC0;
 	 }
+     #endif
 }
 
+/**
+ * 设置病毒
+*/
 void set_bingdu(){
     myTempData->Num = 0xF;
     u8 partyMax = gPlayerPartyCount;
@@ -321,7 +313,11 @@ void SetText_MsgBox(u32 str)
 {
 	u8 boxid_t = mySav->boxId;
 	FillWindowPixelBuffer(boxid_t,0x11);
+    #ifdef BPRE0
+	AddTextPrinterParameterized(boxid_t,1,str,0,0,0,0); //按键提示
+    #else
 	AddTextPrinterParameterized(boxid_t,1,str,6,0,0,0); //按键提示
+    #endif
 }
 
 void UpdateCurrentPageText(){
@@ -347,6 +343,7 @@ u32 getIvOrEvSum(){
 }
 
 void SetAbilitySelect(){
+    #ifdef BPEE0
 	if(check_Ultra_Emerald())
 	{
 		switch (myTempData->ability)
@@ -366,9 +363,14 @@ void SetAbilitySelect(){
 	else{
 		myTempData->ability = !myTempData->ability;
 	}
-	
+    #else
+    myTempData->ability = !myTempData->ability;
+	#endif
 }
 
+/**
+ * 按下确认键
+*/
 void OnSureClick(){
     if(myTempData->page/0x10 == PAGETYPE_POKEMON && myTempData->egg){
         EggHatchNow();
@@ -423,11 +425,13 @@ void OnSureClick(){
             }
         }
         
+        #ifndef BPRE0
         u8 t = gLocalTime.hours;
         if (t != myTempData->time)
         {
             RtcInitLocalTimeOffset(myTempData->time, 0); //设置时间
         }
+        #endif
         
         setCurrentMonData(ATTR_CATCH_LOCATION, &myTempData->location);
 
@@ -436,7 +440,7 @@ void OnSureClick(){
 
         RefreshCurrentMonData();
 
-        if (myTempData->monCopy)
+        if (myTempData->monCopy) //复制精灵
         {
             u32 r = GiveMonToPlayer(getCurrentPartyplayer());
             if (r != MON_CANT_GIVE)
@@ -451,8 +455,11 @@ void OnSureClick(){
             }
         }
         
-        if (myTempData->selectedflightPoint)
+        if (myTempData->selectedflightPoint) //执行瞬移
         {
+            #ifdef BPRE0
+			gSaveBlock2Ptr->optionsButtonMode = myTempData->optionsButtonMode;
+			#endif
             BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
             HealPlayerParty();
             DestroyTask(mySav->task_id);
@@ -528,15 +535,16 @@ void OnSureClick(){
     break;
     case PAGE_OTHER:{
         if (myTempData->pokedexUpgrade){
-            FlagSet(0x896);
             EnableNationalPokedex();
         }
+        #ifndef BPRE0
         if (myTempData->mirageShow){
             VarSet(0x4024, getCurrentMonData(ATTR_PID) & 0xFFFF);
         }
         else{
             VarSet(0x4024, Random());
         }
+        #endif
         if (myTempData->pokerus){
             set_bingdu();
         }
@@ -544,7 +552,7 @@ void OnSureClick(){
             shiye();
         }
         throughWallFlag[0] = myTempData->throughWall;
-        VarSet(0x4021, myTempData->species);
+        VarSet(VAR_REPEL_STEP_COUNT, myTempData->species);
     }
     break;
     default:
@@ -689,6 +697,9 @@ bool8 ButtonBEvent(){
         return FALSE;
     if (myTempData->cursorState == FALSE){
         if(myTempData->page == PAGE_MAIN){
+            #ifdef BPRE0
+			gSaveBlock2Ptr->optionsButtonMode = myTempData->optionsButtonMode;
+			#endif
             BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
             HealPlayerParty();
             PlaySound(36);
@@ -740,15 +751,15 @@ void ButtonLeftEvent()
                 break;
             case PAGE_MOVES:
             case PAGE_SPECIE:
-                if(myTempData->select == 8){
+                if(myTempData->select == SELECT_SURE){
                     if(myTempData->page == PAGE_SPECIE)
                         myTempData->select = 4;
                     else{
                         myTempData->select = myTempData->attackSelect+1;
                     }
                 }  
-                else if (myTempData->select == 7)
-                    myTempData->select = 8;
+                else if (myTempData->select == SELECT_CANCEL)
+                    myTempData->select = SELECT_SURE;
                 break;
             case PAGE_POKE_NAME:
             case PAGE_PLAYER_NAME:
@@ -810,6 +821,7 @@ void ButtonLeftEvent()
 		}
         break;
         case PAGE_POKE_INFO2:
+            #ifndef BPRE0
             if(myTempData->select == 4){
                 if(myTempData->time > 3){
                     myTempData->time -= 3;
@@ -819,6 +831,7 @@ void ButtonLeftEvent()
                 }
                 UpdateCurrentPageTextAndPlaySound();
             }
+            #endif
             break;
         case PAGE_IVS:
         case PAGE_EVS:{
@@ -979,6 +992,7 @@ void ButtonRightEvent()
 		    }
             break;
         case PAGE_POKE_INFO2:
+            #ifndef BPRE0
             if(myTempData->select == 4){
                 if(myTempData->time < 21){
                     myTempData->time += 3;
@@ -988,6 +1002,7 @@ void ButtonRightEvent()
                 }
                 UpdateCurrentPageTextAndPlaySound();
             }
+            #endif
             break;
         case PAGE_IVS:
         case PAGE_EVS:{
@@ -1049,8 +1064,10 @@ void ButtonRightEvent()
         case PAGE_SPECIE:
             if(myTempData->select == 4){
                 u16 pmax = MON_COUNT;
+                #ifdef BPEE0
                 if(check_802())
                     pmax-=2;
+                #endif
                 if(myTempData->attackBuffer < pmax-4){
                     myTempData->attackBuffer += 4;
                     UpdateCurrentPageTextAndPlaySound();
@@ -1271,6 +1288,7 @@ void ButtonUpEvent(){
                 }
                 break;
             case 4:
+                #ifndef BPRE0
                 if(myTempData->time == 23){
                     myTempData->time = 0;
                     UpdateCurrentPageTextAndPlaySound();
@@ -1279,6 +1297,7 @@ void ButtonUpEvent(){
                     myTempData->time ++;
                     UpdateCurrentPageTextAndPlaySound();
                 }
+                #endif
                 break;
             case 5:
                 myTempData->monCopy = !myTempData->monCopy;
@@ -1508,6 +1527,7 @@ void ButtonDownEvent(){
                     }
                 }break;
                 case 4:
+                    #ifndef BPRE0
                     if(myTempData->time == 0){
                         myTempData->time = 23;
                         UpdateCurrentPageTextAndPlaySound();
@@ -1516,6 +1536,7 @@ void ButtonDownEvent(){
                         myTempData->time --;
                         UpdateCurrentPageTextAndPlaySound();
                     }
+                    #endif
                     break;
                 case 5:
                     myTempData->monCopy = !myTempData->monCopy;
@@ -1548,8 +1569,10 @@ void ButtonDownEvent(){
                 break;
             case PAGE_SPECIE:{
                 u16 pmax = MON_COUNT;
+                #ifdef BPEE0
                 if(check_802())
                     pmax-=2;
+                #endif
                 if(myTempData->attackBuffer < pmax){
                     myTempData->attackBuffer++;
                     UpdateCurrentPageTextAndPlaySound();

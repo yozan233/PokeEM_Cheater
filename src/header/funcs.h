@@ -61,7 +61,6 @@ void LoadBgTiles(u8 bgid, u8 *src, u16 size, u16 offset);
 void DrawStdFrameWithCustomTileAndPalette(u8 rbox_id, u8 unk, u16 char_name, u8 pal);
 u8 AddWindow(struct rbox_short *);
 u8 *ConvertIntToDecimalStringN(u8 *dest, u32 value, u8 mode, u8 charlength);
-void* ConvertUIntToDecimalStringN(u8* destination, u32 num, u8 formatting, u8 max_digits);
 u8 *ConvertIntToHexStringN(u8 *dest, u32 value, u8 mode, u8 n);
 u8 *StringCopy(u8 *dest, u8 *src);
 void FreeAllWindowBuffers(void);
@@ -77,7 +76,7 @@ s8 GetSetPokedexFlag(u16 nationalNum, u8 caseId);
 void SetBagItemQuantity(u16 *quantity, u16 newValue);
 void ZeroMonData(struct Pokemon *mon);
 s16 udivsi3(s16 a, s16 b);
-u8 GetBattleEntryLevelCap(void);
+void ItemUseCB_RareCandy(void);
 extern void CpuFastSet(const void *src, void *dest, int control);
 //swi 0x12
 extern void LZ77UnCompVram(const void *src, void *dest);
@@ -101,8 +100,7 @@ extern u8 *gPlayerPartyCount;
 extern struct Pokemon gPlayerParty[];
 extern struct BagPocket gBagPockets[];
 
-extern u8 gStringVar2[0x100];
-extern u8 gStringVar3[0x100];
+extern u8 gStringVar4[];
 
 extern struct SaveBlock1 *gSaveBlock1Ptr;
 extern struct SaveBlock2 *gSaveBlock2Ptr;

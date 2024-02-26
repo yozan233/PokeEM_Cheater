@@ -7,7 +7,10 @@ ASFLAGS=-mthumb
 CFLAGS= -std=gnu11 -mthumb -mthumb-interwork -mcpu=arm7tdmi -fno-inline -mlong-calls -march=armv4t -Wall -Wextra -Wconversion -O2 -w
 LDFLAGS=-z muldefs --relocatable
 MAPFILE=-Map test.map
-GAME_VERSION = bpee
+GAME_VERSION = BPEE0
+
+CFLAGS += -D$(GAME_VERSION)
+ASFLAGS += --defsym $(GAME_VERSION)=1
 
 .PHONY: clean,objects
 
@@ -29,7 +32,7 @@ all: objects
 "build\set_text.o" \
 "build\keyboard.o" \
 "build\resource.o"
-	armips insert.asm
+	armips insert_${GAME_VERSION}.asm
 	@echo "Compile Successfully."
 		
 
@@ -53,8 +56,8 @@ objects:
 clean:
 	rm build//*
 
-bpee:              ; @$(MAKE) GAME_VERSION=bpee
-bpee_legend:       ; @$(MAKE) GAME_VERSION=bpee_legend
-bpre:              ; @$(MAKE) GAME_VERSION=bpre
+bpee0:              ; @$(MAKE) GAME_VERSION=BPEE0
+bpee0_legend:       ; @$(MAKE) GAME_VERSION=BPEE_LEGEND
+bpre0:              ; @$(MAKE) GAME_VERSION=BPRE0
 
 

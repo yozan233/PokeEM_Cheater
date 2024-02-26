@@ -3,6 +3,55 @@
 
 extern void PrintText(u8 x, u8 y, u8 *str);
 
+#ifdef BPRE0
+#define KEYBOARD_BASE_X 0x12
+#define KEYBOARD_BASE_Y 0x40
+#define CHINESE_FONT_SPACE_H 18
+#define ENGLISH_FONT_SPACE_H 18
+#define FONT_SPACE_V 14
+#else
+#define KEYBOARD_BASE_X 0x1C
+#define KEYBOARD_BASE_Y 0x40
+#define CHINESE_FONT_SPACE_H 15
+#define ENGLISH_FONT_SPACE_H 12
+#define FONT_SPACE_V 16
+#endif
+
+/**
+ * 输入文字模式时，更新键盘光标位置
+*/
+void UpdateKeyboardMousePos(){
+    u16 x,y;
+    BufferPos();
+    switch(myTempData->select){
+        case 1:
+            x = 0xE2;y = 0x4C;
+            break;
+        case 2:
+            x = 0xE2;y = 0x5C;
+            break;
+        default:{
+            u8 select = ~myTempData->select;
+            x = KEYBOARD_BASE_X;
+            y = KEYBOARD_BASE_Y + udivsi3(select,10)*FONT_SPACE_V;
+            select = umodsi3(select,10);
+            #ifdef BPRE0
+            x += (CHINESE_FONT_SPACE_H*select);
+            #else
+            if(myTempData->fontType == FONT_CHINESE)
+                x += (CHINESE_FONT_SPACE_H*select);
+            else
+                x += (ENGLISH_FONT_SPACE_H*select);
+            #endif
+        }
+        break;
+    }
+    SetMousePos(x,y);
+    if(IsPosChange())
+        PlaySound(SOUND_SELECT);
+}
+
+
 void UpdateEnglishWordList(){
     struct font *ft = (struct font *)textBuffer->wordList;
 	u8 b = myTempData->fontBit2;
@@ -235,15 +284,15 @@ void UpdateFontPageFlag(){
 
 	}
 	fontPage[0] = b;
+	#ifdef BPRE0
+	UpdateString(216,48,&myTempData->fontPage,1);
+	#else
 	UpdateString(210,48,&myTempData->fontPage,1);
+	#endif
 }
 
 void ClearNewNameBuffer(){
 	CpuFastFill(-1,textBuffer->newName,16);
-	// u32 *text = (u32 *);
-	// for (int i = 0; i < 16/4; i++){
-	// 	text[i] = -1;
-	// }
 }
 
 void PrintUnderline(u32 cur, u32 length){
@@ -275,8 +324,13 @@ void UpdateWordList(){
 		UpdateChiniseWordList();
 	else
 		UpdateEnglishWordList();
+	#ifdef BPRE0
+	FillWindowPixelRect(0,0,0,40,12*10+6*9,16*5);
+	PrintText(0,40,textBuffer->wordList);
+	#else
 	FillWindowPixelRect(0,0,0,40,12*10+5*9,16*5);
 	PrintText(10,40,textBuffer->wordList);
+	#endif
 	UpdateFontPageFlag();
 }
 
@@ -306,8 +360,13 @@ void UpdateKeyboardValue(){
 	}
 
 	PrintText(46,18,textBuffer->newName);//新名字
+	#ifdef BPRE0
+	UpdateSmallString(144,0,text_table[TEXT_CIRCLE_DOT]+myTempData->pageLock*4,1);//[点]
+	PrintSmallText(154,0,text_table[TEXT_PAGELOCK]);//锁定页面
+	#else
 	UpdateSmallString(148,0,text_table[TEXT_CIRCLE_DOT]+myTempData->pageLock*4,1);//[点]
 	PrintSmallText(158,0,text_table[TEXT_PAGELOCK]);//锁定页面
+	#endif
 	PrintUnderline(myTempData->inputCursorIndex,name_len);//横线
 
 }

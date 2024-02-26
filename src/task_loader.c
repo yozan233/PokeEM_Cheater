@@ -21,7 +21,11 @@ void task_loader(u8 task_id)
 	{
 		case 0:
 			SetVBlankCallback((void*)0);
-			CpuFastFill(0,myTempData,0x40);
+			CpuFastFill(0,myTempData,0x80);
+			#ifdef BPRE0
+			myTempData->optionsButtonMode = gSaveBlock2Ptr->optionsButtonMode;
+			gSaveBlock2Ptr->optionsButtonMode = 1;
+			#endif
 			sub_bg_init();
 			CreateSprites();
 			break;

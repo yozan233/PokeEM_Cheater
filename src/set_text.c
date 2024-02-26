@@ -1,7 +1,5 @@
 #include "header/funcs.h"
 
-extern u32 check_802();
-// extern void set_zi();
 extern u32 GetPenWuMax();
 extern struct Pokemon *getCurrentPartyplayer();
 extern u32 getCurrentMonData(u8 request);
@@ -24,6 +22,17 @@ void UpdatePageValue(u8 page);
 u32 GetAuthorText();
 u32 GetVersionText();
 
+#ifdef BPEE0
+extern u32 check_802();
+#define CRC_AUTHOR_TEXT 0x0710
+#define CRC_VERSION_TEXT 0x3D9F
+#else
+#define CRC_AUTHOR_TEXT 0x0710
+#define CRC_VERSION_TEXT 0xFD53
+#endif
+
+
+
 const u8 sTrainerCardTextColors[] = {0, 2, 3};
 
 void UpdatePageValue(u8 page)
@@ -31,9 +40,9 @@ void UpdatePageValue(u8 page)
 	switch(page){
 		case PAGE_POKE_INFO:{
 			u32 temp = &myTempData->numTextBuff;
-			ConvertUIntToDecimalStringN(temp,myTempData->lvl,2,3);
+			ConvertIntToDecimalStringN(temp,myTempData->lvl,2,3);
 			UpdateString(60,28,temp,3);//等级
-			ConvertUIntToDecimalStringN(temp,myTempData->happiness,2,3);
+			ConvertIntToDecimalStringN(temp,myTempData->happiness,2,3);
 			UpdateString(168,28,temp,3);//亲密度
 			u32 naturesTable = text_table[TEXT_NATURES_TABLE];
 			temp = naturesTable+5*myTempData->nature;
@@ -49,9 +58,11 @@ void UpdatePageValue(u8 page)
 			UpdateString(160,84,temp,1);//性别
 		}return;
 		case PAGE_POKE_INFO2:{
-			ConvertUIntToDecimalStringN(&myTempData->numTextBuff,myTempData->time,2,2);
+			#ifndef BPRE0
 			ClearStringForWidth(156,56,12);
+			ConvertIntToDecimalStringN(&myTempData->numTextBuff,myTempData->time,2,2);
 			PrintText(156,56,&myTempData->numTextBuff);//时间
+			#endif
 			UpdateString(76,84,text_table[TEXT_CIRCLE_DOT]+(myTempData->monCopy)*4,1);
 			UpdateString(172,84,text_table[TEXT_CIRCLE_DOT]+(myTempData->obedience)*4,1);
 
@@ -198,8 +209,10 @@ void UpdatePageValue(u8 page)
 			while(b5 < 2){
 				pokeN++;
 				u16 pmax = MON_COUNT;
+				#ifdef BPEE0
 				if(check_802())
 					pmax-=2;
+				#endif
 				if(pokeN > pmax)
 					break;
 				b5++;
@@ -234,7 +247,7 @@ void UpdatePageValue(u8 page)
 			return;
 		case PAGE_ITEMS:{
 			set_item_tile();
-			ConvertUIntToDecimalStringN(&myTempData->numTextBuff,myTempData->Num,2,2);
+			ConvertIntToDecimalStringN(&myTempData->numTextBuff,myTempData->Num,2,2);
 			UpdateString(156,26,&myTempData->numTextBuff,2);//数值
 			UpdateString(108,50,text_table[TEXT_CIRCLE_DOT]+ 4*myTempData->addItemEnable,1);//添加[点]
 			UpdateString(108,70,text_table[TEXT_CIRCLE_DOT]+ 4*myTempData->throwKeyItemEnable,1);//扔掉一个重要道具[空心点]
@@ -310,7 +323,7 @@ void UpdatePageValue(u8 page)
 			u8 numLength = 5;
 			if(GetPenWuMax() == 255)
 				numLength -= 2;
-			ConvertUIntToDecimalStringN(&myTempData->numTextBuff,myTempData->species,2,numLength);
+			ConvertIntToDecimalStringN(&myTempData->numTextBuff,myTempData->species,2,numLength);
 			UpdateString(156,20,&myTempData->numTextBuff,4);
 			UpdateString(20,20,text_table[TEXT_CIRCLE_DOT] + 4 * myTempData->pokedexUpgrade,1);
 			UpdateString(20,48,text_table[TEXT_CIRCLE_DOT] + 4 * myTempData->pokerus,1);
@@ -378,7 +391,7 @@ void InitPage(u8 page){
 	case PAGE_OTHER:
 		throughWallFlag[0] = FALSE;
 		((u8 *)myTempData)[0x46] = 0;
-		ldr_var4021();
+		loadRepelStepCount();
 		myTempData->select = SELECT_CANCEL;
 		break;
 	default:
@@ -432,8 +445,12 @@ void SetPageTxet(u8 page){
 		PrintText(24,28,text_table[TEXT_BALL_TYPE]);//球种
 		PrintText(120,28,text_table[TEXT_CATCH_LOCATION]);//捕获地
 		PrintText(24,56,text_table[TEXT_TELEPORT]);//瞬移
+		#ifdef BPRE0
+		PrintText(120,56,text_table[TEXT_COMING_SOON]);//敬请期待
+		#else
 		PrintText(120,56,text_table[TEXT_TIME]);//时间
 		PrintText(170,56,text_table[TEXT_HOUR]);//时
+		#endif
 		PrintText(24,84,text_table[TEXT_MON_COPY]);//复制精灵
 		PrintText(120,84,text_table[TEXT_MON_OBEDIENCE]);//精灵听话
 	}break;
@@ -449,10 +466,15 @@ void SetPageTxet(u8 page){
 		PrintText(180,0,ivevTitle);//个体/努力
 	}break;
 	case PAGE_POKE_NAME:
-	case PAGE_PLAYER_NAME:
+	case PAGE_PLAYER_NAME:{
+		#ifdef BPRE0
+		PrintSmallText(180,48,text_table[TEXT_INITIALS]);//首字母
+		PrintSmallText(180,68,text_table[TEXT_DELETE]);//删除
+		#else
 		PrintSmallText(170,48,text_table[TEXT_INITIALS]);//首字母
 		PrintSmallText(170,68,text_table[TEXT_DELETE]);//删除
-		break;
+		#endif
+		}break;
 	case PAGE_MOVES:
 		PrintSmallText(04,92,text_table[TEXT_MOVE_POWER]);
 		PrintSmallText(70,92,text_table[TEXT_MOVE_TYPE]);
@@ -476,7 +498,11 @@ void SetPageTxet(u8 page){
 	case PAGE_OTHER:
 		PrintText(32,20,text_table[TEXT_POKEDEX_UPGRADE]);//升级图鉴
 		PrintText(32,48,text_table[TEXT_POKERUS]);//精灵病毒 
+		#ifdef BPRE0
+		PrintText(32,76,text_table[TEXT_COMING_SOON]);//敬请期待
+		#else
 		PrintText(32,76,text_table[TEXT_MIRAGE_SHOW]);//出现幻岛 
+		#endif
 		PrintText(120,20,text_table[TEXT_SPRAY]);//喷雾
 		PrintText(132,48,text_table[TEXT_VISUAL_RANGE_MAX]);//视野
 		PrintText(132,76,text_table[TEXT_THROUGH_WALL]);//穿墙
@@ -527,7 +553,7 @@ u32 GetAuthorText(){
 	u8* authorText = text_table[TEXT_AUTHOR];
 	int len = 10;
 	u16 authorCrc = AnalysisText(authorText,textBuffer->temp,len);
-	if(authorCrc != 0x0710){
+	if(authorCrc != CRC_AUTHOR_TEXT){
 		asm("swi #0");//SoftReset
 	}
 	return textBuffer->temp;
@@ -537,7 +563,7 @@ u32 GetVersionText(){
 	u8 *versionText = text_table[TEXT_VERSION];
 	int len = 13;
 	u16 versionCrc = AnalysisText(versionText,textBuffer->temp,len);
-	if(versionCrc != 0x3D9F){
+	if(versionCrc != CRC_VERSION_TEXT){
 		asm("swi #0");//SoftReset
 	}
 	return textBuffer->temp;
@@ -558,7 +584,7 @@ void UpdateString(u8 x, u8 y, u8 *str,u16 len){
 
 void UpdateNumString(u8 pos_x, u8 pos_y, u32 num){
 	u32 numTextBuff = &myTempData->numTextBuff;
-	ConvertUIntToDecimalStringN(numTextBuff,num,2,3);
+	ConvertIntToDecimalStringN(numTextBuff,num,2,3);
 	UpdateString(pos_x,pos_y,numTextBuff,3);
 }
 
@@ -570,7 +596,7 @@ void UpdateNumHexString(u8 pos_x, u8 pos_y, u32 num){
 
 void UpdateNumSmallString(u8 pos_x, u8 pos_y, u32 num){
 	u32 numTextBuff = &myTempData->numTextBuff;
-	ConvertUIntToDecimalStringN(numTextBuff,num,2,3);
+	ConvertIntToDecimalStringN(numTextBuff,num,2,3);
 	UpdateSmallString(pos_x,pos_y,numTextBuff,3);
 }
 
@@ -617,7 +643,9 @@ void get_ball_addr(){
 	myTempData->selectedBall = 0;
 	myTempData->monCopy = FALSE;
 	myTempData->selectedBall = 0;
+	#ifndef BPRE0
 	myTempData->time = gLocalTime.hours;
+	#endif
 	getBallCount();
 }
 

@@ -40,10 +40,13 @@ void cb_execute()
  * 获取精灵最大等级
 */
 u8 getMonMaxLevel(){
-    myTempData->Num = VarGet(0x40CF);
-	VarSet(0x40CF,9);
-	u8 maxLvl = GetBattleEntryLevelCap();
-	VarSet(0x40CF,myTempData->Num);
+	int fun = ItemUseCB_RareCandy;
+	#ifdef BPRE0
+	fun += 0x25;
+	#else
+	fun += 0x35;
+	#endif
+	u8 maxLvl = ((u8*) fun)[0];
 	return maxLvl;
 }
 
