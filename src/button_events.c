@@ -2,6 +2,38 @@
 
 extern struct Pokemon *getCurrentPartyplayer();
 extern void PlaySound(u16 soundID);
+extern void UpdateKeyboardMousePos();
+extern void initMonTempData();
+extern void KeyboardPreviousFlag();
+extern void get_ball_addr();
+extern void InitCurrentPage();
+extern u32 getMonSpeciesName(u16 species);
+extern void SetShowNickNameOnly(bool8 b);
+extern void ClearNewNameBuffer();
+extern u16 GetItemListBuffer(u8 index);
+extern void get_attackN();
+extern void UpdatePageValue(u8 page);
+extern u32 getCurrentMonData(u8 request);
+extern void backupMonTempData();
+extern void InitPage(u8 page);
+extern void setCurrentMonData(u8 request, void* value);
+extern void ChangePid(u8 nature,u8 gender,u8 shininess);
+extern void RefreshCurrentMonData();
+extern void ShowMonName();
+extern u32 getPlayerNameOffset();
+extern void SetMonPidTid(struct Pokemon *mon,u32 pid,u32 tid);
+extern void loadMonName();
+extern void KeyboardButtonAEvent();
+extern void KeyboardPreviousPage();
+extern void KeyboardNextPage();
+extern void KeyboardNextFlag();
+extern void PrintSmallText(u8 x, u8 y, u8 *str);
+extern void DeleteWord();
+extern u32 getAttackNameValid(u16 atackNum);
+extern u32 getMonSpeciesNameValid(u16 species);
+void loadRepelStepCount();
+void EggHatchNow();
+void pause();
 
 const u8 ivevMap[] = {0,0,3,1,4,2,5};
 
@@ -148,10 +180,10 @@ void SetPokedexFlag(u16 species){
 	GetSetPokedexFlag(index,2); //图鉴设置已发现的标识
 	GetSetPokedexFlag(index,3); //图鉴设置已捕获的标识
 }
+#ifdef BPEE0
 /**
  * 是否为绿宝石802
 */
-#ifdef BPEE0
 bool8 check_802(){
 	return gBaseStatsPtr == 0x08F186E0;
 }
@@ -273,13 +305,17 @@ void SetCurrentMonLevel(u8 lvl){
  * 视野最大化
 */
 void shiye(){
+    #ifdef AXVE0
+    gSaveBlock1.flashLevel = 0;
+    #else
 	 gSaveBlock1Ptr->flashLevel = 0;
-     #ifdef BPEE0
-	 u8 *pyramidFlag = (u8 *)(((u32*)&gSaveBlock2Ptr)[0]+0x0E68);
-	 if(pyramidFlag[0] != 0){
-         pyramidFlag[0] = 0xC0;
-	 }
-     #endif
+    #endif
+    #ifdef BPEE0
+    u8 *pyramidFlag = (u8 *)(((u32*)&gSaveBlock2Ptr)[0]+0x0E68);
+    if(pyramidFlag[0] != 0){
+        pyramidFlag[0] = 0xC0;
+    }
+    #endif
 }
 
 /**
@@ -293,7 +329,7 @@ void set_bingdu(){
     }
 }
 
-void DelLastKeyitem(){
+bool8 DelLastKeyitem(){
 	struct BagPocket *keyitemsPocket = &gBagPockets[KEYITEMS_POCKET];
 	u16 n = 0;
 	while (n < keyitemsPocket->capacity){
@@ -301,20 +337,24 @@ void DelLastKeyitem(){
 			break;
 		n++;
 	}
-	SetBagItemQuantity(&keyitemsPocket->itemSlots[n-1].quantity,0);
-	keyitemsPocket->itemSlots[n-1].itemId = 0;
+    return RemoveBagItem(keyitemsPocket->itemSlots[n-1].itemId,1);
 }
 
 void pause(){
 	asm("push {lr}\nmov r0, #0\nmov r1, #0xFF\nlsl r1, #0xA\npause_t:\nadd r0, #0x1\ncmp r0, r1\nbne pause_t\npop {pc}\nBX_R3:\nbx r3");
 }
 
-void SetText_MsgBox(u32 str)
+void SetText_MsgBox(u8 *str)
 {
 	u8 boxid_t = mySav->boxId;
+    #ifdef AXVE0
+    #else
 	FillWindowPixelBuffer(boxid_t,0x11);
+    #endif
     #ifdef BPRE0
 	AddTextPrinterParameterized(boxid_t,1,str,0,0,0,0); //按键提示
+    #elif AXVE0
+    Menu_PrintText(str,6,0);
     #else
 	AddTextPrinterParameterized(boxid_t,1,str,6,0,0,0); //按键提示
     #endif
@@ -463,7 +503,9 @@ void OnSureClick(){
             BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
             HealPlayerParty();
             DestroyTask(mySav->task_id);
+            #ifndef AXVE0
             FreeAllWindowBuffers();
+            #endif
             Free(*malloc_pointer_loc);
             struct HealLocation *location = GetHealLocation(myTempData->selectedflightPoint);
             SetWarpDestination(location->group, location->map, -1, location->x, location->y);
@@ -875,9 +917,9 @@ void ButtonLeftEvent()
                     UpdateCurrentPageTextAndPlaySound();
             }
             else{
-                u16 t = GetItembuffer(ITEM_TEXT_CURSOR_INDEX);
+                u16 t = GetItemListBuffer(ITEM_TEXT_CURSOR_INDEX);
                 if(t){
-                    myTempData->itemBuffer = GetItembuffer(0);
+                    myTempData->itemBuffer = GetItemListBuffer(0);
                     UpdateCurrentPageTextAndPlaySound();
                 }
             }
@@ -1050,7 +1092,7 @@ void ButtonRightEvent()
         case PAGE_MOVES:{
             u8 rt = 1;
             while (rt <= 4){
-                if(!getAttackName(myTempData->attackBuffer+rt))
+                if(!getAttackNameValid(myTempData->attackBuffer+rt))
                     break;
                 else
                     rt++;
@@ -1090,9 +1132,9 @@ void ButtonRightEvent()
                     UpdateCurrentPageTextAndPlaySound();
             }
             else{
-                u16 t = GetItembuffer(ITEM_TEXT_CURSOR_INDEX);
+                u16 t = GetItemListBuffer(ITEM_TEXT_CURSOR_INDEX);
                 if(t < 6){
-                    myTempData->itemBuffer = GetItembuffer(6);
+                    myTempData->itemBuffer = GetItemListBuffer(6);
                     UpdateCurrentPageTextAndPlaySound();
                 }
             }
@@ -1363,9 +1405,9 @@ void ButtonUpEvent(){
             break;
         case PAGE_ITEMS:{
             if(myTempData->select == 1){
-				u16 t = GetItembuffer(ITEM_TEXT_CURSOR_INDEX);
+				u16 t = GetItemListBuffer(ITEM_TEXT_CURSOR_INDEX);
 				if(t){
-					myTempData->itemBuffer = GetItembuffer(t-1);
+					myTempData->itemBuffer = GetItemListBuffer(t-1);
 					UpdateCurrentPageTextAndPlaySound();
 				}
 			}
@@ -1562,27 +1604,22 @@ void ButtonDownEvent(){
             }
             break;
             case PAGE_MOVES:
-                if(getAttackName(myTempData->attackBuffer+1)){
+                if(getAttackNameValid(myTempData->attackBuffer+1)){
                     myTempData->attackBuffer++;
                     UpdateCurrentPageTextAndPlaySound();
                 }
                 break;
             case PAGE_SPECIE:{
-                u16 pmax = MON_COUNT;
-                #ifdef BPEE0
-                if(check_802())
-                    pmax-=2;
-                #endif
-                if(myTempData->attackBuffer < pmax){
+                if(getMonSpeciesNameValid(myTempData->attackBuffer+1)){
                     myTempData->attackBuffer++;
                     UpdateCurrentPageTextAndPlaySound();
                 }
             }break;
             case PAGE_ITEMS:{
                 if(myTempData->select == 1){
-                    u16 t = GetItembuffer(ITEM_TEXT_CURSOR_INDEX);
+                    u16 t = GetItemListBuffer(ITEM_TEXT_CURSOR_INDEX);
                     if(t < 6){
-                        myTempData->itemBuffer = GetItembuffer(t+1);
+                        myTempData->itemBuffer = GetItemListBuffer(t+1);
                         UpdateCurrentPageTextAndPlaySound();
                     }
                 }

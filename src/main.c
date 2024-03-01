@@ -3,7 +3,7 @@
 extern void obj_callback();
 extern void task_loader(u8);
 extern u32 GetMonData(struct Pokemon* poke_address, u8 request);
-void cb_execute(void);
+void MainCB2(void);
 void initMonTempData();
 void loadMonName();
 void loadMonIconSprite();
@@ -15,6 +15,8 @@ struct Pokemon *getCurrentPartyplayer();
 struct BaseStats* getSpeciesBaseStats(u16 species);
 struct Sprite *getSprite(u8 id);
 u32 getMonSpeciesName(u16 species);
+u32 getItemName(u16 itemId);
+void backupMonTempData();
 
 void main_func()
 {
@@ -23,11 +25,11 @@ void main_func()
 	ResetPaletteFade();
 	FreeAllSpritePalettes();
 	mySav->task_id = CreateTask(task_loader,1);
-	SetMainCallback2(cb_execute);
+	SetMainCallback2(MainCB2);
 	return;
 }
 
-void cb_execute()
+void MainCB2()
 {
 	RunTasks();
 	AnimateSprites();
@@ -43,6 +45,8 @@ u8 getMonMaxLevel(){
 	int fun = ItemUseCB_RareCandy;
 	#ifdef BPRE0
 	fun += 0x25;
+	#elif AXVE0
+	fun += 0x28;
 	#else
 	fun += 0x35;
 	#endif
@@ -127,7 +131,7 @@ struct Sprite *getSprite(u8 id){
 
 void loadMonIconTiles(u16 species){
 	u32* gMonIconTable = gMonIconTablePtr;
-	u32 monIconOffset = gMonIconTable[species];//GetMonIconTiles(myTempData->species,FALSE);
+	u32 monIconOffset = gMonIconTable[species];
 	CpuSet(monIconOffset,0x06010400,0x200);
 }
 
@@ -211,3 +215,100 @@ void PlaySound(u16 soundID){
 	else
 		PlaySE(soundID);
 }
+
+/**
+ * 获取战斗文本缓存
+*/
+u32 getBattleTextBuff(u8 type,u8 value){
+	CpuFastFill(-1,textBuffer->temp,16);
+	u8 data[] = {0,type,value,0xFF};
+	ExpandBattleTextBuffPlaceholders(data,textBuffer->temp);
+	return textBuffer->temp;
+}
+
+/**
+ * 获取技能名称地址
+ * @param atackNum 技能编号
+ * @return 技能名称地址，如果不存在则返回0
+*/
+u32 getAttackName(u16 atackNum){
+	u32 moveNames = gMoveNamesPtr;
+	moveNames += (atackNum*gNameLengthConfig.moveNameLength);
+	return moveNames;
+}
+
+u32 getItemName(u16 itemId){
+	struct Item *itemTable = (struct Item *)((u32*)gItemsPtr);
+	struct Item *item = itemTable + itemId;
+	return item->name;
+}
+
+/**
+ * 检查名字字符串是否有效
+*/
+bool8 checkNameString(u8 *str,u32 length){
+	u8 firstChar = str[0];
+	if(firstChar == 0 || firstChar == 0xAE || firstChar == 0xFF){
+		return FALSE;
+	}
+	for (int i = 1; i < length; i++){
+		if(str[i] == 0xFF){
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+u32 getMonSpeciesNameValid(u16 species){
+	u32 limit = gQuantityLimit.pokemonCount;
+	if (limit != 0){
+		return species < limit;
+	}
+	u32 name = getMonSpeciesName(species);
+	if (checkNameString(name,gNameLengthConfig.pokemonNameLength)){
+		return name;
+	}
+	return 0;
+}
+
+u32 getAttackNameValid(u16 atackNum){
+	u32 limit = gQuantityLimit.moveCount;
+	if (limit != 0){
+		return atackNum < limit;
+	}
+	u32 name = getAttackName(atackNum);
+	if (checkNameString(name,gNameLengthConfig.moveNameLength)){
+		return name;
+	}
+	return 0;
+}
+
+u32 getItemNameValid(u16 itemId){
+	u32 limit = gQuantityLimit.itemCount;
+	if (limit != 0){
+		return itemId < limit;
+	}
+
+	u8 *name = getItemName(itemId);
+
+
+	u8 firstChar = name[0];
+	if(firstChar == 0x3D || firstChar == 0xAC || firstChar == 0xAE){
+		return ITEM_NAME_TEMP;
+	}
+	u8 nameLen = gNameLengthConfig.itemNameLength;
+
+	if(name[nameLen] == itemId){
+		return name;
+	}
+
+	if(checkNameString(name,nameLen)){
+		return name;
+	}
+
+	return ITEM_NAME_NONE;
+}
+
+
+
+

@@ -2,6 +2,19 @@
 #include "header/text.h"
 
 extern void PrintText(u8 x, u8 y, u8 *str);
+extern void BufferPos();
+extern void SetMousePos(u16 x,u16 y);
+extern bool8 IsPosChange();
+extern void UpdateString(u8 x, u8 y, u8 *str,u16 len);
+extern void PlaySound(u16 soundID);
+extern void ClearStringRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height);
+extern void ShowPlayerName();
+extern void ShowMonName();
+extern void UpdateSmallString(u8 pos_x, u8 pos_y, u8 *str,u16 len);
+extern void PrintSmallText(u8 x, u8 y, u8 *str);
+extern void UpdateCurrentPageText();
+extern void changeMouseColor();
+extern void SetText_MsgBox(u8 *str);
 
 #ifdef BPRE0
 #define KEYBOARD_BASE_X 0x12
@@ -325,10 +338,10 @@ void UpdateWordList(){
 	else
 		UpdateEnglishWordList();
 	#ifdef BPRE0
-	FillWindowPixelRect(0,0,0,40,12*10+6*9,16*5);
+	ClearStringRect(0,0,0,40,12*10+6*9,16*5);
 	PrintText(0,40,textBuffer->wordList);
 	#else
-	FillWindowPixelRect(0,0,0,40,12*10+5*9,16*5);
+	ClearStringRect(0,0,0,40,12*10+5*9,16*5);
 	PrintText(10,40,textBuffer->wordList);
 	#endif
 	UpdateFontPageFlag();
@@ -347,7 +360,7 @@ void InitKeyboard(){
 
 void UpdateKeyboardValue(){
 	UpdateWordList();
-	FillWindowPixelRect(0,0,46,18,5*12,20);
+	ClearStringRect(0,0,46,18,5*12,20);
 
 	int name_len = 10;
 	if(myTempData->page == PAGE_PLAYER_NAME)

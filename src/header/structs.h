@@ -15,6 +15,8 @@
 #define TRUE 1
 #define FALSE 0
 
+#define NULL 0
+
 #define PAGE_MAIN 0 //主页
 #define PAGE_POKE_INFO 0x10 //精灵信息
 #define PAGE_POKE_INFO2 0x11 //精灵信息2
@@ -133,6 +135,11 @@
 #define SOUND_DELETE 3 
 #define SOUND_SELECT 5
 #define SOUND_PAGE 6
+
+#define ITEM_NAME_NONE 0
+#define ITEM_NAME_TEMP 1
+
+#define ARRAY_COUNT(array) (size_t)(sizeof(array) / sizeof((array)[0]))
 
 /* structs */
 struct SpriteFrameImage
@@ -711,3 +718,22 @@ struct TilesPal
     const u8 *tiles;
     const u16 *pal;
 };
+
+struct ListQuantityLimit
+{
+    u32 pokemonCount;
+    u32 moveCount;
+    u32 itemCount;
+};
+
+struct NameLengthConfig
+{
+    u8 pokemonNameLength;
+    u8 moveNameLength;
+    u8 itemNameLength;
+    u8 fill;
+};
+
+
+
+

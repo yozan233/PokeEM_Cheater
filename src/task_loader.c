@@ -1,10 +1,15 @@
 #include "header/funcs.h"
 extern void sub_bg_init(void);
-extern u8 tiles_load(void);
+extern bool8 tiles_load(void);
 extern void string_print(void);
 extern void load_icons(void);
 extern void task_02(u8 task_id);
+extern void CreateSprites();
+extern void InitPage(u8 page);
+
+#ifndef AXVE0
 void box_draw(u8,u8);
+#endif
 
 const struct rbox_short rbox_table[] = 
 {
@@ -20,7 +25,6 @@ void task_loader(u8 task_id)
 	switch(*(*malloc_pointer_loc+2))
 	{
 		case 0:
-			SetVBlankCallback((void*)0);
 			CpuFastFill(0,myTempData,0x80);
 			#ifdef BPRE0
 			myTempData->optionsButtonMode = gSaveBlock2Ptr->optionsButtonMode;
@@ -32,8 +36,17 @@ void task_loader(u8 task_id)
 		case 1:
 			if(!tiles_load())
 				return;
-			else break;
+			else 
+				break;
 		case 2:
+			#ifdef AXVE0
+			Menu_DrawStdWindowFrame(0, 0x10, 0x1D, 0x13);
+
+			SetGpuReg(0x4,0x8);
+			SetGpuReg(0x0,0x1940);
+    		SetGpuReg(0xE,0x4603);
+
+			#else
 			//内容盒子
 			InitWindows(rbox_table);
 			DeactivateAllTextPrinters();
@@ -43,8 +56,6 @@ void task_loader(u8 task_id)
 			temp = AddWindow(rbox_table+2);
 			mySav->boxId = temp;
 			box_draw(temp,0xE);
-			
-			InitPage(PAGE_MAIN);
 
 			SetGpuReg(0,0x3341);
 			
@@ -53,6 +64,10 @@ void task_loader(u8 task_id)
 			SetGpuReg(0x4A,0x0F1F);
 			CopyBgTilemapBufferToVram(0);
 			CopyBgTilemapBufferToVram(1);
+			#endif
+
+
+			InitPage(PAGE_MAIN);
 			break;
 		case 3:
 			BeginNormalPaletteFade(-1,0,0x10,0,0); //make it come back to bright
@@ -71,6 +86,7 @@ void task_loader(u8 task_id)
 	return;
 }
 
+#ifndef AXVE0
 void box_draw(u8 box_id, u8 pal)
 {
 	struct TilesPal tilesPal = ((struct TilesPal *)sWindowFrames_offset)[0];
@@ -82,3 +98,4 @@ void box_draw(u8 box_id, u8 pal)
 	DrawStdFrameWithCustomTileAndPalette(box_id,0,0x300,pal);
 	return;
 }
+#endif

@@ -2,7 +2,7 @@
 #include "header/sprite.h"
 
 extern struct Sprite *getSprite(u8 id);
-#ifdef BPRE0
+#ifndef EMERALD
 extern const u8 mouse_tile[];
 extern const u8 mouse_pal[];
 #endif
@@ -90,6 +90,7 @@ void CreateSprites(){
     sprite->oam.mosaic = TRUE;
     sprite->callback = MonIconSpriteCallback;
 
+    #ifndef AXVE0
     u8 itemPicId = CreateNormalSprite(0x70,0x28);
     mySav->itemPicId = itemPicId;
     sprite = getSprite(itemPicId);
@@ -97,12 +98,14 @@ void CreateSprites(){
     sprite->oam.tileNum = 256;
     sprite->oam.size = SPRITE_SIZE(32x32);
     sprite->oam.mosaic = TRUE;
-    #ifdef BPRE0
-    CpuSet(&mouse_tile,0x06010000,0x40);
-    CpuSet(&mouse_pal,OBJ_PaletteMem,0x10);
-    #else
+    #endif
+
+    #ifdef EMERALD
     LZ77UnCompVram(sCursor_Gfx,0x06010000);
     CpuSet(gFrontierPassCursor_Pal,OBJ_PaletteMem,0x10);
+    #else
+    CpuSet(&mouse_tile,0x06010000,0x40);
+    CpuSet(&mouse_pal,OBJ_PaletteMem,0x10);
     #endif
 
 }

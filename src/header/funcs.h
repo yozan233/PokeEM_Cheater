@@ -2,19 +2,18 @@
 void SetMainCallback2(void(*func)(void));
 void * AllocZeroed(u32 size);
 void * Alloc(u32 size);
+void Free(void *);
 void PlaySE(u16 soundID);
 void GetMapName(u8 *dest, u16 regionMapId, u16 padLength);
 u32 GetPlayerIDAsU32(void);
 u32 umodsi3(u32 numerator, u32 denumerator);
 u8 AddBagItem(u16 item, u16 num);
 //080B3964
-void MyTest(void);
 void RtcInitLocalTimeOffset(s32 hour, s32 minute);
 u16 Random(void);
 void CreateMon(struct Pokemon* poke, u16 species, u8 lvl, u8 IVs, u8 pid_set, u32 PiD, u8 tid_set, u32 TiD);
 void SetMonData(struct Pokemon* poke_address, u8 request, const void* new_value);
 void CalculateMonStats(struct Pokemon* poke_address);
-u8* GetMonIconTiles(u16 species, bool32 handleDeoxys);
 void FlagSet(u16 flag);
 //special_0x1F3
 void EnableNationalPokedex(void);
@@ -36,7 +35,6 @@ void UpdatePaletteFade(void);
 void SetVBlankCallback(void(*)(void));
 //lcd_io_set
 void SetGpuReg(u8 reg, u16 value);
-void ResetBgsAndClearDma3BusyFlags(u32);
 void InitBgsFromTemplates(u8 bg_mode, struct bg_cfg *config_data, u8 config_num_entries);
 u32 ChangeBgX(u8 bg_id, u32 delta, u8 mode);
 u32 ChangeBgY(u8 bg_id, u32 delta, u8 mode);
@@ -45,7 +43,6 @@ u8 InitWindows(struct rbox_short *);
 void DeactivateAllTextPrinters(void);
 void SetBgTilemapBuffer(u8 bg_id, void *src);
 void ShowBg(u8 bg_id);
-void FillBgTilemapBufferRect_Palette0(u8 bg_id, u16, u8, u8, u8, u8);
 void ResetTempTileDataBuffers(void);
 u8 FreeTempTileDataBuffersIfPossible(void);
 void CopyToBgTilemapBuffer(u8 bg_id, void *src, u16 mode, u16 offset_in_block);
@@ -64,7 +61,6 @@ u8 *ConvertIntToDecimalStringN(u8 *dest, u32 value, u8 mode, u8 charlength);
 u8 *ConvertIntToHexStringN(u8 *dest, u32 value, u8 mode, u8 n);
 u8 *StringCopy(u8 *dest, u8 *src);
 void FreeAllWindowBuffers(void);
-void Free(void *);
 void CB2_ReturnToFieldContinueScript(void);
 void SetWarpDestination(s8 mapGroup, s8 mapNum, s8 warpId, s8 x, s8 y);
 void FillWindowPixelRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height);
@@ -73,9 +69,9 @@ void CopyItemIconPicTo4x4Buffer(void *src, void *dest);
 s32 StringCompare(const u8 *str1, const u8 *str2);
 u16 SpeciesToNationalPokedexNum(u16 species);
 s8 GetSetPokedexFlag(u16 nationalNum, u8 caseId);
-void SetBagItemQuantity(u16 *quantity, u16 newValue);
+bool8 RemoveBagItem(u16 itemId, u16 count);
 void ZeroMonData(struct Pokemon *mon);
-s16 udivsi3(s16 a, s16 b);
+extern s16 udivsi3(s16 a, s16 b);
 void ItemUseCB_RareCandy(void);
 extern void CpuFastSet(const void *src, void *dest, int control);
 //swi 0x12
@@ -84,6 +80,22 @@ extern void LZ77UnCompVram(const void *src, void *dest);
 extern void CpuSet(void *src, void *dest, int control);
 extern void CpuFastFill(int value, void *dest, int size);
 extern void ItemUseOutOfBattle_Repel(u8 taskId);
+extern const struct HealLocation *GetHealLocation(u32 index);
+extern void DoWarp(void);
+extern void ResetInitialPlayerAvatarState(void);
+extern void DecryptBoxMon(void *boxMon);
+extern void EncryptBoxMon(void *boxMon);
+extern u16 CalculateBoxMonChecksum(void *boxMon);
+
+extern void Text_LoadWindowTemplate(const void *winConfig);
+extern void InitMenuWindow(const void *winConfig);
+extern void Menu_PrintText(const u8 *str, u8 left, u8 top);
+extern void ScanlineEffect_Stop(void);
+extern void Menu_DrawStdWindowFrame(u8 left, u8 top, u8 right, u8 bottom);
+extern void Menu_BlankWindowRect(u8 left, u8 top, u8 right, u8 bottom);
+extern void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst);
+
+extern void debug();
 
 extern u8 throughWallFlag[];
 extern struct fade_ctrl *gPaletteFade;
@@ -105,6 +117,9 @@ extern u8 gStringVar4[];
 extern struct SaveBlock1 *gSaveBlock1Ptr;
 extern struct SaveBlock2 *gSaveBlock2Ptr;
 
+extern struct SaveBlock1 gSaveBlock1;
+extern struct SaveBlock2 gSaveBlock2;
+
 extern struct Time gLocalTime;
 extern struct Main gMain;
 extern struct Task *gTasks;
@@ -121,13 +136,6 @@ extern u32 *gItemsPtr;
 extern u32 *gAbilityNamesPtr;
 extern u32 *gBattleMovesPtr;
 extern u32 *gItemIconTablePtr;
-
-extern u16 sItemsCount[];
-#define ITEMS_COUNT sItemsCount[0]
-
-extern u16 sMonCount[];
-#define MON_COUNT sMonCount[0]
-#define NUM_SPECIES (MON_COUNT+1)
 
 extern u8 sCursor_Gfx[];
 extern u8 gFrontierPassCursor_Pal[];

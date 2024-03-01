@@ -5,36 +5,71 @@ extern struct Pokemon *getCurrentPartyplayer();
 extern u32 getCurrentMonData(u8 request);
 extern struct BaseStats* getSpeciesBaseStats(u16 species);
 extern u32 getMonSpeciesName(u16 species);
+extern checkNameString(u8 *str,u32 length);
+extern u32 getItemName(u16 itemId);
+extern void initMonTempData();
+extern struct Sprite *getSprite(u8 id);
+extern void loadRepelStepCount();
+extern u32 getItemNameValid(u16 itemId);
+extern void InitKeyboard();
+extern void SetText_MsgBox(u8 *str);
+extern u32 getBattleTextBuff(u8 type,u8 value);
+extern void UpDateSelectedMousePos();
+extern u32 getAttackNameValid(u16 atackNum);
+extern void UpdateKeyboardValue();
+extern void restart(int i);
 u8 getMapId(u16 mapGroup, u16 mapNum);
 u32 getPlayerNameOffset();
 u16 get_ballNum(u8 index);
 u16 get_attackN0(u8 n);
 u8 getMoveAttr(u8 n);
 u32 getTypeName(u8 type);
-bool8 checkString(u8 *str,u32 length);
 u32 getAttackName(u16 atackNum);
+u32 getMonName(u16 monNum);
 u32 getAbilityName();
 bool8 checkPicLZ(struct LZData *data);
 bool8 checkLZ(struct LZData *data);
-u32 getItemName(u16 itemId);
-u16 GetItembuffer(u8 index);
+u16 GetItemListBuffer(u8 index);
 void UpdatePageValue(u8 page);
 u32 GetAuthorText();
 u32 GetVersionText();
+void UpdateString(u8 x, u8 y, u8 *str,u16 len);
+void ClearStringRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height);
+void UpdateNumString(u8 pos_x, u8 pos_y, u32 num);
+void UpdateNumHexString(u8 pos_x, u8 pos_y, u32 num);
+void ClearStringForWidth(u16 pos_x, u16 pos_y, u16 width);
+void LoadMonIVEV();
+void PrintSmallText(u8 x, u8 y, u8 *str);
+void UpdateSmallString(u8 pos_x, u8 pos_y, u8 *str,u16 len);
+void PrintText(u8 x, u8 y, u8 *str);
+void UpdateNumSmallString(u8 pos_x, u8 pos_y, u32 num);
+void getBallCount();
+void get_ball_addr();
+void ShowMonName();
+void ShowSprite(u8 id);
+void HideSprite(u8 id);
+void SetShowNickNameOnly(bool8 b);
+void SetPageTxet(u8 page);
+void get_attackN();
+void set_poke_tile();
+void SortItemBuffer(u8 index);
+void MoveItemBuffer(u8 index,int length);
+void SetItemListBuffer(u8 index,u16 value);
 
-#ifdef BPEE0
-extern u32 check_802();
-#define CRC_AUTHOR_TEXT 0x0710
-#define CRC_VERSION_TEXT 0x3D9F
-#else
-#define CRC_AUTHOR_TEXT 0x0710
-#define CRC_VERSION_TEXT 0xFD53
+#ifndef AXVE0
+void set_item_tile();
 #endif
+
+#define CRC_AUTHOR_TEXT 0x0710
+#define CRC_VERSION_TEXT 0x3653
 
 
 
 const u8 sTrainerCardTextColors[] = {0, 2, 3};
 
+/**
+ * 更新页面数值
+*/
 void UpdatePageValue(u8 page)
 {
 	switch(page){
@@ -115,8 +150,8 @@ void UpdatePageValue(u8 page)
 			return;
 		case PAGE_MOVES:{
 			u32 textNone = text_table[TEXT_NONE];
-			FillWindowPixelRect(0,0,18,20,12*6,4*16);
-			FillWindowPixelRect(0,0,128,16,12*8,5*16+8);
+			ClearStringRect(0,0,18,20,12*6,4*16);
+			ClearStringRect(0,0,128,16,12*8,5*16+8);
 
 			for(u8 i = 0;i <= 3;i++){
 				if(get_attackN0(i))
@@ -152,7 +187,7 @@ void UpdatePageValue(u8 page)
 			u32 b = 0;
 			while(b < 2){
 				attN++;
-				if(!getAttackName(attN))
+				if(!getAttackNameValid(attN))
 					break;
 				b++;
 			}
@@ -186,6 +221,7 @@ void UpdatePageValue(u8 page)
 			set_poke_tile();
 			loadSpecieData();
 			
+			//显示6项种族值
 			u8 *specieData = (u8 *)&myTempData->hp;
 			for(int k = 0; k < 6; k++){
 				UpdateNumSmallString(42,28+k*14,specieData[k]);
@@ -196,7 +232,7 @@ void UpdatePageValue(u8 page)
 
 			UpdateNumHexString(94,98,pokeN);//精灵编号
 
-			FillWindowPixelRect(0,0,128,16,12*8,5*16+8);
+			ClearStringRect(0,0,128,16,12*8,5*16+8);
 			
 			while(a5 < 2){
 				pokeN--;
@@ -246,73 +282,80 @@ void UpdatePageValue(u8 page)
 			UpdateKeyboardValue();
 			return;
 		case PAGE_ITEMS:{
+			#ifndef AXVE0
 			set_item_tile();
+			#endif
 			ConvertIntToDecimalStringN(&myTempData->numTextBuff,myTempData->Num,2,2);
 			UpdateString(156,26,&myTempData->numTextBuff,2);//数值
 			UpdateString(108,50,text_table[TEXT_CIRCLE_DOT]+ 4*myTempData->addItemEnable,1);//添加[点]
 			UpdateString(108,70,text_table[TEXT_CIRCLE_DOT]+ 4*myTempData->throwKeyItemEnable,1);//扔掉一个重要道具[空心点]
 			
-			FillWindowPixelRect(0,0,0,0,12*7+6*4,16*7+4);
-			u16 S=myTempData->itemBuffer;
-			u32 a6=0,i6=0;
-			while(a6 < 3){
-				if(S==1)
-					break;
-				S--;
-				u32 itemN = getItemName(S);
-				if (itemN == 0)
-					break;
-				else if(itemN != 1){
-						SetItembuffer(i6,S);
-						a6++;
-						i6++;
-					}
-			}
-			SortItemBuffer(a6);
-			
-			SetItembuffer(i6,myTempData->itemBuffer);
-			i6++;
+			ClearStringRect(0,0,0,0,12*7+6*4,16*7+4);
+			u16 curItem = myTempData->itemBuffer;
 
-			u32 b6 = 3;
-			if(a6 < 3)
-				b6 = 6-a6;
-			S=myTempData->itemBuffer;
-			while(b6){
-				S++;
-				u32 itemN = getItemName(S);
-				if (itemN == 0)
+			//查找上半部分道具
+			u32 topIndex=0,listIndex=0;
+			while(topIndex < 3){ //0-2
+				if(curItem==1)
 					break;
-				else if(itemN != 1){
-						SetItembuffer(i6,S);
-						b6--;
-						i6++;
-					}
+				curItem--;
+				u32 itemN = getItemNameValid(curItem);
+				if (itemN == ITEM_NAME_NONE)
+					break;
+				else if(itemN != ITEM_NAME_TEMP){
+					SetItemListBuffer(listIndex,curItem);
+					topIndex++;
+					listIndex++;
+				}
+			}
+			SortItemBuffer(topIndex);
+			
+			//当前道具
+			SetItemListBuffer(listIndex,myTempData->itemBuffer);
+			listIndex++;
+
+			//查找下半部分道具
+			u32 bottomIndex = 3;
+			if(topIndex < 3)
+				bottomIndex = 6-topIndex;
+			curItem=myTempData->itemBuffer;
+			while(bottomIndex){
+				curItem++;
+				u32 itemN = getItemNameValid(curItem);
+				if (itemN == ITEM_NAME_NONE)
+					break;
+				else if(itemN != ITEM_NAME_TEMP){
+					SetItemListBuffer(listIndex,curItem);
+					bottomIndex--;
+					listIndex++;
+				}
 			}
 			
-			if(b6){
-				MoveItemBuffer(b6);
-				S = GetItembuffer(0);
-				a6=0,i6=0;
-				while(a6 < b6){
-					S--;
-					u32 itemN = getItemName(S);
+			if(bottomIndex){
+				MoveItemBuffer(bottomIndex,7);
+				curItem = GetItemListBuffer(0);
+				topIndex=0,listIndex=0;
+				while(topIndex < bottomIndex){
+					curItem--;
+					u32 itemN = getItemNameValid(curItem);
 					if (itemN == 0)
 						break;
 					else if(itemN != 1){
-							SetItembuffer(i6,S);
-							a6++;
-							i6++;
-						}
+						SetItemListBuffer(listIndex,curItem);
+						topIndex++;
+						listIndex++;
+					}
 				}
-				SortItemBuffer(a6);
+				SortItemBuffer(topIndex);
 			}
 			u32 text6t = &myTempData->numTextBuff;
 			for(u8 k=0;k<7;k++){
-				u16 Na = GetItembuffer(k);
+				u16 Na = GetItemListBuffer(k);
 				if(Na == myTempData->itemBuffer)
 				{
+					//文本光标
 					PrintText(0,k*17,text_table[TEXT_CURSOR]);
-					SetItembuffer(ITEM_TEXT_CURSOR_INDEX,k);
+					SetItemListBuffer(ITEM_TEXT_CURSOR_INDEX,k);
 				}
 				PrintText(30,k*17,getItemName(Na));//道具名称
 				ConvertIntToHexStringN(text6t,Na,2,3);
@@ -342,7 +385,9 @@ void InitPage(u8 page){
 	switch (page)
 	{
 	case PAGE_MAIN:
+		#ifndef AXVE0
 		HideSprite(mySav->itemPicId);
+		#endif
 		HideSprite(mySav->monIconId);
 		HideSprite(mySav->monPicId);
 		break;
@@ -385,8 +430,10 @@ void InitPage(u8 page){
 		myTempData->itemBuffer = 1;
 		myTempData->addItemEnable = TRUE;
 		myTempData->throwKeyItemEnable = FALSE;
+		#ifndef AXVE0
 		ShowSprite(mySav->itemPicId);
 		CpuFastFill(0,itemTilesArm,0x800);
+		#endif
 		break;
 	case PAGE_OTHER:
 		throughWallFlag[0] = FALSE;
@@ -407,7 +454,10 @@ void InitPage(u8 page){
 }
 
 void SetPageTxet(u8 page){
+	#ifdef AXVE0
+	#else
 	FillWindowPixelBuffer(0,0); //清空全部文本
+	#endif
 	if(page != PAGE_MAIN){
 		PrintSmallText(176,104,text_table[TEXT_SURE]);//确认
 		PrintSmallText(204,104,text_table[TEXT_CANCEL]);//取消
@@ -554,7 +604,7 @@ u32 GetAuthorText(){
 	int len = 10;
 	u16 authorCrc = AnalysisText(authorText,textBuffer->temp,len);
 	if(authorCrc != CRC_AUTHOR_TEXT){
-		asm("swi #0");//SoftReset
+        restart(1);
 	}
 	return textBuffer->temp;
 }
@@ -564,17 +614,25 @@ u32 GetVersionText(){
 	int len = 13;
 	u16 versionCrc = AnalysisText(versionText,textBuffer->temp,len);
 	if(versionCrc != CRC_VERSION_TEXT){
-		asm("swi #0");//SoftReset
+        restart(1);
 	}
 	return textBuffer->temp;
 }
 
 void PrintSmallText(u8 x, u8 y, u8 *str){
+	#ifndef AXVE0
 	AddTextPrinterParameterized3(0,0,x,y,sTrainerCardTextColors,0,str);
+	#else
+	Menu_PrintText(str,x,y);
+	#endif
 }
 
 void PrintText(u8 x, u8 y, u8 *str){
+	#ifndef AXVE0
 	AddTextPrinterParameterized3(0,1,x,y,sTrainerCardTextColors,0,str);
+	#else
+	Menu_PrintText(str,x,y);
+	#endif
 }
 
 void UpdateString(u8 x, u8 y, u8 *str,u16 len){
@@ -594,6 +652,9 @@ void UpdateNumHexString(u8 pos_x, u8 pos_y, u32 num){
 	UpdateString(pos_x,pos_y,numTextBuff,3);
 }
 
+/**
+ * 更新小字体数字
+*/
 void UpdateNumSmallString(u8 pos_x, u8 pos_y, u32 num){
 	u32 numTextBuff = &myTempData->numTextBuff;
 	ConvertIntToDecimalStringN(numTextBuff,num,2,3);
@@ -606,7 +667,15 @@ void UpdateSmallString(u8 pos_x, u8 pos_y, u8 *str,u16 len){
 }
 
 void ClearStringForWidth(u16 pos_x, u16 pos_y, u16 width){
-	FillWindowPixelRect(0,0,pos_x,pos_y,width,14);
+	ClearStringRect(0,0,pos_x,pos_y,width,14);
+}
+
+void ClearStringRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height){
+	#ifdef AXVE0
+	Menu_BlankWindowRect(x,y,x+width,y+height);
+	#else
+    FillWindowPixelRect(windowId,fillValue,x,y,width,height);
+	#endif
 }
 
 u8 getMapId(u16 mapGroup, u16 mapNum){
@@ -615,9 +684,16 @@ u8 getMapId(u16 mapGroup, u16 mapNum){
 }
 
 u32 getPlayerNameOffset(){
+	#ifdef AXVE0
+		return gSaveBlock2.playerName;
+	#else
 	return &gSaveBlock2Ptr->playerName;
+	#endif
 }
 
+/**
+ * 加载种族数据
+*/
 void loadSpecieData(){
 	struct BaseStats* baseStats = getSpeciesBaseStats(myTempData->attackBuffer);  //这里attackBuffer用来暂存种族编号
 	CpuSet(baseStats,&myTempData->hp,3);
@@ -683,34 +759,13 @@ u16 get_attackN0(u8 n){
 	getCurrentMonData(request);
 }
 
-u32 getAttackName(u16 atackNum){
-	u32 moveNames = gMoveNamesPtr;
-	moveNames += (atackNum*MOVE_NAME_LENGTH);
-	u8 *name = (u8 *)moveNames;
-	if(name[0] == 0xAE){
-		return text_table[TEXT_NONE];
-	}
-	if(checkString(name,MOVE_NAME_LENGTH)){
-		return name;
-	}
-	else{
-		return 0;
-	}
-}
-
-u32 getBattleTextBuff(u8 type,u8 value){
-	CpuFastFill(-1,textBuffer->temp,16);
-	u8 data[] = {0,type,value,0xFF};
-	ExpandBattleTextBuffPlaceholders(data,textBuffer->temp);
-	return textBuffer->temp;
-}
 
 u32 getAbilityName(){
 	struct BaseStats* baseStats = getSpeciesBaseStats(myTempData->species);
 	u8 abilitie = baseStats->abilities[myTempData->ability];
 
 	u32 abilityName = getBattleTextBuff(B_BUFF_ABILITY,abilitie);
-	if (checkString(abilityName,0xC)){
+	if (checkNameString(abilityName,0xC)){
 		return abilityName;
 	}
 	
@@ -722,22 +777,6 @@ u32 gettypeName(u8 type){
 	return typeNames;
 }
 
-bool8 checkString(u8 *str,u32 length){
-	bool8 eosFlag = FALSE;
-	u32 i = 0;
-	while (i < length){
-		if(str[i] == 0xFF){
-			eosFlag = TRUE;
-			break;
-		}
-		i++;
-	}
-	if(eosFlag && i > 0){
-		return TRUE;
-	}
-		
-	return FALSE;
-}
 
 void LoadMonIVEV(){
 	u8 request;
@@ -762,6 +801,7 @@ u8 getMoveAttr(u8 n){
 	return attr;
 }
 
+#ifndef AXVE0
 void set_item_tile(){
 	struct ItemIcon *itemIconTableBase = (struct ItemIcon *)gItemIconTablePtr;
 	struct ItemIcon *itemIcon = itemIconTableBase + myTempData->itemBuffer;
@@ -776,6 +816,7 @@ void set_item_tile(){
 		itemIcon = itemIconTableBase;
 	LZ77UnCompVram(itemIcon->pal,&OBJ_PaletteMem2[0x40]);
 }
+#endif
 
 void set_poke_tile(){
 	struct CompressedSpriteSheet *monFrontPicTable = (struct CompressedSpriteSheet *)(gMonFrontPicTablePtr);
@@ -811,47 +852,45 @@ bool8 checkLZ(struct LZData *data){
 	return TRUE;
 }
 
-u32 getItemName(u16 itemId){
-	struct Item *itemTable = (struct Item *)((u32*)gItemsPtr);
-	struct Item *item = itemTable + itemId;
-
-	if(itemId < ITEMS_COUNT){
-		u8 flag = item->name[0];
-		if(flag == 0x3D || flag == 0xAC || flag == 0xFF)
-			return 1;
-		
-		return item->name;
-	}
-	else
-		return 0;
-}
-
-void SetItembuffer(u8 index,u16 value){
+/**
+ * 设置道具列表缓存
+ * @param index 索引
+ * @param value 道具编号
+*/
+void SetItemListBuffer(u8 index,u16 value){
 	u16 *buffer = textBuffer->wordList;
 	buffer[index] = value;
 }
 
-u16 GetItembuffer(u8 index){
+/*
+* 获取道具列表缓存
+* @param index 索引
+*/
+u16 GetItemListBuffer(u8 index){
 	u16 *buffer = textBuffer->wordList;
 	return buffer[index];
 }
 
-void MoveItemBuffer(u8 index){
+/**
+ * 将从index开始的元素移动到length-1文字
+*/
+void MoveItemBuffer(u8 index,int length){
 	u16 *buffer = textBuffer->wordList;
-
-	for (u32 i = 0; i < 7-index; i++){
-		buffer[6-i] = buffer[6-i-index];
+	for (u32 i = 0; i < length-index; i++){
+		buffer[length-1-i] = buffer[length-1-i-index];
 	}
 }
+
+/**
+ * 将0~index-1的元素逆序
+*/
 void SortItemBuffer(u8 index){
+	if(index < 2)
+		return;
 	u16 *buffer = textBuffer->wordList;
-	if (index == 2 || index == 3){
-		u16 temp = buffer[0];
-		buffer[0] = buffer[index-1];
-		buffer[index-1] = temp;
-	
+	for(u8 i = 0;i < index/2;i++){
+		u16 temp = buffer[i];
+		buffer[i] = buffer[index-1-i];
+		buffer[index-1-i] = temp;
 	}
 }
-
-
-

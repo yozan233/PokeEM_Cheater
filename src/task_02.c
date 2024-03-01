@@ -1,6 +1,17 @@
 #include "header/funcs.h"
 //flags for buttons3_new_remapped:1=A,2=B,4=SELECT,8=START,0x10=RIGHT,0x20=LEFT,0x40=UP,0x80=DOWN,0x100=L,0x200=R
 extern struct rbox_short rbox_table[];
+extern void ButtonAEvent();
+extern bool8 ButtonBEvent();
+extern void ButtonSelectEvent();
+extern void ButtonStartEvent();
+extern void ButtonRightEvent();
+extern void ButtonLeftEvent();
+extern void ButtonUpEvent();
+extern void ButtonDownEvent();
+extern void ButtonShoulderR();
+extern void ButtonShoulderL();
+
 void aborter(u8 task_id);
 
 void task_02(u8 task_id)
@@ -70,7 +81,9 @@ void aborter(u8 task_id)
 	if(((pal_fade_control->mix_color) >> 8 & 0x80))
 		return;
 	DestroyTask(task_id);
+	#ifndef AXVE0
 	FreeAllWindowBuffers();
+	#endif
 	Free(*malloc_pointer_loc);
 	SetMainCallback2(CB2_ReturnToFieldContinueScript);
 	return;

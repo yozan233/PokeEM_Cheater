@@ -4,7 +4,6 @@ Alloc = 0x08000B38|1;
 AllocZeroed = 0x8000B4C|1;
 Free = 0x8000B60|1;
 SetGpuReg = 0x80010B4|1;
-ResetBgsAndClearDma3BusyFlags = 0x80017BC|1;
 InitBgsFromTemplates = 0x80017E8|1;
 LoadBgTiles = 0x8001944|1;
 ShowBg = 0x8001B30|1;
@@ -13,7 +12,6 @@ ChangeBgY = 0x8001E7C|1;
 SetBgTilemapBuffer = 0x8002250|1;
 CopyToBgTilemapBuffer = 0x80022F0|1;
 CopyBgTilemapBufferToVram = 0x800236C|1;
-FillBgTilemapBufferRect_Palette0 = 0x8002704|1;
 InitWindows = 0x80031C0|1;
 AddWindow = 0x8003380|1;
 FreeAllWindowBuffers = 0x8003604|1;
@@ -63,10 +61,8 @@ CreateTask = 0x80A8FB0|1;
 DestroyTask = 0x80A909C|1;
 RunTasks = 0x080A910C|1;
 DoWarp = 0x080af734|1;
-MyTest = 0x080B3964|1;
 GetSetPokedexFlag = 0x080c0664|5;
-GetMonIconTiles = 0x080d3020|1;
-SetBagItemQuantity = 0x080D656C|1;
+RemoveBagItem = 0x080d6aa4|1;
 AddBagItem = 0x080D6928|1;
 GetPlayerIDAsU32 = 0x080F0020|1;
 HealPlayerParty = 0x080F9180|1;
@@ -126,9 +122,6 @@ gAbilityNamesPtr = 0x080001C0; /*特性名字*/
 gItemsPtr = 0x080001C8; /*道具表*/
 gBattleMovesPtr = 0x080001CC; /*技能表*/
 gItemIconTablePtr = 0x081B0034; /*道具图标*/
-
-sItemsCount = 0x081B0014; /*GetItemIconPicOrPalette*/
-sMonCount = 0x0806D400; /*HoennPokedexNumToSpecies*/
 
 ItemUseOutOfBattle_Repel = 0x080fe0bc|1;
 

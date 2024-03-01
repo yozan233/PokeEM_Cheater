@@ -87,7 +87,6 @@
 #define MON_CANT_GIVE           2
 
 #define MON_DATA_SIZE 0x64
-#define MOVE_NAME_LENGTH 13
 #define MOVE_DATA_SIZE 0xC
 
 
