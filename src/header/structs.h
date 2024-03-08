@@ -334,9 +334,10 @@ struct MySaveblock
 
 struct TextBuffer{
     u8 monName[0x20];
-    u8 newName[0x10];
-    u8 temp[0x10];
-    u8 wordList[100];
+    u8 newName[0x20];
+    u8 temp[0x20];
+    u8 wordList[0x100];
+    u8 format[0x20];
 };
 
 struct MyDatastruct

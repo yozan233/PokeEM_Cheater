@@ -27,7 +27,7 @@ const struct OamData gDummyOamData =
     .x = 0,
     .size = SPRITE_SIZE(16x16),
     .tileNum = 0,
-    .priority = 2,
+    .priority = 0,
     .paletteNum = 0,
 };
 

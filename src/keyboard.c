@@ -126,7 +126,7 @@ void UpdateEnglishWordList(){
 	
 }
 
-void UpdateChiniseWordList(){
+void UpdateChineseWordList(){
     struct font *ft = (struct font *)textBuffer->wordList;
 	u8 a = myTempData->fontBit1;
 	u8 b = myTempData->fontBit2;
@@ -299,6 +299,8 @@ void UpdateFontPageFlag(){
 	fontPage[0] = b;
 	#ifdef BPRE0
 	UpdateString(216,48,&myTempData->fontPage,1);
+    #elif AXVE0
+    UpdateString(208,48,&myTempData->fontPage,1);
 	#else
 	UpdateString(210,48,&myTempData->fontPage,1);
 	#endif
@@ -324,7 +326,11 @@ void PrintUnderline(u32 cur, u32 length){
 		length--;
 	}
 	text_g[0] = 0xFF;
+    #ifdef AXVE0
+    PrintText(40,24,textBuffer->temp);
+    #else
 	PrintText(46,24,textBuffer->temp);
+    #endif
 }
 
 bool32 CheckCurrentFont(){
@@ -334,12 +340,15 @@ bool32 CheckCurrentFont(){
 
 void UpdateWordList(){
 	if(myTempData->fontType > FONT_LOWERCASE)
-		UpdateChiniseWordList();
+        UpdateChineseWordList();
 	else
 		UpdateEnglishWordList();
 	#ifdef BPRE0
 	ClearStringRect(0,0,0,40,12*10+6*9,16*5);
 	PrintText(0,40,textBuffer->wordList);
+    #elif AXVE0
+    ClearStringRect(0,0,0,40,16*10,16*5-8);
+	PrintText(8,40,textBuffer->wordList);
 	#else
 	ClearStringRect(0,0,0,40,12*10+5*9,16*5);
 	PrintText(10,40,textBuffer->wordList);
@@ -372,16 +381,23 @@ void UpdateKeyboardValue(){
 		ShowMonName();
 	}
 
-	PrintText(46,18,textBuffer->newName);//新名字
 	#ifdef BPRE0
 	UpdateSmallString(144,0,text_table[TEXT_CIRCLE_DOT]+myTempData->pageLock*4,1);//[点]
 	PrintSmallText(154,0,text_table[TEXT_PAGELOCK]);//锁定页面
+    #elif AXVE0
+    UpdateSmallString(128,0,text_table[TEXT_CIRCLE_DOT]+myTempData->pageLock*4,1);//[点]
+	PrintSmallText(136,0,text_table[TEXT_PAGELOCK]);//锁定页面
 	#else
 	UpdateSmallString(148,0,text_table[TEXT_CIRCLE_DOT]+myTempData->pageLock*4,1);//[点]
 	PrintSmallText(158,0,text_table[TEXT_PAGELOCK]);//锁定页面
 	#endif
 	PrintUnderline(myTempData->inputCursorIndex,name_len);//横线
 
+    #ifdef AXVE0
+    PrintText(40,16,textBuffer->newName);//新名字
+    #else
+    PrintText(46,18,textBuffer->newName);//新名字
+    #endif
 }
 
 void KeyboardPreviousPage(){

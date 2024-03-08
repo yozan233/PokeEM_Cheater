@@ -89,10 +89,11 @@ extern u16 CalculateBoxMonChecksum(void *boxMon);
 
 extern void Text_LoadWindowTemplate(const void *winConfig);
 extern void InitMenuWindow(const void *winConfig);
-extern void Menu_PrintText(const u8 *str, u8 left, u8 top);
+extern u8 Menu_PrintTextPixelCoords(const u8 *text, u8 left, u16 top, u8 a4);
 extern void ScanlineEffect_Stop(void);
 extern void Menu_DrawStdWindowFrame(u8 left, u8 top, u8 right, u8 bottom);
 extern void Menu_BlankWindowRect(u8 left, u8 top, u8 right, u8 bottom);
+extern void Menu_EraseWindowRect(u8 left, u8 top, u8 right, u8 bottom);
 extern void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst);
 
 extern void debug();
@@ -112,7 +113,7 @@ extern u8 *gPlayerPartyCount;
 extern struct Pokemon gPlayerParty[];
 extern struct BagPocket gBagPockets[];
 
-extern u8 gStringVar4[];
+extern u8 gStringVar1[];
 
 extern struct SaveBlock1 *gSaveBlock1Ptr;
 extern struct SaveBlock2 *gSaveBlock2Ptr;

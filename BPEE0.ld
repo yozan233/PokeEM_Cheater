@@ -101,7 +101,7 @@ gPlayerPartyCount = 0x020244E9; /*精灵数量*/
 
 gBagPockets = 0x02039dd8;
 
-gStringVar4 = 0x02021fc4;
+gStringVar1 = 0x02021cc4;
 
 gSaveBlock1Ptr = 0x03005D8C;
 gSaveBlock2Ptr = 0x03005d90;

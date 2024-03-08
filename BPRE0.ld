@@ -101,7 +101,7 @@ gPlayerPartyCount = 0x02024029;
 
 gBagPockets = 0x0203988c;
 
-gStringVar4 = 0x02021d18;
+gStringVar1 = 0x02021cd0;
 
 gSaveBlock1Ptr = 0x03005008;
 gSaveBlock2Ptr = 0x0300500c;

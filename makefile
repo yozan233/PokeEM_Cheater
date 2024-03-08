@@ -11,21 +11,27 @@ GAME_VERSION = BPEE0
 EMERALD = 1
 
 CFLAGS += -D $(GAME_VERSION)
+ASFLAGS += --defsym $(GAME_VERSION)=1
 
 ifeq ($(EMERALD),1)
 CFLAGS += -D EMERALD
+ASFLAGS += --defsym EMERALD=1
 endif
 ifeq ($(RUBY),1)
 CFLAGS += -D RUBY
+ASFLAGS += --defsym RUBY=1
 endif
 ifeq ($(RUBY_SAPPHIRE),1)
 CFLAGS += -D RUBY_SAPPHIRE
+ASFLAGS += --defsym RUBY_SAPPHIRE=1
 endif
 ifeq ($(FIRE_RED),1)
 CFLAGS += -D FIRE_RED
+ASFLAGS += --defsym FIRE_RED=1
 endif
 ifeq ($(FIRE_RED_LEAF_GREEN),1)
 CFLAGS += -D FIRE_RED_LEAF_GREEN
+ASFLAGS += --defsym FIRE_RED_LEAF_GREEN=1
 endif
 
 

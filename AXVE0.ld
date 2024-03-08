@@ -23,9 +23,10 @@ InitMenuWindow = 0x08071c4c|1;
 /* FillWindowPixelBuffer = ;*/
 /* DeactivateAllTextPrinters = ;*/
 /* AddTextPrinterParameterized = ;*/
-ScanlineEffect_Stop = 0x08089578;
+ScanlineEffect_Stop = 0x08089578|1;
 Menu_DrawStdWindowFrame = 0x08071f08|1;
 Menu_BlankWindowRect = 0x08071ebc|1;
+Menu_EraseWindowRect = 0x08071e84|1;
 ResetSpriteData = 0x08000748|1;
 AnimateSprites = 0x08000794|1;
 BuildOamBuffer = 0x080007e0|1;
@@ -72,7 +73,7 @@ RemoveBagItem = 0x080a9538|1;
 AddBagItem = 0x080a9424|1;
 GetPlayerIDAsU32 = 0x080bfb94|1; /*GetPlayerTrainerId*/
 HealPlayerParty = 0x080c52b0|1;
-GetMapName = 0x080fbfb4|1; /*GetMapSectionName*/
+GetMapName = 0x080fbff8|1; /*CopyMapName*/
 /*DrawStdFrameWithCustomTileAndPalette = ;*/
 /*ResetTempTileDataBuffers = ;*/
 /*FreeTempTileDataBuffersIfPossible = ;*/
@@ -88,8 +89,8 @@ GetHealLocation = 0x080fa8cc|1;
 ExpandBattleTextBuffPlaceholders = 0x08121a68|1;
 ItemUseCB_RareCandy = 0x08070680|1; /*DoRareCandyItemEffect*/
 
-/*0x08071e50                Menu_PrintText*/
-Menu_PrintText = 0x08071e50|1;
+/*0x080729d8                Menu_PrintTextPixelCoords*/
+Menu_PrintTextPixelCoords = 0x080729d8|1;
 
 
 throughWallFlag = 0x02024e6d;
@@ -110,7 +111,7 @@ gPlayerPartyCount = 0x03004350; /*精灵数量*/
 
 gBagPockets = 0x083c1618;
 
-gStringVar4 = 0x020234cc;
+gStringVar1 = 0x020231cc;
 
 gSaveBlock2 = 0x02024ea4;
 gSaveBlock1 = 0x02025734;
@@ -119,17 +120,17 @@ gLocalTime = 0x03004038;
 gMain = 0x03001770;
 gTasks = 0x03004b20;
 
-gMonFrontPicTablePtr = 0xD324; /*精灵正面图*/
-gMonPaletteTablePtr = 0x40954; /*精灵普通调色板*/
-gMonIconTablePtr = 0x99AA0; /*精灵小图标*/
-gMonIconPaletteIndicesPtr = 0x99BB0; /*精灵小图标调色板编号*/
-gMonIconPaletteTablePtr = 0x9D53C; /*精灵小图标调色板*/
-gSpeciesNamesPtr = 0xFA58; /*精灵种族名字*/
-gMoveNamesPtr = 0x2E18C; /*技能名称*/
-gBaseStatsPtr = 0x10B64; /*精灵种族值*/
-gAbilityNamesPtr = 0x9FE64; /*特性名字*/
-gItemsPtr = 0xA98F0; /*道具表*/
-gBattleMovesPtr = 0xCA54; /*技能表*/
+gMonFrontPicTablePtr = 0x0800D324; /*精灵正面图*/
+gMonPaletteTablePtr = 0x08040954; /*精灵普通调色板*/
+gMonIconTablePtr = 0x08099AA0; /*精灵小图标*/
+gMonIconPaletteIndicesPtr = 0x08099BB0; /*精灵小图标调色板编号*/
+gMonIconPaletteTablePtr = 0x0809D53C; /*精灵小图标调色板*/
+gSpeciesNamesPtr = 0x0800FA58; /*精灵种族名字*/
+gMoveNamesPtr = 0x0802E18C; /*技能名称*/
+gBaseStatsPtr = 0x08010B64; /*精灵种族值*/
+gAbilityNamesPtr = 0x0809FE64; /*特性名字*/
+gItemsPtr = 0x080A98F0; /*道具表*/
+gBattleMovesPtr = 0x0800CA54; /*技能表*/
 gItemIconTablePtr = 0; /*道具图标*/
 
 ItemUseOutOfBattle_Repel = 0x080ca014|1;
@@ -142,5 +143,5 @@ sDiplomaTiles = 0x0840d288; /*gDiplomaTiles*/
 sWindowFrames_offset = 0;
 
 sStartMenuItems = 0x08376D24;
-HandleStartMenuInput = 0x08071338; /*StartMenu_InputProcessCallback*/
+HandleStartMenuInput = 0x08071338|1; /*StartMenu_InputProcessCallback*/
 

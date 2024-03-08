@@ -11,7 +11,7 @@ extern u32 getMonSpeciesName(u16 species);
 extern void SetShowNickNameOnly(bool8 b);
 extern void ClearNewNameBuffer();
 extern u16 GetItemListBuffer(u8 index);
-extern void get_attackN();
+extern void getSelectAttackNum();
 extern void UpdatePageValue(u8 page);
 extern u32 getCurrentMonData(u8 request);
 extern void backupMonTempData();
@@ -219,7 +219,7 @@ void RefreshCurrentPage(){
 		ClearNewNameBuffer();
 		break;
 	case PAGE_MOVES:
-		get_attackN();
+        getSelectAttackNum();
 		break;
 	case PAGE_SPECIE:
 		myTempData->attackBuffer = myTempData->species;
@@ -348,13 +348,14 @@ void SetText_MsgBox(u8 *str)
 {
 	u8 boxid_t = mySav->boxId;
     #ifdef AXVE0
+    Menu_BlankWindowRect(1, 0x11, 0x1C, 0x12);
     #else
 	FillWindowPixelBuffer(boxid_t,0x11);
     #endif
     #ifdef BPRE0
 	AddTextPrinterParameterized(boxid_t,1,str,0,0,0,0); //按键提示
     #elif AXVE0
-    Menu_PrintText(str,6,0);
+    Menu_PrintTextPixelCoords(str,16,0x88,0);
     #else
 	AddTextPrinterParameterized(boxid_t,1,str,6,0,0,0); //按键提示
     #endif
@@ -441,6 +442,7 @@ void OnSureClick(){
     }
     break;
     case PAGE_POKE_INFO2:{
+        #ifndef AXVE0
         if(myTempData->obedience != myTempData->obedienceTemp){
             myTempData->obedienceTemp = myTempData->obedienceTemp;
             setCurrentMonData(ATTR_OBEDIENCE, &myTempData->obedience);
@@ -464,7 +466,8 @@ void OnSureClick(){
                 SetMonPidTid(getCurrentPartyplayer(),myTempData->PID,tidTemp);
             }
         }
-        
+        #endif
+
         #ifndef BPRE0
         u8 t = gLocalTime.hours;
         if (t != myTempData->time)
@@ -499,7 +502,10 @@ void OnSureClick(){
         {
             #ifdef BPRE0
 			gSaveBlock2Ptr->optionsButtonMode = myTempData->optionsButtonMode;
-			#endif
+            #endif
+            #ifdef AXVE0
+            gSaveBlock2.optionsWindowFrameType = myTempData->optionsButtonMode;
+            #endif
             BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
             HealPlayerParty();
             DestroyTask(mySav->task_id);
@@ -741,7 +747,10 @@ bool8 ButtonBEvent(){
         if(myTempData->page == PAGE_MAIN){
             #ifdef BPRE0
 			gSaveBlock2Ptr->optionsButtonMode = myTempData->optionsButtonMode;
-			#endif
+            #endif
+            #ifdef AXVE0
+            gSaveBlock2.optionsWindowFrameType = myTempData->optionsButtonMode;
+            #endif
             BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
             HealPlayerParty();
             PlaySound(36);
@@ -845,8 +854,8 @@ void ButtonLeftEvent()
 					myTempData->lvl -= 10;
                     UpdateCurrentPageTextAndPlaySound();
                 }
-				else if(myTempData->lvl){
-					myTempData->lvl = 0;
+				else if(myTempData->lvl > 1){
+					myTempData->lvl = 1;
                     UpdateCurrentPageTextAndPlaySound();
                 }
 				break;
@@ -1214,7 +1223,7 @@ void ButtonUpEvent(){
                     if(myTempData->select > 1 && myTempData->select <= 4){
                         myTempData->attackSelect--;
                         myTempData->select --;
-					    get_attackN();
+                        getSelectAttackNum();
                         UpdateCurrentPageText();
                     }
                     else if(myTempData->select == 1){
@@ -1346,8 +1355,10 @@ void ButtonUpEvent(){
                 UpdateCurrentPageTextAndPlaySound();
                 break;
             case 6:
+                #ifndef AXVE0
                 myTempData->obedience = !myTempData->obedience;
                 UpdateCurrentPageTextAndPlaySound();
+                #endif
                 break;
             default:
                 break;
@@ -1457,7 +1468,7 @@ void ButtonDownEvent(){
                 case PAGE_MOVES:
                     if(myTempData->select && myTempData->select < 4){
                         myTempData->attackSelect++;
-					    get_attackN();
+                        getSelectAttackNum();
                         UpdateCurrentPageText();
                     }
                     if(myTempData->select != 4)
@@ -1508,7 +1519,7 @@ void ButtonDownEvent(){
                 switch (myTempData->select)
                 {
                 case 1:
-                    if(myTempData->lvl){
+                    if(myTempData->lvl > 1){
                         myTempData->lvl--;
                         UpdateCurrentPageTextAndPlaySound();
                     }
@@ -1585,8 +1596,10 @@ void ButtonDownEvent(){
                     UpdateCurrentPageTextAndPlaySound();
                     break;
                 case 6:
+                    #ifndef AXVE0
                     myTempData->obedience = !myTempData->obedience;
                     UpdateCurrentPageTextAndPlaySound();
+                    #endif
                     break;
                 default:
                     break;

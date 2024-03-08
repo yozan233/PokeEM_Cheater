@@ -29,7 +29,11 @@ void task_loader(u8 task_id)
 			#ifdef BPRE0
 			myTempData->optionsButtonMode = gSaveBlock2Ptr->optionsButtonMode;
 			gSaveBlock2Ptr->optionsButtonMode = 1;
-			#endif
+            #endif
+            #ifdef AXVE0
+            myTempData->optionsButtonMode = gSaveBlock2.optionsWindowFrameType;
+            gSaveBlock2.optionsWindowFrameType = 0;
+            #endif
 			sub_bg_init();
 			CreateSprites();
 			break;

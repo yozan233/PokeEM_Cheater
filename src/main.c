@@ -46,7 +46,7 @@ u8 getMonMaxLevel(){
 	#ifdef BPRE0
 	fun += 0x25;
 	#elif AXVE0
-	fun += 0x28;
+	fun += 0x27;
 	#else
 	fun += 0x35;
 	#endif
