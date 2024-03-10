@@ -1,8 +1,8 @@
 #include "header/funcs.h"
 
-extern struct Pokemon *getCurrentPartyplayer();
+extern struct Pokemon *getCurrentPlayerParty();
 extern struct BaseStats* getSpeciesBaseStats(u16 species);
-extern u32 GetMonData(struct Pokemon* poke_address, u8 request, const void* data);;
+extern u32 GetMonData(struct Pokemon* poke_address, u8 request, const void* data);
 u32 CreateShinyPid(u8 nature, u8 gender, u8 ratio, u32 TiD);
 
 #define CalcNature(PiD)((umodsi3(PiD, 25)))
@@ -61,7 +61,7 @@ void SetMonPidTid(struct Pokemon *mon,u32 pid,u32 tid){
 }
 
 void ChangePid(u8 nature,u8 gender,u8 shininess){
-    struct Pokemon *poke = getCurrentPartyplayer();
+    struct Pokemon *poke = getCurrentPlayerParty();
 
     u16 species = myTempData->species_2;
     u8 ratio = getSpeciesBaseStats(species)->genderRatio;

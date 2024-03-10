@@ -64,8 +64,8 @@ u8 CreateNormalSprite(s16 x, s16 y){
 }
 
 void CreateSprites(){
-    u32 gMonIconPaletteTable = gMonIconPaletteTablePtr;
-    CpuSet(((u32*)gMonIconPaletteTable)[0],&OBJ_PaletteMem[0x10],16*3);
+    u32* gMonIconPaletteTable = (u32 *) gMonIconPaletteTablePtr[0];
+    CpuSet((void *) gMonIconPaletteTable[0], &OBJ_PaletteMem[0x10], 16 * 3);
     u8 curId = CreateNormalSprite(0x2E,0x4C);
     mySav->cursorPicId = curId;
     struct Sprite *sprite = getSprite(curId);
@@ -88,7 +88,7 @@ void CreateSprites(){
     sprite->oam.tileNum = 32;
     sprite->oam.size = SPRITE_SIZE(32x32);
     sprite->oam.mosaic = TRUE;
-    sprite->callback = MonIconSpriteCallback;
+    sprite->callback = (void *) MonIconSpriteCallback;
 
     #ifndef AXVE0
     u8 itemPicId = CreateNormalSprite(0x70,0x28);
@@ -101,7 +101,7 @@ void CreateSprites(){
     #endif
 
     #ifdef EMERALD
-    LZ77UnCompVram(sCursor_Gfx,0x06010000);
+    LZ77UnCompVram(sCursor_Gfx, (void *) 0x06010000);
     CpuSet(gFrontierPassCursor_Pal,OBJ_PaletteMem,0x10);
     #else
     CpuSet(&mouse_tile,0x06010000,0x40);

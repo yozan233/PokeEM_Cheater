@@ -109,7 +109,7 @@ extern u16 gPlttBufferFaded[];
 extern u16 BG_PaletteMem2[];
 extern u16 OBJ_PaletteMem2[];
 
-extern u8 *gPlayerPartyCount;
+extern u8 gPlayerPartyCount[];
 extern struct Pokemon gPlayerParty[];
 extern struct BagPocket gBagPockets[];
 
@@ -126,17 +126,16 @@ extern struct Main gMain;
 extern struct Task *gTasks;
 
 extern u32 *gMonIconTablePtr;
-extern u32 *gSpeciesNamesPtr;
 extern u32 *gMonFrontPicTablePtr;
+extern u32 gItemIconTablePtr;
 extern u32 *gMonPaletteTablePtr;
-extern u32 *gBaseStatsPtr;
-extern u32 *gMonIconPaletteIndicesPtr;
-extern u32 *gMonIconPaletteTablePtr;
-extern u32 *gMoveNamesPtr;
-extern u32 *gItemsPtr;
-extern u32 *gAbilityNamesPtr;
-extern u32 *gBattleMovesPtr;
-extern u32 *gItemIconTablePtr;
+extern u32 gSpeciesNamesPtr[];
+extern u32 gBaseStatsPtr[];
+extern u32 gMonIconPaletteIndicesPtr[];
+extern u32 gMonIconPaletteTablePtr[];
+extern u32 gMoveNamesPtr[];
+extern u32 gItemsPtr[];
+extern u32 gBattleMovesPtr[];
 
 extern u8 sCursor_Gfx[];
 extern u8 gFrontierPassCursor_Pal[];

@@ -1,6 +1,6 @@
 #include "header/funcs.h"
 
-extern struct Pokemon *getCurrentPartyplayer();
+extern struct Pokemon *getCurrentPlayerParty();
 extern void PlaySound(u16 soundID);
 extern void UpdateKeyboardMousePos();
 extern void initMonTempData();
@@ -20,7 +20,7 @@ extern void setCurrentMonData(u8 request, void* value);
 extern void ChangePid(u8 nature,u8 gender,u8 shininess);
 extern void RefreshCurrentMonData();
 extern void ShowMonName();
-extern u32 getPlayerNameOffset();
+extern u8 *getPlayerNameOffset();
 extern void SetMonPidTid(struct Pokemon *mon,u32 pid,u32 tid);
 extern void loadMonName();
 extern void KeyboardButtonAEvent();
@@ -29,8 +29,9 @@ extern void KeyboardNextPage();
 extern void KeyboardNextFlag();
 extern void PrintSmallText(u8 x, u8 y, u8 *str);
 extern void DeleteWord();
-extern u32 getAttackNameValid(u16 atackNum);
-extern u32 getMonSpeciesNameValid(u16 species);
+extern u8 *getAttackNameValid(u16 atackNum);
+extern u8 *getMonSpeciesNameValid(u16 species);
+extern u32 GetMonData(struct Pokemon* poke_address, u8 request);
 void loadRepelStepCount();
 void EggHatchNow();
 void pause();
@@ -108,13 +109,13 @@ void UpDateSelectedMousePos()
 	SetMousePos(pos[0],pos[1]);
     if(IsPosChange())
         PlaySound(SOUND_SELECT);
-};
+}
 
 /**
  * 选择下一个队伍精灵
 */
 void SelectNextPartyMon(){
-	u8 partyMax = gPlayerPartyCount;
+	u8 partyMax = gPlayerPartyCount[0];
 	if(myTempData->party<partyMax-1){
 		myTempData->party++;
 		u8 t = myTempData->sex;
@@ -147,13 +148,13 @@ void SelectPreviousPartyMon(){
 /**
  * 检查精灵名字和种族是否相同
 */
-bool8 checkMonNmaeAndSpecies(){
+bool8 checkMonNameAndSpecies(){
 	u8 nickLength = textBuffer->monName[0x1F];
 	textBuffer->monName[nickLength] = 0xFF;
 	bool8 res;
-    u32 buffer = textBuffer;
+    u32 buffer = (u32) textBuffer;
 
-	if(StringCompare(buffer+nickLength+1,buffer) != 0){
+	if(StringCompare((const u8 *) (buffer + nickLength + 1), (const u8 *) buffer) != 0){
 		res = FALSE;
 	}
 	else
@@ -166,7 +167,7 @@ bool8 checkMonNmaeAndSpecies(){
 */
 bool8 MonRenameBySpecies(){
 	u8 *speciesName = (u8 *) getMonSpeciesName(myTempData->attackBuffer);
-	struct Pokemon* party = getCurrentPartyplayer();
+	struct Pokemon* party = getCurrentPlayerParty();
 	u8 *nickName = party->nickname;
 	for (u32 n = 0; n < 0xB; n++){
 		nickName[n] = speciesName[n];
@@ -185,7 +186,7 @@ void SetPokedexFlag(u16 species){
  * 是否为绿宝石802
 */
 bool8 check_802(){
-	return gBaseStatsPtr == 0x08F186E0;
+	return gBaseStatsPtr[0] == 0x08F186E0;
 }
 /**
  * 是否为究极绿宝石
@@ -243,7 +244,7 @@ void RefreshCurrentPage(){
 }
 
 u16 GetPenWuMax(){
-    int fun = ItemUseOutOfBattle_Repel;
+    void *fun = ItemUseOutOfBattle_Repel;
     #ifdef BPRE0
     fun += 0xC;
     #else
@@ -290,7 +291,7 @@ void reLoadPid(){
 }
 
 void SetMonNikename(){
-	CpuSet(&textBuffer->newName,&getCurrentPartyplayer()->nickname,5);
+	CpuSet(&textBuffer->newName,&getCurrentPlayerParty()->nickname,5);
 }
 
 void SetCurrentMonLevel(u8 lvl){
@@ -323,7 +324,7 @@ void shiye(){
 */
 void set_bingdu(){
     myTempData->Num = 0xF;
-    u8 partyMax = gPlayerPartyCount;
+    u8 partyMax = gPlayerPartyCount[0];
     for (u8 i=0;i<partyMax;i++){
 		SetMonData(&gPlayerParty[i],ATTR_POKERUS,&myTempData->Num);
     }
@@ -424,7 +425,7 @@ void OnSureClick(){
         if (myTempData->lvl != myTempData->lvl_2){
             SetCurrentMonLevel(myTempData->lvl);
         }
-        struct Pokemon* party = getCurrentPartyplayer();
+        struct Pokemon* party = getCurrentPlayerParty();
         party->padding = 0;
         myTempData->Num = myTempData->ability;
         setCurrentMonData(ATTR_ABILITY_BIT,&myTempData->Num);
@@ -463,7 +464,7 @@ void OnSureClick(){
             }
             if (myTempData->TID != tidTemp){
                 myTempData->TID = tidTemp;
-                SetMonPidTid(getCurrentPartyplayer(),myTempData->PID,tidTemp);
+                SetMonPidTid(getCurrentPlayerParty(),myTempData->PID,tidTemp);
             }
         }
         #endif
@@ -485,7 +486,7 @@ void OnSureClick(){
 
         if (myTempData->monCopy) //复制精灵
         {
-            u32 r = GiveMonToPlayer(getCurrentPartyplayer());
+            u32 r = GiveMonToPlayer(getCurrentPlayerParty());
             if (r != MON_CANT_GIVE)
             {
                 PrintSmallText(26, 100, text_table[TEXT_COPY_SUCCESS]);
@@ -539,7 +540,7 @@ void OnSureClick(){
         UpdateCurrentPageText();
         break;
     case PAGE_SPECIE:{
-        if(checkMonNmaeAndSpecies()){
+        if(checkMonNameAndSpecies()){
             MonRenameBySpecies();
         }
         SetPokedexFlag(myTempData->attackBuffer);
@@ -571,7 +572,7 @@ void OnSureClick(){
     break;
     case PAGE_ITEMS:{
         if (myTempData->Num && myTempData->addItemEnable){
-            u32 successText = text_table[TEXT_INSUFFICIENT_SPACE];
+            u8 *successText = text_table[TEXT_INSUFFICIENT_SPACE];
             if (AddBagItem(myTempData->itemBuffer, myTempData->Num))
                 successText = text_table[TEXT_ADD_SUCCESS];
             PrintSmallText(120, 88, successText); //添加成功
@@ -616,9 +617,9 @@ void EggHatchNow(){
     if (spe == 0x19C)
         spe = umodsi3(Random(), 0xFB) + 1;
     u8 eggLvl = 5;
-    CreateMon(getCurrentPartyplayer(), spe, eggLvl, 32, 1, Random() | (Random() << 0x10), 0, myTempData->TID);
+    CreateMon(getCurrentPlayerParty(), spe, eggLvl, 32, 1, Random() | (Random() << 0x10), 0, myTempData->TID);
     myTempData->Num = 0;
-    SetMonData(getCurrentPartyplayer(), 0x24, &myTempData->Num);
+    SetMonData(getCurrentPlayerParty(), 0x24, &myTempData->Num);
     if(myTempData->page != PAGE_POKE_INFO)
         initMonTempData();
     InitCurrentPage();
@@ -667,7 +668,7 @@ void ButtonAEvent()
     case PAGE_SPECIE:{
         changeMouseColor();
         myTempData->cursorState = 1;
-        u32 textButtonPrompt = text_table[TEXT_BUTTON_PROMPT4];
+        u8 *textButtonPrompt = text_table[TEXT_BUTTON_PROMPT4];
         if ((myTempData->page == PAGE_POKE_INFO && myTempData->select > 2) 
             || myTempData->select == 0 
             || (myTempData->page == PAGE_POKE_INFO2 && myTempData->select != 4)
@@ -1090,8 +1091,7 @@ void ButtonRightEvent()
             if(temp < max-10){
 				ivev[0] += 10;
                 UpdateCurrentPageTextAndPlaySound();
-            }
-			else if(ivev[0] != max){
+            }else if(ivev[0] != max){
 				ivev[0] = max;
                 UpdateCurrentPageTextAndPlaySound();
             }
@@ -1370,9 +1370,9 @@ void ButtonUpEvent(){
             ivev += ivevMap[myTempData->select];
             u8 temp = ivev[0];
 			u8 max;
-			if(myTempData->page == PAGE_IVS)
-				max = 31;
-			else{
+			if(myTempData->page == PAGE_IVS) {
+                max = 31;
+            }else{
 				if (myTempData->limit510){
 					u32 sum = getIvOrEvSum();
 					if (sum >= 510){
@@ -1396,12 +1396,11 @@ void ButtonUpEvent(){
 				}
 			}
 
-            if(temp < max-1){
-				ivev[0]++;
+            if (temp < max - 1) {
+                ivev[0]++;
                 UpdateCurrentPageTextAndPlaySound();
-            }
-			else if(max){
-				ivev[0] = max;
+            } else if (max) {
+                ivev[0] = max;
                 UpdateCurrentPageTextAndPlaySound();
             }
 
@@ -1421,8 +1420,7 @@ void ButtonUpEvent(){
 					myTempData->itemBuffer = GetItemListBuffer(t-1);
 					UpdateCurrentPageTextAndPlaySound();
 				}
-			}
-			else if(myTempData->Num < 99){
+			}else if(myTempData->Num < 99){
 				myTempData->Num++;
 				UpdateCurrentPageTextAndPlaySound();
 			}
@@ -1483,9 +1481,7 @@ void ButtonDownEvent(){
                         myTempData->select = 8;
                     break;
                 case PAGE_ITEMS:
-                    if(myTempData->select == 1)
-                        myTempData->select = 8;
-                    else if(myTempData->select == 4)
+                    if(myTempData->select == 1 || myTempData->select == 4)
                         myTempData->select = 8;
                     else if(myTempData->select <= 4)
                         myTempData->select ++;

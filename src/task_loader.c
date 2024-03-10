@@ -1,8 +1,6 @@
 #include "header/funcs.h"
 extern void sub_bg_init(void);
 extern bool8 tiles_load(void);
-extern void string_print(void);
-extern void load_icons(void);
 extern void task_02(u8 task_id);
 extern void CreateSprites();
 extern void InitPage(u8 page);
@@ -87,7 +85,6 @@ void task_loader(u8 task_id)
 			break;
 	}
 	(*(*malloc_pointer_loc+2))++;
-	return;
 }
 
 #ifndef AXVE0
@@ -100,6 +97,5 @@ void box_draw(u8 box_id, u8 pal)
 	FillWindowPixelBuffer(box_id,0);
 	PutWindowTilemap(box_id);
 	DrawStdFrameWithCustomTileAndPalette(box_id,0,0x300,pal);
-	return;
 }
 #endif

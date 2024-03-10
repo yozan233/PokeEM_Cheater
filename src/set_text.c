@@ -1,38 +1,38 @@
 #include "header/funcs.h"
 
 extern u32 GetPenWuMax();
-extern struct Pokemon *getCurrentPartyplayer();
+extern struct Pokemon *getCurrentPlayerParty();
 extern u32 getCurrentMonData(u8 request);
 extern struct BaseStats* getSpeciesBaseStats(u16 species);
-extern u32 getMonSpeciesName(u16 species);
-extern checkNameString(u8 *str,u32 length);
-extern u32 getItemName(u16 itemId);
+extern u8 *getMonSpeciesName(u16 species);
+extern bool8 checkNameString(u8 *str,u32 length);
+extern u8 *getItemName(u16 itemId);
 extern void initMonTempData();
 extern struct Sprite *getSprite(u8 id);
 extern void loadRepelStepCount();
-extern u32 getItemNameValid(u16 itemId);
+extern u8 *getItemNameValid(u16 itemId);
 extern void InitKeyboard();
 extern void SetText_MsgBox(u8 *str);
-extern u32 getBattleTextBuff(u8 type,u8 value);
+extern u8 *getBattleTextBuff(u8 type,u8 value);
 extern void UpDateSelectedMousePos();
-extern u32 getAttackNameValid(u16 atackNum);
+extern u8 *getAttackNameValid(u16 atackNum);
 extern void UpdateKeyboardValue();
 extern void restart(int i);
 u8 getMapId(u16 mapGroup, u16 mapNum);
-u32 getPlayerNameOffset();
+u8 *getPlayerNameOffset();
 u16 get_ballNum(u8 index);
 u16 getAttackNum(u8 n);
 u8 getMoveAttr(u8 n);
-u32 getTypeName(u8 type);
-u32 getAttackName(u16 atackNum);
+u8 *getTypeName(u8 type);
+u8 *getAttackName(u16 attackNum);
 u32 getMonName(u16 monNum);
-u32 getAbilityName();
+u8 *getAbilityName();
 bool8 checkPicLZ(struct LZData *data);
 bool8 checkLZ(struct LZData *data);
 u16 GetItemListBuffer(u8 index);
 void UpdatePageValue(u8 page);
-u32 GetAuthorText();
-u32 GetVersionText();
+u8 *GetAuthorText();
+u8 *GetVersionText();
 void UpdateString(u8 x, u8 y, u8 *str,u16 len);
 void ClearStringRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height);
 void UpdateNumString(u8 pos_x, u8 pos_y, u32 num);
@@ -166,12 +166,12 @@ void UpdatePageValue(u8 page)
             UpdateNumber(POS_168, POS_28, myTempData->happiness, 3);
 
             //性格
-			u32 naturesTable = text_table[TEXT_NATURES_TABLE];
-			u32 naturesStr = naturesTable+5*myTempData->nature;
+			u8 *naturesTable = text_table[TEXT_NATURES_TABLE];
+            u8 *naturesStr = naturesTable+5*myTempData->nature;
 			UpdateString(POS_60, POS_56, naturesStr, 5);
 
             //特性
-			u32 abilityName = getAbilityName();
+            u8 *abilityName = getAbilityName();
 			if(!abilityName){
                 abilityName = text_table[TEXT_UNKNOWN_ABILITY]+6*myTempData->ability;
 			}
@@ -223,7 +223,7 @@ void UpdatePageValue(u8 page)
 			else{
 				struct HealLocation *location = GetHealLocation(myTempData->selectedflightPoint);
 				u16 m = getMapId(location->group, location->map);
-				u32 mapName2 = textBuffer->wordList;
+                u8 *mapName2 = textBuffer->wordList;
 				GetMapName(mapName2,m,0);
 
 				UpdateString(POS_60,POS_56,mapName2,5);
@@ -248,12 +248,12 @@ void UpdatePageValue(u8 page)
 			UpdateNumString(POS_160,POS_84,myTempData->SP_defence);//特防
 			return;
 		case PAGE_MOVES:{
-			u32 textNone = text_table[TEXT_NONE];
+            u8 *textNone = text_table[TEXT_NONE];
 			ClearStringRect(0,0,18,20,12*6,4*16);
 			ClearStringRect(0,0,128,16,12*8,5*16+8);
 
 			for(u8 i = 0;i <= 3;i++){
-                u32 nameStr;
+                u8 *nameStr;
 				if(getAttackNum(i)) {
                     nameStr = getAttackName(getAttackNum(i));
                 }else {
@@ -418,7 +418,7 @@ void UpdatePageValue(u8 page)
 				if(curItem==1)
 					break;
 				curItem--;
-				u32 itemN = getItemNameValid(curItem);
+                u8 *itemN = getItemNameValid(curItem);
 				if (itemN == ITEM_NAME_NONE)
 					break;
 				else if(itemN != ITEM_NAME_TEMP){
@@ -440,7 +440,7 @@ void UpdatePageValue(u8 page)
 			curItem=myTempData->itemBuffer;
 			while(bottomIndex){
 				curItem++;
-				u32 itemN = getItemNameValid(curItem);
+                u8 *itemN = getItemNameValid(curItem);
 				if (itemN == ITEM_NAME_NONE)
 					break;
 				else if(itemN != ITEM_NAME_TEMP){
@@ -456,7 +456,7 @@ void UpdatePageValue(u8 page)
 				topIndex=0,listIndex=0;
 				while(topIndex < bottomIndex){
 					curItem--;
-					u32 itemN = getItemNameValid(curItem);
+                    u8 *itemN = getItemNameValid(curItem);
 					if (itemN == 0)
 						break;
 					else if(itemN != 1){
@@ -467,7 +467,7 @@ void UpdatePageValue(u8 page)
 				}
 				SortItemBuffer(topIndex);
 			}
-			u32 text6t = &myTempData->numTextBuff;
+            u8 *text6t = &myTempData->numTextBuff;
 			for(u8 k=0;k<7;k++){
 				u16 Na = GetItemListBuffer(k);
 				if(Na == myTempData->itemBuffer)
@@ -563,7 +563,7 @@ void InitPage(u8 page){
 		myTempData->throwKeyItemEnable = FALSE;
 		#ifndef AXVE0
 		ShowSprite(mySav->itemPicId);
-		CpuFastFill(0,itemTilesArm,0x800);
+		CpuFastFill(0, (void *) itemTilesArm, 0x800);
 		#endif
 		break;
 	case PAGE_OTHER:
@@ -610,7 +610,8 @@ void SetPageTxet(u8 page){
 	
 	switch (page)
 	{
-	case PAGE_MAIN:
+//	case PAGE_MAIN:
+    default:
 		PrintText(24,56,text_table[TEXT_MON]); //精灵
 		PrintText(96,56,text_table[TEXT_BAG]); //背包
 		PrintText(168,56,text_table[TEXT_OTHER]); //其它
@@ -653,7 +654,7 @@ void SetPageTxet(u8 page){
 		PrintText(POS_124,POS_28,text_table[TEXT_SPEED]);//速度
 		PrintText(POS_124, POS_56, text_table[TEXT_SP_ATTACK]);//特攻
 		PrintText(POS_124,POS_84,text_table[TEXT_SP_DEFENSE]);//特防
-		u32 ivevTitle = text_table[TEXT_IV+(myTempData->page-PAGE_IVS)];
+        u8 *ivevTitle = text_table[TEXT_IV+(myTempData->page-PAGE_IVS)];
 		PrintText(POS_180,0,ivevTitle);//个体/努力
 	}break;
 	case PAGE_POKE_NAME:
@@ -759,7 +760,7 @@ u16 AnalysisText(const u8 *src, u8 *dest,u32 len){
 /**
  * 获取作者文本
  */
-u32 GetAuthorText(){
+u8 *GetAuthorText(){
 	u8* authorText = text_table[TEXT_AUTHOR];
 	int len = 10;
 	u16 authorCrc = AnalysisText(authorText,textBuffer->temp,len);
@@ -772,7 +773,7 @@ u32 GetAuthorText(){
 /**
  * 获取版本文本
  */
-u32 GetVersionText(){
+u8 *GetVersionText(){
 	u8 *versionText = text_table[TEXT_VERSION];
 	int len = 13;
 	u16 versionCrc = AnalysisText(versionText,textBuffer->temp,len);
@@ -841,13 +842,13 @@ void UpdateNumber(u8 x, u8 y, u32 value,u16 len){
 }
 
 void UpdateNumString(u8 pos_x, u8 pos_y, u32 num){
-	u32 numTextBuff = &myTempData->numTextBuff;
+    u8 *numTextBuff = &myTempData->numTextBuff;
 	ConvertIntToDecimalStringN(numTextBuff,num,2,3);
 	UpdateString(pos_x,pos_y,numTextBuff,3);
 }
 
 void UpdateNumHexString(u8 pos_x, u8 pos_y, u32 num){
-	u32 numTextBuff = &myTempData->numTextBuff;
+    u8 *numTextBuff = &myTempData->numTextBuff;
 	ConvertIntToHexStringN(numTextBuff,num,2,3);
 	UpdateString(pos_x,pos_y,numTextBuff,3);
 }
@@ -856,7 +857,7 @@ void UpdateNumHexString(u8 pos_x, u8 pos_y, u32 num){
  * 更新小字体数字
 */
 void UpdateNumSmallString(u8 pos_x, u8 pos_y, u32 num){
-	u32 numTextBuff = &myTempData->numTextBuff;
+    u8 *numTextBuff = &myTempData->numTextBuff;
 	ConvertIntToDecimalStringN(numTextBuff,num,2,3);
 	UpdateSmallString(pos_x,pos_y,numTextBuff,3);
 }
@@ -885,7 +886,7 @@ u8 getMapId(u16 mapGroup, u16 mapNum){
 	return header->regionMapSectionId;
 }
 
-u32 getPlayerNameOffset(){
+u8 *getPlayerNameOffset(){
 	#ifdef AXVE0
     return gSaveBlock2.playerName;
 	#else
@@ -964,11 +965,11 @@ u16 getAttackNum(u8 n){
 }
 
 
-u32 getAbilityName(){
+u8 *getAbilityName(){
 	struct BaseStats* baseStats = getSpeciesBaseStats(myTempData->species);
 	u8 abilitie = baseStats->abilities[myTempData->ability];
 
-	u32 abilityName = getBattleTextBuff(B_BUFF_ABILITY,abilitie);
+    u8 *abilityName = getBattleTextBuff(B_BUFF_ABILITY,abilitie);
 	if (checkNameString(abilityName,0xC)){
 		return abilityName;
 	}
@@ -976,8 +977,8 @@ u32 getAbilityName(){
 	return 0;
 }
 
-u32 gettypeName(u8 type){
-	u32 typeNames = getBattleTextBuff(B_BUFF_TYPE,type);
+u8 *getTypeName(u8 type){
+    u8 *typeNames = getBattleTextBuff(B_BUFF_TYPE,type);
 	return typeNames;
 }
 
@@ -999,7 +1000,7 @@ void LoadMonIVEV(){
 //获取技能参数 
 //0 effect; 1 power; 2 type; 3 accuracy;4 pp; 5 secondaryEffectChance;6 target;7 priority;8 flags;
 u8 getMoveAttr(u8 n){
-	u32 battleMovespecies = gBattleMovesPtr;
+	u32 battleMovespecies = gBattleMovesPtr[0];
 	battleMovespecies += myTempData->attackBuffer*MOVE_DATA_SIZE;
 	u8 attr = ((u8 *)battleMovespecies)[n];
 	return attr;
@@ -1013,8 +1014,8 @@ void set_item_tile(){
 	if(!checkPicLZ(itemIcon->tiles))
 		itemIcon = itemIconTableBase;
 	
-	LZ77UnCompVram(itemIcon->tiles,itemTilesArm+0x400);
-	CopyItemIconPicTo4x4Buffer(itemTilesArm+0x400,itemTilesArm);
+	LZ77UnCompVram(itemIcon->tiles, (void *) (itemTilesArm + 0x400));
+	CopyItemIconPicTo4x4Buffer((void *) (itemTilesArm + 0x400), (void *) itemTilesArm);
 
 	if(!checkLZ(itemIcon->pal))
 		itemIcon = itemIconTableBase;
@@ -1028,7 +1029,7 @@ void set_poke_tile(){
 	if(!checkPicLZ(monFrontPic->data))
 		monFrontPic = monFrontPicTable;
 	
-	LZ77UnCompVram(monFrontPic->data,monTilesArm);
+	LZ77UnCompVram(monFrontPic->data, (void *) monTilesArm);
 	
 	u32 *palPtr = &gMonPaletteTablePtr;
 	palPtr += myTempData->shiny_2;

@@ -128,7 +128,6 @@ gMonIconPaletteTablePtr = 0x0809D53C; /*精灵小图标调色板*/
 gSpeciesNamesPtr = 0x0800FA58; /*精灵种族名字*/
 gMoveNamesPtr = 0x0802E18C; /*技能名称*/
 gBaseStatsPtr = 0x08010B64; /*精灵种族值*/
-gAbilityNamesPtr = 0x0809FE64; /*特性名字*/
 gItemsPtr = 0x080A98F0; /*道具表*/
 gBattleMovesPtr = 0x0800CA54; /*技能表*/
 gItemIconTablePtr = 0; /*道具图标*/

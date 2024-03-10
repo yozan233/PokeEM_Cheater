@@ -22,8 +22,8 @@ void task_02(u8 task_id)
 			(tasks[task_id].priv[2])++;
 			if(tasks[task_id].priv[2] == 0x20)
 				break;
-			else return;
-			break;
+			else
+                return;
 		case 1:
 			switch(super->buttons4_new_and_keyrepeat)
 			{
@@ -73,7 +73,6 @@ void task_02(u8 task_id)
 			return;
 	}	
 	(*(*malloc_pointer_loc))++;
-	return;
 }
 
 void aborter(u8 task_id)
@@ -86,7 +85,6 @@ void aborter(u8 task_id)
 	#endif
 	Free(*malloc_pointer_loc);
 	SetMainCallback2(CB2_ReturnToFieldContinueScript);
-	return;
 }
 
 

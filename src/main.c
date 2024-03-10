@@ -11,11 +11,11 @@ void loadMonIconTiles(u16 species);
 void loadMonIsShiny();
 void loadMonGender(u16 species);
 u32 getCurrentMonData(u8 request);
-struct Pokemon *getCurrentPartyplayer();
+struct Pokemon *getCurrentPlayerParty();
 struct BaseStats* getSpeciesBaseStats(u16 species);
 struct Sprite *getSprite(u8 id);
-u32 getMonSpeciesName(u16 species);
-u32 getItemName(u16 itemId);
+u8 *getMonSpeciesName(u16 species);
+u8 *getItemName(u16 itemId);
 void backupMonTempData();
 
 void main_func()
@@ -26,7 +26,6 @@ void main_func()
 	FreeAllSpritePalettes();
 	mySav->task_id = CreateTask(task_loader,1);
 	SetMainCallback2(MainCB2);
-	return;
 }
 
 void MainCB2()
@@ -35,14 +34,13 @@ void MainCB2()
 	AnimateSprites();
 	BuildOamBuffer();
 	UpdatePaletteFade();
-	return;
 }
 
 /**
  * 获取精灵最大等级
 */
 u8 getMonMaxLevel(){
-	int fun = ItemUseCB_RareCandy;
+    void* fun = ItemUseCB_RareCandy;
 	#ifdef BPRE0
 	fun += 0x25;
 	#elif AXVE0
@@ -92,7 +90,7 @@ void refreshMonTempData(){
  * 加载精灵名字
 */
 void loadMonName(){
-    struct Pokemon *party =	getCurrentPartyplayer();
+    struct Pokemon *party =	getCurrentPlayerParty();
 	StringCopy(textBuffer->monName,party->nickname);
 	u8* nameStr = textBuffer->monName;
 	nameStr[10] = 0xFF;
@@ -107,16 +105,16 @@ void loadMonName(){
 /**
  * 获取种族名字
 */
-u32 getMonSpeciesName(u16 species){
-	u32 speciesNames = gSpeciesNamesPtr;
-	return speciesNames + 0xB*species;
+u8 *getMonSpeciesName(u16 species){
+	u32 speciesNames = gSpeciesNamesPtr[0];
+	return (u8*)(speciesNames + 0xB*species);
 }
 /**
  * 加载精灵小图标
 */
 void loadMonIconSprite(){
 	u16 species = getCurrentMonData(ATTR_SPECIES_2);
-	u32 monIconPaletteIndices = gMonIconPaletteIndicesPtr;
+	u32 monIconPaletteIndices = gMonIconPaletteIndicesPtr[0];
 	u32 monIconPaletteIndex = ((u8*)(myTempData->species+monIconPaletteIndices))[0];
 	monIconPaletteIndex += 1;
 	
@@ -132,7 +130,7 @@ struct Sprite *getSprite(u8 id){
 void loadMonIconTiles(u16 species){
 	u32* gMonIconTable = gMonIconTablePtr;
 	u32 monIconOffset = gMonIconTable[species];
-	CpuSet(monIconOffset,0x06010400,0x200);
+	CpuSet((void *) monIconOffset, (void *) 0x06010400, 0x200);
 }
 
 void loadMonIsShiny(){
@@ -177,21 +175,21 @@ void loadMonGender(u16 species){
 }
 
 u32 getCurrentMonData(u8 request){
-	return GetMonData(getCurrentPartyplayer(),request);
+	return GetMonData(getCurrentPlayerParty(),request);
 }
 
 void setCurrentMonData(u8 request, void* value){
-	SetMonData(getCurrentPartyplayer(),request,value);
+	SetMonData(getCurrentPlayerParty(),request,value);
 }
 
 void RefreshCurrentMonData(){
-	CalculateMonStats(getCurrentPartyplayer());
+	CalculateMonStats(getCurrentPlayerParty());
 }
 
 /**
  * 获取当前精灵数据
 */
-struct Pokemon *getCurrentPartyplayer(){
+struct Pokemon *getCurrentPlayerParty(){
 	return &gPlayerParty[myTempData->party];
 }
 
@@ -199,7 +197,7 @@ struct Pokemon *getCurrentPartyplayer(){
  * 获取种族值数据
 */
 struct BaseStats* getSpeciesBaseStats(u16 species){
-	u32 gBaseStats = gBaseStatsPtr;
+	u32 gBaseStats = gBaseStatsPtr[0];
 	gBaseStats += (0x1C*species);
 	return (struct BaseStats*)gBaseStats;
 }
@@ -219,7 +217,7 @@ void PlaySound(u16 soundID){
 /**
  * 获取战斗文本缓存
 */
-u32 getBattleTextBuff(u8 type,u8 value){
+u8 *getBattleTextBuff(u8 type,u8 value){
 	CpuFastFill(-1,textBuffer->temp,16);
 	u8 data[] = {0,type,value,0xFF};
 	ExpandBattleTextBuffPlaceholders(data,textBuffer->temp);
@@ -231,22 +229,27 @@ u32 getBattleTextBuff(u8 type,u8 value){
  * @param atackNum 技能编号
  * @return 技能名称地址，如果不存在则返回0
 */
-u32 getAttackName(u16 atackNum){
-	u32 moveNames = gMoveNamesPtr;
-	moveNames += (atackNum*gNameLengthConfig.moveNameLength);
-	return moveNames;
+u8 *getAttackName(u16 attackNum){
+	u32 moveNames = gMoveNamesPtr[0];
+	moveNames += (attackNum*gNameLengthConfig.moveNameLength);
+	return (u8 *) moveNames;
 }
 
-u32 getItemName(u16 itemId){
-	struct Item *itemTable = (struct Item *)((u32*)gItemsPtr);
-	struct Item *item = itemTable + itemId;
+struct Item *getItemData(u16 itemId){
+    struct Item *itemTable = (struct Item *)(gItemsPtr[0]);
+    struct Item *item = itemTable + itemId;
+    return item;
+}
+
+u8 *getItemName(u16 itemId){
+	struct Item *item = getItemData(itemId);
 	return item->name;
 }
 
 /**
  * 检查名字字符串是否有效
 */
-bool8 checkNameString(u8 *str,u32 length){
+bool8 checkNameString(const u8 *str,u32 length){
 	u8 firstChar = str[0];
 	if(firstChar == 0 || firstChar == 0xAE || firstChar == 0xFF){
 		return FALSE;
@@ -259,42 +262,46 @@ bool8 checkNameString(u8 *str,u32 length){
 	return FALSE;
 }
 
-u32 getMonSpeciesNameValid(u16 species){
+u8 *getMonSpeciesNameValid(u16 species){
 	u32 limit = gQuantityLimit.pokemonCount;
 	if (limit != 0){
-		return species < limit;
+		return (u8 *) (species < limit);
 	}
-	u32 name = getMonSpeciesName(species);
+	u8 *name = getMonSpeciesName(species);
 	if (checkNameString(name,gNameLengthConfig.pokemonNameLength)){
 		return name;
 	}
 	return 0;
 }
 
-u32 getAttackNameValid(u16 atackNum){
+u8 *getAttackNameValid(u16 atackNum){
 	u32 limit = gQuantityLimit.moveCount;
 	if (limit != 0){
-		return atackNum < limit;
+		return (u8 *) (atackNum < limit);
 	}
-	u32 name = getAttackName(atackNum);
+	u8 *name = getAttackName(atackNum);
 	if (checkNameString(name,gNameLengthConfig.moveNameLength)){
 		return name;
 	}
 	return 0;
 }
 
-u32 getItemNameValid(u16 itemId){
+u8 *getItemNameValid(u16 itemId){
 	u32 limit = gQuantityLimit.itemCount;
 	if (limit != 0){
-		return itemId < limit;
+		return (u8 *) (itemId < limit);
 	}
 
-	u8 *name = getItemName(itemId);
+    struct Item *item = getItemData(itemId);
 
+//    if(item->itemId != itemId){
+//        return (u8 *) ITEM_NAME_TEMP;
+//    }
 
+    u8 *name = item->name;
 	u8 firstChar = name[0];
 	if(firstChar == 0x3D || firstChar == 0xAC || firstChar == 0xAE){
-		return ITEM_NAME_TEMP;
+		return (u8 *) ITEM_NAME_TEMP;
 	}
 	u8 nameLen = gNameLengthConfig.itemNameLength;
 
@@ -306,7 +313,7 @@ u32 getItemNameValid(u16 itemId){
 		return name;
 	}
 
-	return ITEM_NAME_NONE;
+	return (u8 *) ITEM_NAME_NONE;
 }
 
 

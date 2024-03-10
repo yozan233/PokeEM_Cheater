@@ -6,9 +6,10 @@ CC=arm-none-eabi-gcc
 ASFLAGS=-mthumb
 CFLAGS= -std=gnu11 -mthumb -mthumb-interwork -mcpu=arm7tdmi -fno-inline -mlong-calls -march=armv4t -Wall -Wextra -Wconversion -O2 -w
 LDFLAGS=-z muldefs --relocatable
-MAPFILE=-Map test.map
 GAME_VERSION = BPEE0
 EMERALD = 1
+
+MAPFILE=-Map test_$(GAME_VERSION).map
 
 CFLAGS += -D $(GAME_VERSION)
 ASFLAGS += --defsym $(GAME_VERSION)=1
