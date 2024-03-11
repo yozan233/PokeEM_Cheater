@@ -29,7 +29,7 @@ StringCopy = 0x08008d84|1;
 StringCompare = 0x08008e28|1;
 ConvertIntToDecimalStringN = 0x08008e78|1;
 ConvertIntToHexStringN = 0x08008f18|1;
-VBlankCB_SelectScreen = 0x080f4bfc|1;
+VBlankCB_SelectScreen = 0x080f4bfc|1; /*VBlankCB_Diploma*/
 RtcInitLocalTimeOffset = 0;
 ZeroMonData = 0x0803d994|1;
 CreateMon = 0x0803da54|1;
@@ -122,19 +122,17 @@ gItemsPtr = 0x080001C8; /*道具表*/
 gBattleMovesPtr = 0x080001CC; /*技能表*/
 gItemIconTablePtr = 0x0809899C; /*道具图标*/
 
-/*0x080a1998                FieldUseFunc_Repel*/
-ItemUseOutOfBattle_Repel = 0x080a1998|1;
+ItemUseOutOfBattle_Repel = 0x080a1998|1; /*FieldUseFunc_Repel*/
 
 sCursor_Gfx = 0;
 gFrontierPassCursor_Pal = 0;
-sDiplomaPalettes = 0x8415954;
-sDiplomaTilemap = 0x84154E8;
-sDiplomaTiles = 0x84147C0;
-sWindowFrames_offset = 0x08471E8C;
+sDiplomaPalettes = 0x8415954; /*sDiplomaPal*/
+sDiplomaTilemap = 0x84154E8; /*sDiplomaTilemap*/
+sDiplomaTiles = 0x84147C0; /*sDiplomaGfx*/
+sWindowFrames_offset = 0x08471E8C; /*gUserFrames*/
 
-sStartMenuItems = 0x083a7344;
+sStartMenuItems = 0x083a7344; /*sStartMenuActionTable*/
 
-/*0x000000000806f394                StartMenu_FadeScreenIfLeavingOverworld*/
-HandleStartMenuInput = 0x0806f394|1;
+HandleStartMenuInput = 0x0806f394|1; /*StartMenu_FadeScreenIfLeavingOverworld*/
 
 

@@ -38,7 +38,7 @@ void pause();
 
 const u8 ivevMap[] = {0,0,3,1,4,2,5};
 
-#ifdef BPRE0
+#ifdef FIRE_RED_LEAF_GREEN
 #define VAR_REPEL_STEP_COUNT 0x4020
 #else
 #define VAR_REPEL_STEP_COUNT 0x4021
@@ -245,7 +245,7 @@ void RefreshCurrentPage(){
 
 u16 GetPenWuMax(){
     void *fun = ItemUseOutOfBattle_Repel;
-    #ifdef BPRE0
+    #ifdef FIRE_RED_LEAF_GREEN
     fun += 0xC;
     #else
     fun += 0xE;
@@ -353,7 +353,7 @@ void SetText_MsgBox(u8 *str)
     #else
 	FillWindowPixelBuffer(boxid_t,0x11);
     #endif
-    #ifdef BPRE0
+    #ifdef FIRE_RED_LEAF_GREEN
 	AddTextPrinterParameterized(boxid_t,1,str,0,0,0,0); //按键提示
     #elif AXVE0
     Menu_PrintTextPixelCoords(str,16,0x88,0);
@@ -469,7 +469,7 @@ void OnSureClick(){
         }
         #endif
 
-        #ifndef BPRE0
+        #ifndef FIRE_RED_LEAF_GREEN
         u8 t = gLocalTime.hours;
         if (t != myTempData->time)
         {
@@ -501,7 +501,7 @@ void OnSureClick(){
         
         if (myTempData->selectedflightPoint) //执行瞬移
         {
-            #ifdef BPRE0
+            #ifdef FIRE_RED_LEAF_GREEN
 			gSaveBlock2Ptr->optionsButtonMode = myTempData->optionsButtonMode;
             #endif
             #ifdef AXVE0
@@ -586,7 +586,7 @@ void OnSureClick(){
         if (myTempData->pokedexUpgrade){
             EnableNationalPokedex();
         }
-        #ifndef BPRE0
+        #ifndef FIRE_RED_LEAF_GREEN
         if (myTempData->mirageShow){
             VarSet(0x4024, getCurrentMonData(ATTR_PID) & 0xFFFF);
         }
@@ -746,7 +746,7 @@ bool8 ButtonBEvent(){
         return FALSE;
     if (myTempData->cursorState == FALSE){
         if(myTempData->page == PAGE_MAIN){
-            #ifdef BPRE0
+            #ifdef FIRE_RED_LEAF_GREEN
 			gSaveBlock2Ptr->optionsButtonMode = myTempData->optionsButtonMode;
             #endif
             #ifdef AXVE0
@@ -873,7 +873,7 @@ void ButtonLeftEvent()
 		}
         break;
         case PAGE_POKE_INFO2:
-            #ifndef BPRE0
+            #ifndef FIRE_RED_LEAF_GREEN
             if(myTempData->select == 4){
                 if(myTempData->time > 3){
                     myTempData->time -= 3;
@@ -1044,7 +1044,7 @@ void ButtonRightEvent()
 		    }
             break;
         case PAGE_POKE_INFO2:
-            #ifndef BPRE0
+            #ifndef FIRE_RED_LEAF_GREEN
             if(myTempData->select == 4){
                 if(myTempData->time < 21){
                     myTempData->time += 3;
@@ -1339,7 +1339,7 @@ void ButtonUpEvent(){
                 }
                 break;
             case 4:
-                #ifndef BPRE0
+                #ifndef FIRE_RED_LEAF_GREEN
                 if(myTempData->time == 23){
                     myTempData->time = 0;
                     UpdateCurrentPageTextAndPlaySound();
@@ -1576,7 +1576,7 @@ void ButtonDownEvent(){
                     }
                 }break;
                 case 4:
-                    #ifndef BPRE0
+                    #ifndef FIRE_RED_LEAF_GREEN
                     if(myTempData->time == 0){
                         myTempData->time = 23;
                         UpdateCurrentPageTextAndPlaySound();

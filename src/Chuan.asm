@@ -17,7 +17,7 @@
 	
 	this_end:
 	lsl r0, r0,#0x18
-	.ifdef BPRE0
+	.ifdef FIRE_RED_LEAF_GREEN
 	lsr r0, r0,#0x18
 	.else
 	lsr r4, r0,#0x18

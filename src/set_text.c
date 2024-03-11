@@ -184,7 +184,7 @@ void UpdatePageValue(u8 page)
 			UpdateString(POS_160,POS_84,text_table[TEXT_GENDER_TABLE]+4*myTempData->sex,1);
 		}return;
 		case PAGE_POKE_INFO2:{
-			#ifndef BPRE0
+			#ifndef FIRE_RED_LEAF_GREEN
 			ClearStringForWidth(POS_156,POS_56,12);
 			ConvertIntToDecimalStringN(&myTempData->numTextBuff,myTempData->time,2,2);
 			PrintText(POS_156,POS_56,&myTempData->numTextBuff);//时间
@@ -632,7 +632,7 @@ void SetPageTxet(u8 page){
 		PrintText(POS_24, POS_28, text_table[TEXT_BALL_TYPE]);//球种
 		PrintText(POS_120,POS_28,text_table[TEXT_CATCH_LOCATION]);//捕获地
 		PrintText(POS_24, POS_56, text_table[TEXT_TELEPORT]);//瞬移
-		#ifdef BPRE0
+		#ifdef FIRE_RED_LEAF_GREEN
 		PrintText(120,POS_56,text_table[TEXT_COMING_SOON]);//敬请期待
 		#else
 		PrintText(POS_120, POS_56, text_table[TEXT_TIME]);//时间
@@ -659,7 +659,7 @@ void SetPageTxet(u8 page){
 	}break;
 	case PAGE_POKE_NAME:
 	case PAGE_PLAYER_NAME:{
-		#ifdef BPRE0
+		#ifdef FIRE_RED_LEAF_GREEN
 		PrintSmallText(180,48,text_table[TEXT_INITIALS]);//首字母
 		PrintSmallText(180,68,text_table[TEXT_DELETE]);//删除
         #elif AXVE0
@@ -706,7 +706,7 @@ void SetPageTxet(u8 page){
 	case PAGE_OTHER:
 		PrintText(32,POS_20_0,text_table[TEXT_POKEDEX_UPGRADE]);//升级图鉴
 		PrintText(32,POS_48,text_table[TEXT_POKERUS]);//精灵病毒
-		#ifdef BPRE0
+		#ifdef FIRE_RED_LEAF_GREEN
 		PrintText(32,76,text_table[TEXT_COMING_SOON]);//敬请期待
 		#else
 		PrintText(32,POS_76,text_table[TEXT_MIRAGE_SHOW]);//出现幻岛
@@ -924,7 +924,7 @@ void get_ball_addr(){
 	myTempData->selectedBall = 0;
 	myTempData->monCopy = FALSE;
 	myTempData->selectedBall = 0;
-	#ifndef BPRE0
+	#ifndef FIRE_RED_LEAF_GREEN
 	myTempData->time = gLocalTime.hours;
 	#endif
 	getBallCount();

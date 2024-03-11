@@ -41,7 +41,7 @@ void MainCB2()
 */
 u8 getMonMaxLevel(){
     void* fun = ItemUseCB_RareCandy;
-	#ifdef BPRE0
+	#ifdef FIRE_RED_LEAF_GREEN
 	fun += 0x25;
 	#elif AXVE0
 	fun += 0x27;

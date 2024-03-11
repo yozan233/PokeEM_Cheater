@@ -16,7 +16,7 @@ extern void UpdateCurrentPageText();
 extern void changeMouseColor();
 extern void SetText_MsgBox(u8 *str);
 
-#ifdef BPRE0
+#ifdef FIRE_RED_LEAF_GREEN
 #define KEYBOARD_BASE_X 0x12
 #define KEYBOARD_BASE_Y 0x40
 #define CHINESE_FONT_SPACE_H 18
@@ -48,7 +48,7 @@ void UpdateKeyboardMousePos(){
             x = KEYBOARD_BASE_X;
             y = KEYBOARD_BASE_Y + udivsi3(select,10)*FONT_SPACE_V;
             select = umodsi3(select,10);
-            #ifdef BPRE0
+            #ifdef FIRE_RED_LEAF_GREEN
             x += (CHINESE_FONT_SPACE_H*select);
             #else
             if(myTempData->fontType == FONT_CHINESE)
@@ -297,7 +297,7 @@ void UpdateFontPageFlag(){
 
 	}
 	fontPage[0] = b;
-	#ifdef BPRE0
+	#ifdef FIRE_RED_LEAF_GREEN
 	UpdateString(216,48,&myTempData->fontPage,1);
     #elif AXVE0
     UpdateString(208,48,&myTempData->fontPage,1);
@@ -343,7 +343,7 @@ void UpdateWordList(){
         UpdateChineseWordList();
 	else
 		UpdateEnglishWordList();
-	#ifdef BPRE0
+	#ifdef FIRE_RED_LEAF_GREEN
 	ClearStringRect(0,0,0,40,12*10+6*9,16*5);
 	PrintText(0,40,textBuffer->wordList);
     #elif AXVE0
@@ -381,7 +381,7 @@ void UpdateKeyboardValue(){
 		ShowMonName();
 	}
 
-	#ifdef BPRE0
+	#ifdef FIRE_RED_LEAF_GREEN
 	UpdateSmallString(144,0,text_table[TEXT_CIRCLE_DOT]+myTempData->pageLock*4,1);//[点]
 	PrintSmallText(154,0,text_table[TEXT_PAGELOCK]);//锁定页面
     #elif AXVE0

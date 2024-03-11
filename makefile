@@ -58,6 +58,7 @@ all: objects
  "build\resource.o"
 	armips insert_${GAME_VERSION}.asm
 	@echo "Compile Successfully."
+	VisualBoyAdvance test_$(GAME_VERSION).gba
 		
 
 objects:
@@ -83,4 +84,5 @@ clean:
 bpee0:              ; @$(MAKE) GAME_VERSION=BPEE0 EMERALD=1
 bpre0:              ; @$(MAKE) GAME_VERSION=BPRE0 EMERALD=0 FIRE_RED=1 FIRE_RED_LEAF_GREEN=1
 axve0:              ; @$(MAKE) GAME_VERSION=AXVE0 EMERALD=0 RUBY=1 RUBY_SAPPHIRE=1
+bpge0:				; @$(MAKE) GAME_VERSION=BPGE0 EMERALD=0 LEAF_GREEN=1 FIRE_RED_LEAF_GREEN=1
 

@@ -24,7 +24,7 @@ void task_loader(u8 task_id)
 	{
 		case 0:
 			CpuFastFill(0,myTempData,0x80);
-			#ifdef BPRE0
+			#ifdef FIRE_RED_LEAF_GREEN
 			myTempData->optionsButtonMode = gSaveBlock2Ptr->optionsButtonMode;
 			gSaveBlock2Ptr->optionsButtonMode = 1;
             #endif
