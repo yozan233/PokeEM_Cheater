@@ -26,7 +26,7 @@ void CpuFastFill(int value, void *dest, int size)
     CpuFastSet(&tmp,dest,0x01000000 | ((size)/(32/8) & 0x1FFFFF));
 }
 
-#ifdef AXVE0
+#ifdef RUBY_SAPPHIRE
 extern u32 gBGTilemapBuffers[];
 
 struct MallocBlock {

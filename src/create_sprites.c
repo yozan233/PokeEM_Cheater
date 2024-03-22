@@ -90,7 +90,7 @@ void CreateSprites(){
     sprite->oam.mosaic = TRUE;
     sprite->callback = (void *) MonIconSpriteCallback;
 
-    #ifndef AXVE0
+    #ifndef RUBY_SAPPHIRE
     u8 itemPicId = CreateNormalSprite(0x70,0x28);
     mySav->itemPicId = itemPicId;
     sprite = getSprite(itemPicId);

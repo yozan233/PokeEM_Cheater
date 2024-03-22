@@ -299,7 +299,7 @@ void UpdateFontPageFlag(){
 	fontPage[0] = b;
 	#ifdef FIRE_RED_LEAF_GREEN
 	UpdateString(216,48,&myTempData->fontPage,1);
-    #elif AXVE0
+    #elif RUBY_SAPPHIRE
     UpdateString(208,48,&myTempData->fontPage,1);
 	#else
 	UpdateString(210,48,&myTempData->fontPage,1);
@@ -326,7 +326,7 @@ void PrintUnderline(u32 cur, u32 length){
 		length--;
 	}
 	text_g[0] = 0xFF;
-    #ifdef AXVE0
+    #ifdef RUBY_SAPPHIRE
     PrintText(40,24,textBuffer->temp);
     #else
 	PrintText(46,24,textBuffer->temp);
@@ -346,7 +346,7 @@ void UpdateWordList(){
 	#ifdef FIRE_RED_LEAF_GREEN
 	ClearStringRect(0,0,0,40,12*10+6*9,16*5);
 	PrintText(0,40,textBuffer->wordList);
-    #elif AXVE0
+    #elif RUBY_SAPPHIRE
     ClearStringRect(0,0,0,40,16*10,16*5-8);
 	PrintText(8,40,textBuffer->wordList);
 	#else
@@ -384,7 +384,7 @@ void UpdateKeyboardValue(){
 	#ifdef FIRE_RED_LEAF_GREEN
 	UpdateSmallString(144,0,text_table[TEXT_CIRCLE_DOT]+myTempData->pageLock*4,1);//[点]
 	PrintSmallText(154,0,text_table[TEXT_PAGELOCK]);//锁定页面
-    #elif AXVE0
+    #elif RUBY_SAPPHIRE
     UpdateSmallString(128,0,text_table[TEXT_CIRCLE_DOT]+myTempData->pageLock*4,1);//[点]
 	PrintSmallText(136,0,text_table[TEXT_PAGELOCK]);//锁定页面
 	#else
@@ -393,7 +393,7 @@ void UpdateKeyboardValue(){
 	#endif
 	PrintUnderline(myTempData->inputCursorIndex,name_len);//横线
 
-    #ifdef AXVE0
+    #ifdef RUBY_SAPPHIRE
     PrintText(40,16,textBuffer->newName);//新名字
     #else
     PrintText(46,18,textBuffer->newName);//新名字

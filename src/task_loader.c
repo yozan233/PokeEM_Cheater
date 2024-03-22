@@ -5,7 +5,7 @@ extern void task_02(u8 task_id);
 extern void CreateSprites();
 extern void InitPage(u8 page);
 
-#ifndef AXVE0
+#ifndef RUBY_SAPPHIRE
 void box_draw(u8,u8);
 #endif
 
@@ -28,7 +28,7 @@ void task_loader(u8 task_id)
 			myTempData->optionsButtonMode = gSaveBlock2Ptr->optionsButtonMode;
 			gSaveBlock2Ptr->optionsButtonMode = 1;
             #endif
-            #ifdef AXVE0
+            #ifdef RUBY_SAPPHIRE
             myTempData->optionsButtonMode = gSaveBlock2.optionsWindowFrameType;
             gSaveBlock2.optionsWindowFrameType = 0;
             #endif
@@ -41,7 +41,7 @@ void task_loader(u8 task_id)
 			else 
 				break;
 		case 2:
-			#ifdef AXVE0
+			#ifdef RUBY_SAPPHIRE
 			Menu_DrawStdWindowFrame(0, 0x10, 0x1D, 0x13);
 
 			SetGpuReg(0x4,0x8);
@@ -87,7 +87,7 @@ void task_loader(u8 task_id)
 	(*(*malloc_pointer_loc+2))++;
 }
 
-#ifndef AXVE0
+#ifndef RUBY_SAPPHIRE
 void box_draw(u8 box_id, u8 pal)
 {
 	struct TilesPal tilesPal = ((struct TilesPal *)sWindowFrames_offset)[0];

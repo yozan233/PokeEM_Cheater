@@ -1,6 +1,6 @@
 #include "header/funcs.h"
 
-#ifndef AXVE0
+#ifndef RUBY_SAPPHIRE
 const u8 bg_config_table[][4] = {
 	{0xF0,0x61,0x00,0x00},{0xD5,0x33,0x00,0x00}
 };

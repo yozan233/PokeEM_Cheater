@@ -80,7 +80,7 @@ void aborter(u8 task_id)
 	if(((pal_fade_control->mix_color) >> 8 & 0x80))
 		return;
 	DestroyTask(task_id);
-	#ifndef AXVE0
+	#ifndef RUBY_SAPPHIRE
 	FreeAllWindowBuffers();
 	#endif
 	Free(*malloc_pointer_loc);

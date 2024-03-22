@@ -59,7 +59,7 @@ void loadSpecieData();
 void UpdateNumber(u8 x, u8 y, u32 value,u16 len);
 void setSureCancelText();
 
-#ifndef AXVE0
+#ifndef RUBY_SAPPHIRE
 void set_item_tile();
 #endif
 
@@ -67,7 +67,7 @@ void set_item_tile();
 extern bool8 check_802();
 #endif
 
-#ifdef AXVE0
+#ifdef RUBY_SAPPHIRE
 #define CRC_AUTHOR_TEXT 0xF3D3
 #define CRC_VERSION_TEXT 0x63C2
 
@@ -190,7 +190,7 @@ void UpdatePageValue(u8 page)
 			PrintText(POS_156,POS_56,&myTempData->numTextBuff);//时间
 			#endif
 			UpdateString(POS_76,POS_84,text_table[TEXT_CIRCLE_DOT]+(myTempData->monCopy)*4,1);
-            #ifndef AXVE0
+            #ifndef RUBY_SAPPHIRE
 			UpdateString(POS_172,POS_84,text_table[TEXT_CIRCLE_DOT]+(myTempData->obedience)*4,1);
             #endif
 
@@ -278,7 +278,7 @@ void UpdatePageValue(u8 page)
                 UpdateSmallString(POS_44,POS_106,textNone,3);
             }
 
-            #ifdef AXVE0
+            #ifdef RUBY_SAPPHIRE
             PrintSmallText(POS_70,POS_92,text_table[TEXT_MOVE_TYPE]);//属性
 		    PrintSmallText(POS_70,POS_106,text_table[TEXT_PP]);//PP
             setSureCancelText();
@@ -336,7 +336,7 @@ void UpdatePageValue(u8 page)
 			//显示6项种族值
 			u8 *specieData = (u8 *)&myTempData->hp;
 			for(int k = 0; k < 6; k++){
-                #ifdef AXVE0
+                #ifdef RUBY_SAPPHIRE
                 UpdateNumSmallString(40,POS_28+k*16-8,specieData[k]);
                 #else
 				UpdateNumSmallString(42,28+k*14,specieData[k]);
@@ -392,7 +392,7 @@ void UpdatePageValue(u8 page)
 				n5++;
 			}
 
-            #ifdef AXVE0
+            #ifdef RUBY_SAPPHIRE
             UpdateNumHexString(88,104,pokeN);//精灵编号
             setSureCancelText();
             #else
@@ -405,7 +405,7 @@ void UpdatePageValue(u8 page)
 			UpdateKeyboardValue();
 			return;
 		case PAGE_ITEMS:{
-			#ifndef AXVE0
+			#ifndef RUBY_SAPPHIRE
 			set_item_tile();
 			#endif
 			
@@ -483,7 +483,7 @@ void UpdatePageValue(u8 page)
 
             ConvertIntToDecimalStringN(&myTempData->numTextBuff,myTempData->Num,2,2);
             UpdateString(POS_156,POS_26,&myTempData->numTextBuff,2);//数值
-            #ifdef AXVE0
+            #ifdef RUBY_SAPPHIRE
             UpdateString(112,48,text_table[TEXT_CIRCLE_DOT]+ 4*myTempData->addItemEnable,1);//添加[点]
             UpdateString(112,72,text_table[TEXT_CIRCLE_DOT]+ 4*myTempData->throwKeyItemEnable,1);//扔掉一个重要道具[空心点]
             PrintText(120,48,text_table[TEXT_ADD_ITEM]);//添加
@@ -516,7 +516,7 @@ void InitPage(u8 page){
 	switch (page)
 	{
 	case PAGE_MAIN:
-		#ifndef AXVE0
+		#ifndef RUBY_SAPPHIRE
 		HideSprite(mySav->itemPicId);
 		#endif
 		HideSprite(mySav->monIconId);
@@ -561,7 +561,7 @@ void InitPage(u8 page){
 		myTempData->itemBuffer = 1;
 		myTempData->addItemEnable = TRUE;
 		myTempData->throwKeyItemEnable = FALSE;
-		#ifndef AXVE0
+		#ifndef RUBY_SAPPHIRE
 		ShowSprite(mySav->itemPicId);
 		CpuFastFill(0, (void *) itemTilesArm, 0x800);
 		#endif
@@ -590,7 +590,7 @@ void setSureCancelText(){
 }
 
 void SetPageTxet(u8 page){
-	#ifdef AXVE0
+	#ifdef RUBY_SAPPHIRE
     Menu_EraseWindowRect(0,0,0x1D,0xF);
 	#else
 	FillWindowPixelBuffer(0,0); //清空全部文本
@@ -640,7 +640,7 @@ void SetPageTxet(u8 page){
 		#endif
 		PrintText(POS_24, POS_84, text_table[TEXT_MON_COPY]);//复制精灵
 
-        #ifdef AXVE0
+        #ifdef RUBY_SAPPHIRE
         PrintText(POS_120,POS_84,text_table[TEXT_COMING_SOON]);//敬请期待
         #else
 		PrintText(POS_120,POS_84,text_table[TEXT_MON_OBEDIENCE]);//精灵听话
@@ -662,7 +662,7 @@ void SetPageTxet(u8 page){
 		#ifdef FIRE_RED_LEAF_GREEN
 		PrintSmallText(180,48,text_table[TEXT_INITIALS]);//首字母
 		PrintSmallText(180,68,text_table[TEXT_DELETE]);//删除
-        #elif AXVE0
+        #elif RUBY_SAPPHIRE
         PrintSmallText(168,48,text_table[TEXT_INITIALS]);//首字母
 		PrintSmallText(168,72,text_table[TEXT_DELETE]);//删除
 		#else
@@ -673,13 +673,13 @@ void SetPageTxet(u8 page){
 	case PAGE_MOVES:
 		PrintSmallText(POS_04,POS_92,text_table[TEXT_MOVE_POWER]);//威力
         PrintSmallText(POS_04,POS_106,text_table[TEXT_MOVE_ACCURACY]);//命中率
-        #ifndef AXVE0
+        #ifndef RUBY_SAPPHIRE
         PrintSmallText(POS_70,POS_92,text_table[TEXT_MOVE_TYPE]);//属性
 		PrintSmallText(POS_70,POS_106,text_table[TEXT_PP]);//PP
         #endif
 		break;
 	case PAGE_SPECIE:
-        #ifdef AXVE0
+        #ifdef RUBY_SAPPHIRE
         PrintSmallText(8,POS_28+0*16-8,text_table[TEXT_HP]);//HP
 		PrintSmallText(8,POS_28+1*16-8,text_table[TEXT_ATTACK]);//物攻
 		PrintSmallText(8,POS_28+2*16-8,text_table[TEXT_DEFENSE]);//物防
@@ -697,7 +697,7 @@ void SetPageTxet(u8 page){
 		break;
 	case PAGE_ITEMS:
         PrintText(120,POS_26,text_table[TEXT_QUANTITY]);//数量
-        #ifndef AXVE0
+        #ifndef RUBY_SAPPHIRE
 		PrintText(120,50,text_table[TEXT_ADD_ITEM]);//添加
 		PrintText(120,70,text_table[TEXT_THROW_KEYITEM]);//扔掉一个重要道具
         #endif
@@ -787,7 +787,7 @@ u8 *GetVersionText(){
  * 显示小字体文本
  */
 void PrintSmallText(u8 x, u8 y, u8 *str){
-	#ifndef AXVE0
+	#ifndef RUBY_SAPPHIRE
 	AddTextPrinterParameterized3(0,0,x,y,sTrainerCardTextColors,0,str);
 	#else
     u8 *format = textBuffer->format;
@@ -806,7 +806,7 @@ void PrintSmallText(u8 x, u8 y, u8 *str){
  * 显示文本
  */
 void PrintText(u8 x, u8 y, u8 *str){
-	#ifndef AXVE0
+	#ifndef RUBY_SAPPHIRE
 	AddTextPrinterParameterized3(0,1,x,y,sTrainerCardTextColors,0,str);
 	#else
     u8 *format = textBuffer->format;
@@ -823,7 +823,7 @@ void PrintText(u8 x, u8 y, u8 *str){
  */
 void UpdateString(u8 x, u8 y, u8 *str,u16 len){
     int textWidth;
-    #ifdef AXVE0
+    #ifdef RUBY_SAPPHIRE
     textWidth = 10;
     #else
     textWidth = 12;
@@ -872,7 +872,7 @@ void ClearStringForWidth(u16 pos_x, u16 pos_y, u16 width){
 }
 
 void ClearStringRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height){
-	#ifdef AXVE0
+	#ifdef RUBY_SAPPHIRE
     x = (x+8)/8;
     y = (y+8)/8;
     Menu_EraseWindowRect(x,y,width/8+x,height/8+y);
@@ -887,7 +887,7 @@ u8 getMapId(u16 mapGroup, u16 mapNum){
 }
 
 u8 *getPlayerNameOffset(){
-	#ifdef AXVE0
+	#ifdef RUBY_SAPPHIRE
     return gSaveBlock2.playerName;
 	#else
 	return &gSaveBlock2Ptr->playerName;
@@ -915,7 +915,7 @@ void HideSprite(u8 id){
 void get_ball_addr(){
     u8 location = getCurrentMonData(ATTR_CATCH_LOCATION);
 	myTempData->location = location;
-    #ifndef AXVE0
+    #ifndef RUBY_SAPPHIRE
 	u8 obedience = getCurrentMonData(ATTR_OBEDIENCE);
 	myTempData->obedience = obedience;
 	myTempData->obedienceTemp = obedience;
@@ -1006,7 +1006,7 @@ u8 getMoveAttr(u8 n){
 	return attr;
 }
 
-#ifndef AXVE0
+#ifndef RUBY_SAPPHIRE
 void set_item_tile(){
 	struct ItemIcon *itemIconTableBase = (struct ItemIcon *)gItemIconTablePtr;
 	struct ItemIcon *itemIcon = itemIconTableBase + myTempData->itemBuffer;

@@ -306,7 +306,7 @@ void SetCurrentMonLevel(u8 lvl){
  * 视野最大化
 */
 void shiye(){
-    #ifdef AXVE0
+    #ifdef RUBY_SAPPHIRE
     gSaveBlock1.flashLevel = 0;
     #else
 	 gSaveBlock1Ptr->flashLevel = 0;
@@ -348,14 +348,14 @@ void pause(){
 void SetText_MsgBox(u8 *str)
 {
 	u8 boxid_t = mySav->boxId;
-    #ifdef AXVE0
+    #ifdef RUBY_SAPPHIRE
     Menu_BlankWindowRect(1, 0x11, 0x1C, 0x12);
     #else
 	FillWindowPixelBuffer(boxid_t,0x11);
     #endif
     #ifdef FIRE_RED_LEAF_GREEN
 	AddTextPrinterParameterized(boxid_t,1,str,0,0,0,0); //按键提示
-    #elif AXVE0
+    #elif RUBY_SAPPHIRE
     Menu_PrintTextPixelCoords(str,16,0x88,0);
     #else
 	AddTextPrinterParameterized(boxid_t,1,str,6,0,0,0); //按键提示
@@ -443,7 +443,7 @@ void OnSureClick(){
     }
     break;
     case PAGE_POKE_INFO2:{
-        #ifndef AXVE0
+        #ifndef RUBY_SAPPHIRE
         if(myTempData->obedience != myTempData->obedienceTemp){
             myTempData->obedienceTemp = myTempData->obedienceTemp;
             setCurrentMonData(ATTR_OBEDIENCE, &myTempData->obedience);
@@ -504,13 +504,13 @@ void OnSureClick(){
             #ifdef FIRE_RED_LEAF_GREEN
 			gSaveBlock2Ptr->optionsButtonMode = myTempData->optionsButtonMode;
             #endif
-            #ifdef AXVE0
+            #ifdef RUBY_SAPPHIRE
             gSaveBlock2.optionsWindowFrameType = myTempData->optionsButtonMode;
             #endif
             BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
             HealPlayerParty();
             DestroyTask(mySav->task_id);
-            #ifndef AXVE0
+            #ifndef RUBY_SAPPHIRE
             FreeAllWindowBuffers();
             #endif
             Free(*malloc_pointer_loc);
@@ -749,7 +749,7 @@ bool8 ButtonBEvent(){
             #ifdef FIRE_RED_LEAF_GREEN
 			gSaveBlock2Ptr->optionsButtonMode = myTempData->optionsButtonMode;
             #endif
-            #ifdef AXVE0
+            #ifdef RUBY_SAPPHIRE
             gSaveBlock2.optionsWindowFrameType = myTempData->optionsButtonMode;
             #endif
             BeginNormalPaletteFade(-1, 0, 0, 0x10, 0);
@@ -1355,7 +1355,7 @@ void ButtonUpEvent(){
                 UpdateCurrentPageTextAndPlaySound();
                 break;
             case 6:
-                #ifndef AXVE0
+                #ifndef RUBY_SAPPHIRE
                 myTempData->obedience = !myTempData->obedience;
                 UpdateCurrentPageTextAndPlaySound();
                 #endif
@@ -1592,7 +1592,7 @@ void ButtonDownEvent(){
                     UpdateCurrentPageTextAndPlaySound();
                     break;
                 case 6:
-                    #ifndef AXVE0
+                    #ifndef RUBY_SAPPHIRE
                     myTempData->obedience = !myTempData->obedience;
                     UpdateCurrentPageTextAndPlaySound();
                     #endif

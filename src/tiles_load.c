@@ -1,6 +1,6 @@
 #include "header/funcs.h"
 
-#ifndef AXVE0
+#ifndef RUBY_SAPPHIRE
 bool8 tiles_load()
 {
 	switch(*(*malloc_pointer_loc+1))

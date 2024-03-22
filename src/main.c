@@ -43,7 +43,7 @@ u8 getMonMaxLevel(){
     void* fun = ItemUseCB_RareCandy;
 	#ifdef FIRE_RED_LEAF_GREEN
 	fun += 0x25;
-	#elif AXVE0
+	#elif RUBY_SAPPHIRE
 	fun += 0x27;
 	#else
 	fun += 0x35;

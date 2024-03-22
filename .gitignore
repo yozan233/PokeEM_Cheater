@@ -6,4 +6,5 @@ build
 *.bin
 *.exe
 *.map
+*.sgm
 test_01.png
