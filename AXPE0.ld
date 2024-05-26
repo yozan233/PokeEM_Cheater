@@ -57,7 +57,6 @@ ScriptContext_SetupScript = 0x080655bc|1; /*ScriptContext1_SetupScript*/
 EnableNationalPokedex = 0x080690f4|1;
 VarGet = 0x08069258|1;
 VarSet = 0x08069274|1;
-FlagSet = 0x080692f4|1;
 StartMenuExitCallback = 0x08071558|1; /*StartMenu_ExitCallback*/
 LoadPalette = 0x08073a5c|1;
 UpdatePaletteFade = 0x08073b40|1;
@@ -138,7 +137,7 @@ gFrontierPassCursor_Pal = 0;
 sDiplomaPalettes = 0x0840cb68; /*gDiplomaPalettes*/
 sDiplomaTilemap = 0x0840cba8; /*gDiplomaTilemap*/
 sDiplomaTiles = 0x0840d2e4; /*gDiplomaTiles*/
-sWindowFrames_offset = 0;
+sWindowFrames = 0;
 
 sStartMenuItems = 0x08376cb4;
 HandleStartMenuInput = 0x0807133c|1; /*StartMenu_InputProcessCallback*/

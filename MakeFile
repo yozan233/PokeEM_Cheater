@@ -9,7 +9,7 @@ LDFLAGS=-z muldefs --relocatable
 GAME_VERSION = BPEE0
 EMERALD = 1
 
-MAPFILE=-Map test_$(GAME_VERSION).map
+MAPFILE=-Map $(GAME_VERSION)_TEST.map
 
 CFLAGS += -D $(GAME_VERSION)
 ASFLAGS += --defsym $(GAME_VERSION)=1
@@ -58,7 +58,8 @@ all: objects
  "build\resource.o"
 	armips insert_${GAME_VERSION}.asm
 	@echo "Compile Successfully."
-	VisualBoyAdvance test_$(GAME_VERSION).gba
+	#python CheaterBinFileTest.py
+	VisualBoyAdvance $(GAME_VERSION)_TEST.gba
 		
 
 objects:

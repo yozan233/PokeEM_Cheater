@@ -1,8 +1,8 @@
 .gba
 .thumb
-.create "test_BPEE0.gba",0x8000000
+.create "BPEE0_TEST.gba",0x8000000
 .close
-.open "bpee0.gba","test_BPEE0.gba", 0x8000000
+.open "BPEE0.gba","BPEE0_TEST.gba", 0x8000000
 
 PlayerNotOnBikeMovingHook equ PlayerNotOnBikeMoving+0xB
 gText_MenuExitPtr equ sStartMenuItems+0x38

@@ -14,8 +14,7 @@ u16 Random(void);
 void CreateMon(struct Pokemon* poke, u16 species, u8 lvl, u8 IVs, u8 pid_set, u32 PiD, u8 tid_set, u32 TiD);
 void SetMonData(struct Pokemon* poke_address, u8 request, const void* new_value);
 void CalculateMonStats(struct Pokemon* poke_address);
-void FlagSet(u16 flag);
-//special_0x1F3
+
 void EnableNationalPokedex(void);
 void HealPlayerParty(void);
 u16 VarGet(u16 varID);
@@ -142,7 +141,7 @@ extern u8 gFrontierPassCursor_Pal[];
 extern u8 sDiplomaPalettes[];
 extern u8 sDiplomaTilemap[];
 extern u8 sDiplomaTiles[];
-extern u8 sWindowFrames_offset[];
+extern u8 sWindowFrames[];
 
 
 

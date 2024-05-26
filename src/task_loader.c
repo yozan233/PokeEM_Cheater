@@ -90,7 +90,7 @@ void task_loader(u8 task_id)
 #ifndef RUBY_SAPPHIRE
 void box_draw(u8 box_id, u8 pal)
 {
-	struct TilesPal tilesPal = ((struct TilesPal *)sWindowFrames_offset)[0];
+	struct TilesPal tilesPal = ((struct TilesPal *)sWindowFrames)[0];
 	LoadBgTiles(0, tilesPal.tiles, 0x120, 0x2FF);
     LoadPalette(tilesPal.pal, pal*0x10, 0x20);
 

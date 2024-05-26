@@ -1,8 +1,8 @@
 .gba
 .thumb
-.create "test_BPRE0.gba",0x8000000
+.create "BPRE0_TEST.gba",0x8000000
 .close
-.open "bpre0.gba","test_BPRE0.gba", 0x8000000
+.open "BPRE0.gba","BPRE0_TEST.gba", 0x8000000
 
 PlayerNotOnBikeMovingHook equ PlayerNotOnBikeMoving+0xB
 gText_MenuExitPtr equ sStartMenuItems+0x30
@@ -22,7 +22,7 @@ bx r1
 .word exit_asm+1
 
 
-//DEFINE YOUR FREE OFFSET HERE 1845A80
+//使用的ROM空位地址
 .org 0x8F20000
 .pool
 .importobj "build/linked.o"
