@@ -27,10 +27,6 @@ void LoadPalette(void *src, u16 dst_index, u16 num_bytes);
 u8 CreateTask(void(*func)(u8),u8 priority);
 void DestroyTask(u8 task_id);
 u32 GiveMonToPlayer(struct Pokemon*);
-void RunTasks(void);
-void AnimateSprites(void);
-void BuildOamBuffer(void);
-void UpdatePaletteFade(void);
 void SetVBlankCallback(void(*)(void));
 //lcd_io_set
 void SetGpuReg(u8 reg, u16 value);
@@ -94,6 +90,7 @@ extern void Menu_DrawStdWindowFrame(u8 left, u8 top, u8 right, u8 bottom);
 extern void Menu_BlankWindowRect(u8 left, u8 top, u8 right, u8 bottom);
 extern void Menu_EraseWindowRect(u8 left, u8 top, u8 right, u8 bottom);
 extern void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst);
+extern void MainCB2();
 
 extern void debug();
 

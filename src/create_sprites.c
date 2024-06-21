@@ -2,10 +2,8 @@
 #include "header/sprite.h"
 
 extern struct Sprite *getSprite(u8 id);
-#ifndef EMERALD
 extern const u8 mouse_tile[];
 extern const u8 mouse_pal[];
-#endif
 
 static const union AnimCmd sAnim_MonPic_0[] =
 {
@@ -100,12 +98,8 @@ void CreateSprites(){
     sprite->oam.mosaic = TRUE;
     #endif
 
-    #ifdef EMERALD
-    LZ77UnCompVram(sCursor_Gfx, (void *) 0x06010000);
-    CpuSet(gFrontierPassCursor_Pal,OBJ_PaletteMem,0x10);
-    #else
-    CpuSet(&mouse_tile,0x06010000,0x40);
+
+    CpuSet(&mouse_tile,(void *)0x06010000,0x40);
     CpuSet(&mouse_pal,OBJ_PaletteMem,0x10);
-    #endif
 
 }

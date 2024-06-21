@@ -449,15 +449,7 @@ struct Pokemon
 /* 0x1E */	u16 padding;
 /* 0x20 */	u8 enc_data[48];
 /* 0x50 */	u32 status;
-/* 0x54 */	u8 level;
-/* 0x55 */	u8 pokerus;
-/* 0x56 */	u16 curHp;
-/* 0x58 */	u16 maxHP;
-/* 0x5A */	u16 attack;
-/* 0x5C */	u16 defense;
-/* 0x5E */	u16 speed;
-/* 0x60 */	u16 spAttack;
-/* 0x62 */	u16 spDefense;
+
 };
 
 struct task

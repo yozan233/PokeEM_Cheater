@@ -28,13 +28,6 @@ void main_func()
 	SetMainCallback2(MainCB2);
 }
 
-void MainCB2()
-{
-	RunTasks();
-	AnimateSprites();
-	BuildOamBuffer();
-	UpdatePaletteFade();
-}
 
 /**
  * 获取精灵最大等级
