@@ -1,14 +1,5 @@
-#include "header/funcs.h"
+#include "header/structs.h"
 
-struct superstate *super = (struct superstate *)&gMain;
-struct TextBuffer *textBuffer = (struct TextBuffer *)&gStringVar1[0x100];
-struct MyDatastruct *myTempData = (struct MyDatastruct *)&gStringVar1;
-struct MousePos *mouseXY = (struct MousePos *)(&gSprites[0].pos1);
-struct task *tasks = (struct task *)&gTasks;
-struct fade_ctrl *pal_fade_control = &gPaletteFade;
-
-struct MySaveblock *mySav = (struct MySaveblock *)&gSpecialVar_0x8004;
-u8 **malloc_pointer_loc = (u8 **)&gSpecialVar_0x8004;
 
 #ifdef RUBY_SAPPHIRE
 #define TEXT_COLOR_RED 0x02
@@ -158,6 +149,14 @@ const u8 exit_text[] = {
 	0xFC,0x01,TEXT_COLOR_RED,0x11,0x2F,0x01,0x94,0xFF
 };
 
+const u8 sTrainerCardTextColors[] = {0, 2, 3};
+
+const struct rbox_short rbox_table[] = {
+        {0x00,0x01,0x01,0x1C,0xF,0x0F,0x57},
+        {0xFF,0,0,0,0,0,0},
+        {0,1,0x11,28,2,0xF,0}
+};
+
 const struct ListQuantityLimit gQuantityLimit = {
 	.pokemonCount = 0,
 	.moveCount = 0,
@@ -167,7 +166,8 @@ const struct ListQuantityLimit gQuantityLimit = {
 const struct NameLengthConfig gNameLengthConfig = {
 	.pokemonNameLength = 11,
 	.moveNameLength = 13,
-	.itemNameLength = 14
+	.itemNameLength = 14,
+    .abilityNameLength = 12
 };
 
 

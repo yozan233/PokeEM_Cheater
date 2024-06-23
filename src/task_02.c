@@ -1,4 +1,4 @@
-#include "header/funcs.h"
+#include "header/data.h"
 //flags for buttons3_new_remapped:1=A,2=B,4=SELECT,8=START,0x10=RIGHT,0x20=LEFT,0x40=UP,0x80=DOWN,0x100=L,0x200=R
 extern struct rbox_short rbox_table[];
 extern void ButtonAEvent();

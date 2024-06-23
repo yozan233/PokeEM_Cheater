@@ -1,4 +1,4 @@
-#include "header/funcs.h"
+#include "header/data.h"
 #include "header/sprite.h"
 
 extern struct Sprite *getSprite(u8 id);

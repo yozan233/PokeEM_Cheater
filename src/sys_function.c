@@ -1,4 +1,4 @@
-#include "header/data.h"
+#include "header/structs.h"
 
 void debug(){
 

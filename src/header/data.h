@@ -1,4 +1,4 @@
-#include "structs.h"
+#include "funcs.h"
 #include "get_attr.h"
 
 
@@ -9,7 +9,6 @@ extern struct fade_ctrl *pal_fade_control;
 #define itemTilesArm 0x06012000
 #define monTilesArm  0x06010C00
 
-#define MON_COUNT 411
 
 extern const u8 *text_table[];
 extern const u8 *mouse_pos_table[];
@@ -28,8 +27,19 @@ extern const struct ListQuantityLimit gQuantityLimit;
 extern const struct NameLengthConfig gNameLengthConfig;
 
 
+extern void ShowBg01();
+extern void ChangeBgXY(u8 bg_id);
+extern void SetBg1TilemapBuffer();
+extern void CopyDiplomaTilemapBuffer();
+extern void CopyBgTilemapBufferToVram01();
+extern void InitMainWindows();
+extern u8 InitSecondWindows();
+extern void FillMainWindowPixelRect(u16 x, u16 y, u16 width, u16 height);
+extern void UpdateMainWindowsText(u8 font,u8 *str,u8 x,u8 y);
+extern void UpdateSecondWindowsText(u8 *str,u8 x,u8 y);
+extern void ResetAllSpriteData();
 
 
-// extern struct main8004 *main_8004;
-// extern u8 *pokemon_quanitity;
+
+
 

@@ -1,5 +1,5 @@
-#include "data.h"
-void SetMainCallback2(void(*func)(void));
+#include "structs.h"
+void SetMainCallback2(void(*func));
 void * AllocZeroed(u32 size);
 void * Alloc(u32 size);
 void Free(void *);
@@ -31,10 +31,10 @@ void RunTasks(void);
 void AnimateSprites(void);
 void BuildOamBuffer(void);
 void UpdatePaletteFade(void);
-void SetVBlankCallback(void(*)(void));
+void SetVBlankCallback(void(*));
 //lcd_io_set
 void SetGpuReg(u8 reg, u16 value);
-void InitBgsFromTemplates(u8 bg_mode, struct bg_cfg *config_data, u8 config_num_entries);
+void InitBgsFromTemplates(u8 bg_mode, u8 *config_data, u8 config_num_entries);
 u32 ChangeBgX(u8 bg_id, u32 delta, u8 mode);
 u32 ChangeBgY(u8 bg_id, u32 delta, u8 mode);
 void CopyBgTilemapBufferToVram(u8 bg_id);

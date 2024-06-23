@@ -1,4 +1,4 @@
-#include "header/funcs.h"
+#include "header/data.h"
 
 extern struct Pokemon *getCurrentPlayerParty();
 extern void PlaySound(u16 soundID);
@@ -29,8 +29,8 @@ extern void KeyboardNextPage();
 extern void KeyboardNextFlag();
 extern void PrintSmallText(u8 x, u8 y, u8 *str);
 extern void DeleteWord();
-extern u8 *getAttackNameValid(u16 atackNum);
-extern u8 *getMonSpeciesNameValid(u16 species);
+extern bool8 validAttackName(u16 attackNum);
+extern bool8 validMonSpeciesNameValid(u16 species);
 extern u32 GetMonData(struct Pokemon* poke_address, u8 request);
 void loadRepelStepCount();
 void EggHatchNow();
@@ -182,12 +182,6 @@ void SetPokedexFlag(u16 species){
 	GetSetPokedexFlag(index,3); //图鉴设置已捕获的标识
 }
 #ifdef BPEE0
-/**
- * 是否为绿宝石802
-*/
-bool8 check_802(){
-	return gBaseStatsPtr[0] == 0x08F186E0;
-}
 /**
  * 是否为究极绿宝石
 */
@@ -347,18 +341,17 @@ void pause(){
 
 void SetText_MsgBox(u8 *str)
 {
-	u8 boxid_t = mySav->boxId;
     #ifdef RUBY_SAPPHIRE
     Menu_BlankWindowRect(1, 0x11, 0x1C, 0x12);
     #else
-	FillWindowPixelBuffer(boxid_t,0x11);
+    FillWindowPixelBuffer(mySav->boxId,0x11);
     #endif
     #ifdef FIRE_RED_LEAF_GREEN
-	AddTextPrinterParameterized(boxid_t,1,str,0,0,0,0); //按键提示
+    UpdateSecondWindowsText(str,0,0); //按键提示
     #elif RUBY_SAPPHIRE
     Menu_PrintTextPixelCoords(str,16,0x88,0);
     #else
-	AddTextPrinterParameterized(boxid_t,1,str,6,0,0,0); //按键提示
+    UpdateSecondWindowsText(str,6,0); //按键提示
     #endif
 }
 
@@ -1101,7 +1094,7 @@ void ButtonRightEvent()
         case PAGE_MOVES:{
             u8 rt = 1;
             while (rt <= 4){
-                if(!getAttackNameValid(myTempData->attackBuffer+rt))
+                if(!validAttackName(myTempData->attackBuffer+rt))
                     break;
                 else
                     rt++;
@@ -1114,17 +1107,15 @@ void ButtonRightEvent()
         break;
         case PAGE_SPECIE:
             if(myTempData->select == 4){
-                u16 pmax = MON_COUNT;
-                #ifdef BPEE0
-                if(check_802())
-                    pmax-=2;
-                #endif
-                if(myTempData->attackBuffer < pmax-4){
-                    myTempData->attackBuffer += 4;
-                    UpdateCurrentPageTextAndPlaySound();
+                u8 rt = 1;
+                while (rt <= 4){
+                    if(!validMonSpeciesNameValid(myTempData->attackBuffer+rt))
+                        break;
+                    else
+                        rt++;
                 }
-                else if(myTempData->attackBuffer != pmax){
-                    myTempData->attackBuffer = pmax;
+                if(rt != 1){
+                    myTempData->attackBuffer+=(rt-1);
                     UpdateCurrentPageTextAndPlaySound();
                 }
             }
@@ -1613,13 +1604,13 @@ void ButtonDownEvent(){
             }
             break;
             case PAGE_MOVES:
-                if(getAttackNameValid(myTempData->attackBuffer+1)){
+                if(validAttackName(myTempData->attackBuffer+1)){
                     myTempData->attackBuffer++;
                     UpdateCurrentPageTextAndPlaySound();
                 }
                 break;
             case PAGE_SPECIE:{
-                if(getMonSpeciesNameValid(myTempData->attackBuffer+1)){
+                if(validMonSpeciesNameValid(myTempData->attackBuffer+1)){
                     myTempData->attackBuffer++;
                     UpdateCurrentPageTextAndPlaySound();
                 }

@@ -483,17 +483,6 @@ struct fade_ctrl
 };
 
 
-struct bg_cfg
-{
-	u16 bg_id:2;
-	u16 charbase:2; //0x6000000 + x * 0x4000
-	u16 screenbase:5; //0x6000000 + x * 0x800
-	u16 size:2;
-	u16 color_mode:1;
-	u16 priority:2;
-	u16 filler:2;
-	u16 filler2;
-};
 
 struct DMACNT
 {
@@ -732,7 +721,7 @@ struct NameLengthConfig
     u8 pokemonNameLength;
     u8 moveNameLength;
     u8 itemNameLength;
-    u8 fill;
+    u8 abilityNameLength;
 };
 
 

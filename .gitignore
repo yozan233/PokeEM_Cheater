@@ -1,10 +1,9 @@
-build
-.idea
-.vscode
+/build
+/.idea
+/.vscode
 *.gba
 *.sav
-*.bin
 *.exe
 *.map
 *.sgm
-test_01.png
+* - 副本*

@@ -1,4 +1,4 @@
-#include "header/funcs.h"
+#include "header/data.h"
 
 extern struct Pokemon *getCurrentPlayerParty();
 extern struct BaseStats* getSpeciesBaseStats(u16 species);
