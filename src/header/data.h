@@ -18,10 +18,7 @@ extern const u8 *mouse_pos_table[];
 // extern u8 *hand_id_loc;
 extern struct superstate *super;
 extern struct MyDatastruct *myTempData;
-extern struct TextBuffer *textBuffer;
 extern struct MySaveblock *mySav;
-// extern struct MyBuffer *bfr;
-extern struct MousePos *mouseXY;
 
 extern const struct ListQuantityLimit gQuantityLimit;
 extern const struct NameLengthConfig gNameLengthConfig;
@@ -38,6 +35,12 @@ extern void FillMainWindowPixelRect(u16 x, u16 y, u16 width, u16 height);
 extern void UpdateMainWindowsText(u8 font,u8 *str,u8 x,u8 y);
 extern void UpdateSecondWindowsText(u8 *str,u8 x,u8 y);
 extern void ResetAllSpriteData();
+extern u16 *GetBGPaletteMem(int offset);
+extern u16 *GetOBJPaletteMem(int offset);
+extern u16 *GetBGPaletteMem2(int offset);
+extern u16 *GetOBJPaletteMem2(int offset);
+
+
 
 
 

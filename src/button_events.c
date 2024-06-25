@@ -21,6 +21,7 @@ extern void ChangePid(u8 nature,u8 gender,u8 shininess);
 extern void RefreshCurrentMonData();
 extern void ShowMonName();
 extern u8 *getPlayerNameOffset();
+extern struct Sprite *getSprite(u8 id);
 extern void SetMonPidTid(struct Pokemon *mon,u32 pid,u32 tid);
 extern void loadMonName();
 extern void KeyboardButtonAEvent();
@@ -49,26 +50,31 @@ const u8 ivevMap[] = {0,0,3,1,4,2,5};
  * @param x x坐标
  * @param y y坐标
 */
-void SetMousePos(u16 x,u16 y){
-    if(x != 0)
-        mouseXY->pos_x = x;
-    if(y != 0)
-        mouseXY->pos_y = y;
+void SetMousePos(s16 x,s16 y){
+    struct Sprite *sprite = getSprite(0);
+    if(x != 0) {
+        sprite->posX1 = x;
+    }
+    if(y != 0) {
+        sprite->posY1 = y;
+    }
 }
 
 /**
  * 缓存光标位置
 */
 void BufferPos(){
-	myTempData->posBuffer[0] = mouseXY->pos_x;
-	myTempData->posBuffer[1] = mouseXY->pos_y;
+    struct Sprite *sprite = getSprite(0);
+	myTempData->posBuffer[0] = sprite->posX1;
+	myTempData->posBuffer[1] = sprite->posY1;
 }
 
 /**
  * 判断光标位置是否改变
 */
 bool8 IsPosChange(){
-	return myTempData->posBuffer[0] != mouseXY->pos_x || myTempData->posBuffer[1] != mouseXY->pos_y;
+    struct Sprite *sprite = getSprite(0);
+	return myTempData->posBuffer[0] != sprite->posX1 || myTempData->posBuffer[1] != sprite->posY1;
 }
 
 
@@ -149,17 +155,9 @@ void SelectPreviousPartyMon(){
  * 检查精灵名字和种族是否相同
 */
 bool8 checkMonNameAndSpecies(){
-	u8 nickLength = textBuffer->monName[0x1F];
-	textBuffer->monName[nickLength] = 0xFF;
-	bool8 res;
-    u32 buffer = (u32) textBuffer;
-
-	if(StringCompare((const u8 *) (buffer + nickLength + 1), (const u8 *) buffer) != 0){
-		res = FALSE;
-	}
-	else
-		res = TRUE;
-	return res;
+	u8 nickLength = myTempData->textBuffer.monName[0x1F];
+    myTempData->textBuffer.monName[nickLength] = 0xFF;
+	return StringCompare(&myTempData->textBuffer.monName[nickLength + 1], &myTempData->textBuffer.monName) == 0;
 }
 
 /**
@@ -262,13 +260,13 @@ void loadRepelStepCount(){
 }
 
 void changeMouseColor(){
-	u16 color = OBJ_PaletteMem2[11];
+    u16 *mouseColor = GetOBJPaletteMem2(11);
 	u16 red = 0x109F;
-	if(color == red){
-		OBJ_PaletteMem2[11] = 0x6546;
+	if(mouseColor[0] == red){
+        mouseColor[0] = 0x6546;
 	}
 	else{
-		OBJ_PaletteMem2[11] = red;
+        mouseColor[0] = red;
 	}
 }
 
@@ -285,7 +283,7 @@ void reLoadPid(){
 }
 
 void SetMonNikename(){
-	CpuSet(&textBuffer->newName,&getCurrentPlayerParty()->nickname,5);
+	CpuSet(&myTempData->textBuffer.newName,&getCurrentPlayerParty()->nickname,5);
 }
 
 void SetCurrentMonLevel(u8 lvl){
@@ -547,7 +545,7 @@ void OnSureClick(){
     }
     break;
     case PAGE_POKE_NAME:{
-        if(textBuffer->newName[0] != 0xFF)
+        if(myTempData->textBuffer.newName[0] != 0xFF)
             SetMonNikename();
         else
             MonRenameBySpecies();
@@ -558,8 +556,8 @@ void OnSureClick(){
     }
     break;
     case PAGE_PLAYER_NAME:{
-        if(textBuffer->newName[0] != 0xFF)
-            StringCopy(getPlayerNameOffset(),textBuffer->newName);
+        if(myTempData->textBuffer.newName[0] != 0xFF)
+            StringCopy(getPlayerNameOffset(),myTempData->textBuffer.newName);
         RefreshCurrentPage();
     }
     break;

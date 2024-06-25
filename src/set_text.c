@@ -190,7 +190,7 @@ void UpdatePageValue(u8 page)
 			UpdateString(POS_172,POS_84,text_table[TEXT_CIRCLE_DOT]+(myTempData->obedience)*4,1);
             #endif
 
-			u8 *mapName = textBuffer->wordList;
+			u8 *mapName = myTempData->textBuffer.wordList;
             if(myTempData->location == 0xFF){
                 mapName = text_table[TEXT_FATEFUL_ENCOUNTER];
             } else{
@@ -219,7 +219,7 @@ void UpdatePageValue(u8 page)
 			else{
 				struct HealLocation *location = GetHealLocation(myTempData->selectedflightPoint);
 				u16 m = getMapId(location->group, location->map);
-                u8 *mapName2 = textBuffer->wordList;
+                u8 *mapName2 = myTempData->textBuffer.wordList;
 				GetMapName(mapName2,m,0);
 
 				UpdateString(POS_60,POS_56,mapName2,5);
@@ -718,7 +718,7 @@ void ShowMonName(){
 	}
 	else
 	{
-		UpdateString(POS_44, 0, textBuffer->monName, 12); //昵称/种族
+		UpdateString(POS_44, 0, myTempData->textBuffer.monName, 12); //昵称/种族
 	}
 }
 
@@ -727,8 +727,8 @@ void ShowPlayerName(){
 }
 
 void SetShowNickNameOnly(bool8 b){
-	u8 nickLength = textBuffer->monName[0x1F];
-	textBuffer->monName[nickLength] = b?0xFF:0xBA;
+	u8 nickLength = myTempData->textBuffer.monName[0x1F];
+    myTempData->textBuffer.monName[nickLength] = b?0xFF:0xBA;
 }
 
 u16 AnalysisText(const u8 *src, u8 *dest,u32 len){
@@ -755,11 +755,11 @@ u16 AnalysisText(const u8 *src, u8 *dest,u32 len){
 u8 *GetAuthorText(){
 	u8* authorText = text_table[TEXT_AUTHOR];
 	int len = 10;
-	u16 authorCrc = AnalysisText(authorText,textBuffer->temp,len);
+	u16 authorCrc = AnalysisText(authorText,myTempData->textBuffer.temp,len);
 	if(authorCrc != CRC_AUTHOR_TEXT){
         restart(1);
 	}
-	return textBuffer->temp;
+	return myTempData->textBuffer.temp;
 }
 
 /**
@@ -768,11 +768,11 @@ u8 *GetAuthorText(){
 u8 *GetVersionText(){
 	u8 *versionText = text_table[TEXT_VERSION];
 	int len = 13;
-	u16 versionCrc = AnalysisText(versionText,textBuffer->temp,len);
+	u16 versionCrc = AnalysisText(versionText,myTempData->textBuffer.temp,len);
 	if(versionCrc != CRC_VERSION_TEXT){
         restart(1);
 	}
-	return textBuffer->temp;
+	return myTempData->textBuffer.temp;
 }
 
 /**
@@ -782,7 +782,7 @@ void PrintSmallText(u8 x, u8 y, u8 *str){
 	#ifndef RUBY_SAPPHIRE
     UpdateMainWindowsText(0,str,x,y);
 	#else
-    u8 *format = textBuffer->format;
+    u8 *format = myTempData->textBuffer.format;
     format[0] = 0xFC;
     format[1] = 0x02;
     format[2] = 0x00;
@@ -790,7 +790,7 @@ void PrintSmallText(u8 x, u8 y, u8 *str){
     format[4] = 0x06;
     format[5] = 0x04;
     StringCopy(&format[6],str);
-    Menu_PrintTextPixelCoords(textBuffer->format,x+8,y+8,0);
+    Menu_PrintTextPixelCoords(myTempData->textBuffer.format,x+8,y+8,0);
 	#endif
 }
 
@@ -801,12 +801,12 @@ void PrintText(u8 x, u8 y, u8 *str){
 	#ifndef RUBY_SAPPHIRE
     UpdateMainWindowsText(1,str,x,y);
 	#else
-    u8 *format = textBuffer->format;
+    u8 *format = myTempData->textBuffer.format;
     format[0] = 0xFC;
     format[1] = 0x02;
     format[2] = 0x00;
     StringCopy(&format[3],str);
-    Menu_PrintTextPixelCoords(textBuffer->format,x+8,y+8,0);
+    Menu_PrintTextPixelCoords(myTempData->textBuffer.format,x+8,y+8,0);
     #endif
 }
 
@@ -1011,7 +1011,7 @@ void set_item_tile(){
 
 	if(!checkLZ(itemIcon->pal))
 		itemIcon = itemIconTableBase;
-	LZ77UnCompVram(itemIcon->pal,&OBJ_PaletteMem2[0x40]);
+	LZ77UnCompVram(itemIcon->pal,GetOBJPaletteMem2(0x40));
 }
 #endif
 
@@ -1032,7 +1032,7 @@ void set_poke_tile(){
 	if (!checkLZ(monPalette->data))
 		monPalette = monPaletteTable;
 		
-	LZ77UnCompVram(monPalette->data,&OBJ_PaletteMem2[0x40]);
+	LZ77UnCompVram(monPalette->data,GetOBJPaletteMem2(0x40));
 }
 
 bool8 checkPicLZ(struct LZData *data){
@@ -1055,8 +1055,7 @@ bool8 checkLZ(struct LZData *data){
  * @param value 道具编号
 */
 void SetItemListBuffer(u8 index,u16 value){
-	u16 *buffer = textBuffer->wordList;
-	buffer[index] = value;
+    myTempData->textBuffer.wordList[index] = value;
 }
 
 /*
@@ -1064,15 +1063,14 @@ void SetItemListBuffer(u8 index,u16 value){
 * @param index 索引
 */
 u16 GetItemListBuffer(u8 index){
-	u16 *buffer = textBuffer->wordList;
-	return buffer[index];
+	return myTempData->textBuffer.wordList[index];
 }
 
 /**
  * 将从index开始的元素移动到length-1文字
 */
 void MoveItemBuffer(u8 index,int length){
-	u16 *buffer = textBuffer->wordList;
+	u16 *buffer = myTempData->textBuffer.wordList;
 	for (u32 i = 0; i < length-index; i++){
 		buffer[length-1-i] = buffer[length-1-i-index];
 	}
@@ -1084,7 +1082,7 @@ void MoveItemBuffer(u8 index,int length){
 void SortItemBuffer(u8 index){
 	if(index < 2)
 		return;
-	u16 *buffer = textBuffer->wordList;
+	u16 *buffer = myTempData->textBuffer.wordList;
 	for(u8 i = 0;i < index/2;i++){
 		u16 temp = buffer[i];
 		buffer[i] = buffer[index-1-i];

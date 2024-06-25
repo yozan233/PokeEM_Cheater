@@ -2,7 +2,6 @@
 
 extern void task_loader(u8);
 extern u32 GetMonData(struct Pokemon* poke_address, u8 request);
-void MainCB2(void);
 void initMonTempData();
 void loadMonName();
 void loadMonIconSprite();
@@ -25,13 +24,6 @@ void main_func()
 	SetMainCallback2(MainCB2);
 }
 
-void MainCB2()
-{
-	RunTasks();
-	AnimateSprites();
-	BuildOamBuffer();
-	UpdatePaletteFade();
-}
 
 /**
  * 获取精灵最大等级
@@ -88,6 +80,7 @@ void refreshMonTempData(){
 */
 void loadMonName(){
     struct Pokemon *party =	getCurrentPlayerParty();
+    struct TextBuffer *textBuffer = &myTempData->textBuffer;
 	StringCopy(textBuffer->monName,party->nickname);
 	u8* nameStr = textBuffer->monName;
 	nameStr[10] = 0xFF;
@@ -205,7 +198,7 @@ struct Pokemon *getCurrentPlayerParty(){
  * 获取种族值数据
 */
 struct BaseStats* getSpeciesBaseStats(u16 species){
-	u32 gBaseStats = gBaseStatsPtr[0];
+	u32 gBaseStats = gSpeciesInfoPtr[0];
 	gBaseStats += (0x1C*species);
 	return (struct BaseStats*)gBaseStats;
 }
@@ -226,6 +219,7 @@ void PlaySound(u16 soundID){
  * 获取战斗文本缓存
 */
 u8 *getBattleTextBuff(u8 type,u8 value){
+    struct TextBuffer *textBuffer = &myTempData->textBuffer;
 	CpuFastFill(-1,textBuffer->temp,16);
 	u8 data[] = {0,type,value,0xFF};
 	ExpandBattleTextBuffPlaceholders(data,textBuffer->temp);

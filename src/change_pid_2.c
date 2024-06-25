@@ -33,8 +33,20 @@ void SetMonPidTid(struct Pokemon *mon,u32 pid,u32 tid){
     ZeroMonData(changed);
     CreateMon(changed, GetMonData(mon,ATTR_SPECIES,0), GetMonData(mon, ATTR_LEVEL, 0), 1, 1, pid, 1, tid);
 
-    for (u8 i = 0xA; i <= 0x50; i++)
+    u8 startAttrNum = 0xA;
+    u8 endAttrNum;
+#ifdef RUBY_SAPPHIRE
+    endAttrNum = 0x4E;
+#else
+    endAttrNum = 0x50;
+#endif
+
+    for (u8 i = startAttrNum; i <= endAttrNum; i++)
     {
+#ifdef RUBY_SAPPHIRE
+        if(i == 0x42)
+            continue;
+#endif
         u32 attr = 0;
         attr = GetMonData(mon, i, 0);
         SetMonData(changed, i, &attr);

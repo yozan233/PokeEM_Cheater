@@ -21,8 +21,6 @@ FillWindowPixelBuffer = 0x0800445c|1;
 DeactivateAllTextPrinters = 0x08002c28|1;
 AddTextPrinterParameterized = 0x08002c48|1;
 ResetSpriteData = 0x08006b10|1;
-AnimateSprites = 0x08006b5c|1;
-BuildOamBuffer = 0x08006ba8|1;
 CreateSprite = 0x08006f8c|1;
 FreeAllSpritePalettes = 0x080088f0|1;
 StringCopy = 0x08008d84|1;
@@ -30,7 +28,6 @@ StringCompare = 0x08008e28|1;
 ConvertIntToDecimalStringN = 0x08008e78|1;
 ConvertIntToHexStringN = 0x08008f18|1;
 VBlankCB_SelectScreen = 0x080f4bfc|1; /*VBlankCB_Diploma*/
-RtcInitLocalTimeOffset = 0;
 ZeroMonData = 0x0803d994|1;
 CreateMon = 0x0803da54|1;
 CalculateBoxMonChecksum = 0x0803e3e8|1;
@@ -52,13 +49,11 @@ VarGet = 0x0806e568|1;
 VarSet = 0x0806e584|1;
 StartMenuExitCallback = 0x0806f540|1;
 LoadPalette = 0x080703ec|1;
-UpdatePaletteFade = 0x080704d0|1;
 ResetPaletteFade = 0x08070528|1;
 BeginNormalPaletteFade = 0x08070588|1;
 PlaySE = 0x080722cc|1;
 CreateTask = 0x0807741c|1;
 DestroyTask = 0x08077508|1;
-RunTasks = 0x08077578|1;
 DoWarp = 0x0807e438|1;
 GetSetPokedexFlag = 0x08088e74|1;
 RemoveBagItem = 0x0809a1d8|1;
@@ -80,7 +75,7 @@ memcpy = 0x081e5e78|1;
 GetHealLocation = 0x080bfcb0|1;
 ExpandBattleTextBuffPlaceholders = 0x080d8418|1;
 ItemUseCB_RareCandy = 0x081262ac|1;
-
+MainCB2 = 0x80F4C50|1; /*CB2_Diploma*/
 
 throughWallFlag = 0x0203f465;
 
@@ -89,11 +84,7 @@ gSpecialVar_0x8004 = 0x020370c0;
 gPaletteFade = 0x02037ab8;
 gSprites = 0x0202063c;
 gPlttBufferUnfaded = 0x020371f8;
-BG_PaletteMem = 0x020371f8;
-OBJ_PaletteMem = 0x020371f8+0x200;
 gPlttBufferFaded = 0x020375f8;
-BG_PaletteMem2 = 0x020375f8;
-OBJ_PaletteMem2 = 0x020375f8+0x200;
 
 gPlayerParty = 0x02024284;
 gPlayerPartyCount = 0x02024029;
@@ -105,7 +96,6 @@ gStringVar1 = 0x02021cd0;
 gSaveBlock1Ptr = 0x03005008;
 gSaveBlock2Ptr = 0x0300500c;
 
-gLocalTime = 0;
 gMain = 0x030030f0;
 gTasks = 0x03005090;
 
@@ -116,15 +106,13 @@ gMonIconPaletteIndicesPtr = 0x800013C; /*精灵小图标调色板编号*/
 gMonIconPaletteTablePtr = 0x8000140; /*精灵小图标调色板*/
 gSpeciesNamesPtr = 0x8000144; /*精灵种族名字*/
 gMoveNamesPtr = 0x08000148; /*技能名称*/
-gBaseStatsPtr = 0x080001BC; /*精灵种族值*/
+gSpeciesInfoPtr = 0x080001BC; /*精灵种族值*/
 gItemsPtr = 0x080001C8; /*道具表*/
 gBattleMovesPtr = 0x080001CC; /*技能表*/
 gItemIconTablePtr = 0x0809899C; /*道具图标*/
 
 ItemUseOutOfBattle_Repel = 0x080a1998|1; /*FieldUseFunc_Repel*/
 
-sCursor_Gfx = 0;
-gFrontierPassCursor_Pal = 0;
 sDiplomaPalettes = 0x8415954; /*sDiplomaPal*/
 sDiplomaTilemap = 0x84154E8; /*sDiplomaTilemap*/
 sDiplomaTiles = 0x84147C0; /*sDiplomaGfx*/

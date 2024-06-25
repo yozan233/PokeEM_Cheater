@@ -167,7 +167,7 @@ const struct NameLengthConfig gNameLengthConfig = {
 	.pokemonNameLength = 11,
 	.moveNameLength = 13,
 	.itemNameLength = 14,
-    .abilityNameLength = 12
+    .abilityNameLength = 13
 };
 
 

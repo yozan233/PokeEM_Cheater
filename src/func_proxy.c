@@ -6,15 +6,14 @@ extern struct MySaveblock *mySav;
 extern const u8 sTrainerCardTextColors[];
 
 struct superstate *super = (struct superstate *)&gMain;
-struct TextBuffer *textBuffer = (struct TextBuffer *)&gStringVar1[0x100];
 struct MyDatastruct *myTempData = (struct MyDatastruct *)&gStringVar1;
-struct MousePos *mouseXY = (struct MousePos *)(&gSprites[0].pos1);
 struct task *tasks = (struct task *)&gTasks;
 struct fade_ctrl *pal_fade_control = &gPaletteFade;
 
 struct MySaveblock *mySav = (struct MySaveblock *)&gSpecialVar_0x8004;
 u8 **malloc_pointer_loc = (u8 **)&gSpecialVar_0x8004;
 
+#ifndef RUBY_SAPPHIRE
 void ShowBg01(){
     ShowBg(0);
     ShowBg(1);
@@ -38,12 +37,6 @@ void CopyBgTilemapBufferToVram01(){
     CopyBgTilemapBufferToVram(1);
 }
 
-void ResetAllSpriteData(){
-    ResetSpriteData();
-    ResetPaletteFade();
-    FreeAllSpritePalettes();
-}
-
 void InitMainWindows(){
     InitWindows(rbox_table);
     DeactivateAllTextPrinters();
@@ -63,6 +56,29 @@ void UpdateMainWindowsText(u8 font,u8 *str,u8 x,u8 y){
 
 void UpdateSecondWindowsText(u8 *str,u8 x,u8 y){
     AddTextPrinterParameterized(mySav->boxId,1,str,x,y,0,0); //按键提示
+}
+#endif
+
+void ResetAllSpriteData(){
+    ResetSpriteData();
+    ResetPaletteFade();
+    FreeAllSpritePalettes();
+}
+
+u16 *GetBGPaletteMem(int offset){
+    return &gPlttBufferUnfaded[offset];
+}
+
+u16 *GetOBJPaletteMem(int offset){
+    return GetBGPaletteMem(0x100+offset);
+}
+
+u16 *GetBGPaletteMem2(int offset){
+    return &gPlttBufferFaded[offset];
+}
+
+u16 *GetOBJPaletteMem2(int offset){
+    return GetBGPaletteMem2(0x100+offset);
 }
 
 

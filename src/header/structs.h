@@ -1,5 +1,11 @@
 #include "types.h"
 
+//// 红宝石 axve0:              ; @$(MAKE) GAME_VERSION=AXVE0 EMERALD=0 RUBY=1 RUBY_SAPPHIRE=1
+//#define RUBY 1
+//#define RUBY_SAPPHIRE 1
+
+
+
 /* define */
 #define BUTTONS_A 1
 #define BUTTONS_B 2
@@ -202,6 +208,12 @@ struct SpriteTemplate
     /*0x14*/ void (*callback)(void*);
 };
 
+struct Coords16
+{
+    s16 x;
+    s16 y;
+};
+
 struct Sprite
 {
     /*0x00*/ struct OamData oam;
@@ -212,8 +224,10 @@ struct Sprite
     /*0x18*/ struct SubspriteTable *subspriteTables;
     /*0x1C*/ void (*callback)(void*);
 
-    /*0x20*/ struct Coords16 *pos1;
-    /*0x24*/ struct Coords16 *pos2;
+    /*0x20*/ s16 posX1;
+    /*0x22*/ s16 posY1;
+    /*0x24*/ s16 posX2;
+    /*0x26*/ s16 posY2;
     /*0x28*/ s8 centerToCornerVecX;
     /*0x29*/ s8 centerToCornerVecY;
 
@@ -250,12 +264,6 @@ struct Sprite
              u8 subspriteMode:2;
 
     /*0x43*/ u8 subpriority;
-};
-
-struct Coords16
-{
-    s16 x;
-    s16 y;
 };
 
 struct UCoords16
@@ -351,7 +359,7 @@ struct MyDatastruct
 	u8 attackSelect;	//0x09
 	u8 mouseMode;		//0x0A
 	u8 soundMute;		//0x0B
-	u16 posBuffer[2];	//0x0C
+	s16 posBuffer[2];	//0x0C
 	u8 party;			//0x10
 	u8 egg;				//0x11
 	u16 species;		//0x12
@@ -398,20 +406,16 @@ struct MyDatastruct
     bool8 pokedexUpgrade:1;
     bool8 pokerus:1;
     bool8 visualRangeMax:1;
-    bool8 mirageShow:1; //0x47 幻影岛
+    bool8 mirageShow:1;
     bool8 throughWall:1;
-    bool8 fill1;
-    bool8 fill2;         //0x47
+    bool8 field_46_7:1;
+    bool8 field_47;
     u8 fontBit1;        //0x48
     u8 fontBit2;        //0x49
     u8 fontPage[2];     //0x4A
     u8 inputCursorIndex;//0x4C
-};
-
-struct MousePos
-{
-	u16 pos_x;
-	u16 pos_y;
+	u8 field_B3[0xB3];
+	struct TextBuffer textBuffer; //0x100
 };
 
 struct font
@@ -419,18 +423,6 @@ struct font
 	u8 zi1;
 	u8 zi2;
 	u8 fill;
-};
-
-struct MyBuffer
-{
-	u16 buffer0;
-	u16 buffer1;
-	u16 buffer2;
-	u16 buffer3;
-	u16 buffer4;
-	u16 buffer5;
-	u16 buffer6;
-	u16 buffer7;
 };
 
 struct Pokemon
