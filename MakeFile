@@ -35,10 +35,16 @@ CFLAGS += -D FIRE_RED_LEAF_GREEN
 ASFLAGS += --defsym FIRE_RED_LEAF_GREEN=1
 endif
 
+.NOTPARALLEL:
 
 .PHONY: clean,objects
 
-all: objects
+all: objects build_rom_f2 build_rom_fb
+	@echo "Enforcement Complete."
+	java -jar CheaterBinFileTest.jar ${GAME_VERSION}
+	@echo "CheaterBinFile Complete."
+
+build_rom_f2:
 	$(LD) $(LDFLAGS) $(MAPFILE) \
  -T linker.lsc \
  -T ${GAME_VERSION}.ld \
@@ -57,11 +63,17 @@ all: objects
  "build\set_text.o" \
  "build\keyboard.o" \
  "build\resource.o"
+	java -jar SetInsertAsmOffset.jar ${GAME_VERSION} 0x8F20000
 	armips insert_${GAME_VERSION}.asm
-	@echo "Compile Successfully."
-	#python CheaterBinFileTest.py
-	VisualBoyAdvance $(GAME_VERSION)_TEST.gba
-		
+	@echo "Build Complete F2."
+	cp ${GAME_VERSION}_TEST.gba ${GAME_VERSION}_TEST_0x8F20000.gba
+
+build_rom_fb:
+	java -jar SetInsertAsmOffset.jar ${GAME_VERSION} 0x8FB0000
+	armips insert_${GAME_VERSION}.asm
+	@echo "Build Complete FB."
+	cp ${GAME_VERSION}_TEST.gba ${GAME_VERSION}_TEST_0x8FB0000.gba
+
 
 objects:
 	mkdir -p build
@@ -80,7 +92,8 @@ objects:
 	$(CC) $(CFLAGS) -c "src\resource.c" -o "build\resource.o"
 	$(AS) $(ASFLAGS) -c "src\exit_asm.s" -o "build\exit_asm.o"
 	$(AS) $(ASFLAGS) -c "src\Chuan.asm" -o "build\Chuan.o"
-	
+	@echo "Object Complete."
+
 clean:
 	rm build//*
 

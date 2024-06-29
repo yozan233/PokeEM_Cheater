@@ -22,8 +22,8 @@ bx r1
 .word exit_asm+1
 
 
-//使用的ROM空位地址
-.org 0x8F20000
+/* 这里填所用的ROM空位地址 */
+.org 0x8FB0000
 .pool
 .importobj "build/linked.o"
 .close

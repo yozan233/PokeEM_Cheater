@@ -322,7 +322,7 @@ void set_bingdu(){
     }
 }
 
-bool8 DelLastKeyitem(){
+void DelLastKeyitem(){
 	struct BagPocket *keyitemsPocket = &gBagPockets[KEYITEMS_POCKET];
 	u16 n = 0;
 	while (n < keyitemsPocket->capacity){
@@ -330,7 +330,8 @@ bool8 DelLastKeyitem(){
 			break;
 		n++;
 	}
-    return RemoveBagItem(keyitemsPocket->itemSlots[n-1].itemId,1);
+
+    ClearItemSlots(&keyitemsPocket->itemSlots[n-1],1);
 }
 
 void pause(){

@@ -65,7 +65,7 @@ void CopyItemIconPicTo4x4Buffer(void *src, void *dest);
 s32 StringCompare(const u8 *str1, const u8 *str2);
 u16 SpeciesToNationalPokedexNum(u16 species);
 s8 GetSetPokedexFlag(u16 nationalNum, u8 caseId);
-bool8 RemoveBagItem(u16 itemId, u16 count);
+void ClearItemSlots(struct ItemSlot *slots, u8 capacity);
 void ZeroMonData(struct Pokemon *mon);
 extern s16 udivsi3(s16 a, s16 b);
 void ItemUseCB_RareCandy(void);

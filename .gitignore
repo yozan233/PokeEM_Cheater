@@ -1,6 +1,7 @@
 /build
 /.idea
 /.vscode
+/inner_cheater_bin
 *.gba
 *.sav
 *.exe
