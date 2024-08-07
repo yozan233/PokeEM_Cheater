@@ -413,12 +413,13 @@ void UpdatePageValue(u8 page)
                 u8 *itemName = getItemNameValid(curItem);
 				if (itemName == ITEM_NAME_NONE)
 					break;
-				else if(itemName != ITEM_NAME_TEMP){
+				if(itemName != ITEM_NAME_TEMP){
 					SetItemListBuffer(listIndex,curItem);
 					topIndex++;
 					listIndex++;
 				}
 			}
+            debug();
 			SortItemBuffer(topIndex);
 			
 			//当前道具
@@ -1055,7 +1056,8 @@ bool8 checkLZ(struct LZData *data){
  * @param value 道具编号
 */
 void SetItemListBuffer(u8 index,u16 value){
-    myTempData->textBuffer.wordList[index] = value;
+    u16 *buffer = myTempData->textBuffer.wordList;
+    buffer[index] = value;
 }
 
 /*
@@ -1063,7 +1065,8 @@ void SetItemListBuffer(u8 index,u16 value){
 * @param index 索引
 */
 u16 GetItemListBuffer(u8 index){
-	return myTempData->textBuffer.wordList[index];
+    u16 *buffer = myTempData->textBuffer.wordList;
+	return buffer[index];
 }
 
 /**

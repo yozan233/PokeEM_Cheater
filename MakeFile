@@ -39,12 +39,10 @@ endif
 
 .PHONY: clean,objects
 
-all: objects build_rom_f2 build_rom_fb
+all: objects build_rom_fb
 	@echo "Enforcement Complete."
-	java -jar CheaterBinFileTest.jar ${GAME_VERSION}
-	@echo "CheaterBinFile Complete."
 
-build_rom_f2:
+build_rom_fb:
 	$(LD) $(LDFLAGS) $(MAPFILE) \
  -T linker.lsc \
  -T ${GAME_VERSION}.ld \
@@ -63,16 +61,10 @@ build_rom_f2:
  "build\set_text.o" \
  "build\keyboard.o" \
  "build\resource.o"
-	java -jar SetInsertAsmOffset.jar ${GAME_VERSION} 0x8F20000
-	armips insert_${GAME_VERSION}.asm
-	@echo "Build Complete F2."
-	cp ${GAME_VERSION}_TEST.gba ${GAME_VERSION}_TEST_0x8F20000.gba
-
-build_rom_fb:
 	java -jar SetInsertAsmOffset.jar ${GAME_VERSION} 0x8FB0000
 	armips insert_${GAME_VERSION}.asm
 	@echo "Build Complete FB."
-	cp ${GAME_VERSION}_TEST.gba ${GAME_VERSION}_TEST_0x8FB0000.gba
+	VisualBoyAdvance $(GAME_VERSION)_TEST.gba
 
 
 objects:
