@@ -419,7 +419,6 @@ void UpdatePageValue(u8 page)
 					listIndex++;
 				}
 			}
-            debug();
 			SortItemBuffer(topIndex);
 			
 			//当前道具

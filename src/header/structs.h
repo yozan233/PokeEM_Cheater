@@ -129,12 +129,16 @@
 #define MOUSE_POS_ITEM 4
 #define MOUSE_POS_OTHER 5
 
-#define ITEMS_POCKET       0
+#ifdef FIRE_RED_LEAF_GREEN
+#define BALLS_POCKET       2
+#define KEYITEMS_POCKET    1
+#elif RUBY_SAPPHIRE
 #define BALLS_POCKET       1
-#define TMHM_POCKET        2
-#define BERRIES_POCKET     3
 #define KEYITEMS_POCKET    4
-#define POCKETS_COUNT      5
+#else
+#define BALLS_POCKET       1
+#define KEYITEMS_POCKET    4
+#endif
 
 #define ITEM_TEXT_CURSOR_INDEX 7
 

@@ -91,6 +91,7 @@ extern void Menu_DrawStdWindowFrame(u8 left, u8 top, u8 right, u8 bottom);
 extern void Menu_BlankWindowRect(u8 left, u8 top, u8 right, u8 bottom);
 extern void Menu_EraseWindowRect(u8 left, u8 top, u8 right, u8 bottom);
 extern void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst);
+extern u8 ItemIdToBallId(u16 ballItem);
 
 extern void debug();
 
@@ -135,6 +136,11 @@ extern u8 sDiplomaPalettes[];
 extern u8 sDiplomaTilemap[];
 extern u8 sDiplomaTiles[];
 extern u8 sWindowFrames[];
+
+extern u8 gBattleBufferA[4][0x200];
+extern u8 gActiveBattler[];
+
+
 
 
 

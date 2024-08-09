@@ -122,4 +122,8 @@ sStartMenuItems = 0x083a7344; /*sStartMenuActionTable*/
 
 HandleStartMenuInput = 0x0806f394|1; /*StartMenu_FadeScreenIfLeavingOverworld*/
 
+ItemIdToBallId = 0x080ef52c|1;
+
+
+
 

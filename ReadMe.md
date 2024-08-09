@@ -1,6 +1,6 @@
 # PokeEM_Cheater
 
-* 如何使用
+## 编译并运行
 1. 将devkitPro\devkitARM\bin目录添加到PATH环境变量
 2. 将armips.exe路径添加到PATH环境变量
 3. 在insert_BPEE.asm中设置要使用的空位地址
@@ -9,6 +9,18 @@
 6. 生成的`BPEE_TEST.gba`，即为输出的ROM
 7. 进入游戏打开菜单，选择作弊选项即可
 
-* 生成bin文件和info文件
-1. 输入`make -f MakefileCmp bpee0`生成bin文件和info文件
+## 生成bin文件和info文件
+### 绿宝石
+```shell
+make -f MakefileCmp bpee0
+```
+### 火红
+```shell
+make -f MakefileCmp bpre0
+```
+### 红宝石
+```shell
+make -f MakefileCmp axve0
+```
+
 

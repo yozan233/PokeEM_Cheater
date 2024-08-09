@@ -471,8 +471,20 @@ void OnSureClick(){
         
         setCurrentMonData(ATTR_CATCH_LOCATION, &myTempData->location);
 
-        if (myTempData->itemBuffer)
-            setCurrentMonData(ATTR_POKEBALL, &myTempData->itemBuffer);
+        if (myTempData->itemBuffer) {
+            #ifndef FIRE_RED_LEAF_GREEN
+            myTempData->numTextBuff = myTempData->itemBuffer;
+            setCurrentMonData(ATTR_POKEBALL, &myTempData->numTextBuff);
+            #else
+            u8 *flag = ItemIdToBallId;
+            if(flag[0] == 0xB5){
+                setCurrentMonData(ATTR_POKEBALL, &myTempData->itemBuffer);
+            } else{
+                myTempData->numTextBuff = ItemIdToBallId(myTempData->itemBuffer);
+                setCurrentMonData(ATTR_POKEBALL, &myTempData->numTextBuff);
+            }
+            #endif
+        }
 
         RefreshCurrentMonData();
 
