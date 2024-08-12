@@ -16,7 +16,8 @@ extern void UpdatePageValue(u8 page);
 extern u32 getCurrentMonData(u8 request);
 extern void backupMonTempData();
 extern void InitPage(u8 page);
-extern void setCurrentMonData(u8 request, void* value);
+extern void setCurrentMonData(u8 request, u32 value);
+extern void setCurrentMonData2(u8 request, void *value);
 extern void ChangePid(u8 nature,u8 gender,u8 shininess);
 extern void RefreshCurrentMonData();
 extern void ShowMonName();
@@ -290,7 +291,7 @@ void SetCurrentMonLevel(u8 lvl){
 	struct Pokemon* temp = Alloc(MON_DATA_SIZE);
     CreateMon(temp,myTempData->species, lvl, 0, 0, 0, 0, 0);
     u32 exp = GetMonData(temp,ATTR_EXP);
-    setCurrentMonData(ATTR_EXP,&exp);
+    setCurrentMonData(ATTR_EXP,exp);
     Free(temp);
 }
 
@@ -419,10 +420,8 @@ void OnSureClick(){
         }
         struct Pokemon* party = getCurrentPlayerParty();
         party->padding = 0;
-        myTempData->Num = myTempData->ability;
-        setCurrentMonData(ATTR_ABILITY_BIT,&myTempData->Num);
-        myTempData->Num = myTempData->happiness;
-        setCurrentMonData(ATTR_HAPPINESS,&myTempData->Num);
+        setCurrentMonData(ATTR_ABILITY_BIT,myTempData->ability);
+        setCurrentMonData(ATTR_HAPPINESS,myTempData->happiness);
         if(myTempData->nature != myTempData->nature_2
             || myTempData->shiny != myTempData->shiny_2
             || myTempData->sex != myTempData->sex_2
@@ -437,8 +436,8 @@ void OnSureClick(){
     case PAGE_POKE_INFO2:{
         #ifndef RUBY_SAPPHIRE
         if(myTempData->obedience != myTempData->obedienceTemp){
-            myTempData->obedienceTemp = myTempData->obedienceTemp;
-            setCurrentMonData(ATTR_OBEDIENCE, &myTempData->obedience);
+            myTempData->obedienceTemp = myTempData->obedience;
+            setCurrentMonData(ATTR_OBEDIENCE, myTempData->obedience);
             u32 mTid = GetPlayerIDAsU32();
             u32 tidTemp = myTempData->TID;
             if (myTempData->obedience == 0xFF)
@@ -452,7 +451,7 @@ void OnSureClick(){
                 if (myTempData->TID != mTid){
                     tidTemp = mTid;
                 }
-                setCurrentMonData(ATTR_OT_NAME, getPlayerNameOffset());
+                setCurrentMonData2(ATTR_OT_NAME, getPlayerNameOffset());
             }
             if (myTempData->TID != tidTemp){
                 myTempData->TID = tidTemp;
@@ -469,19 +468,17 @@ void OnSureClick(){
         }
         #endif
         
-        setCurrentMonData(ATTR_CATCH_LOCATION, &myTempData->location);
+        setCurrentMonData(ATTR_CATCH_LOCATION, myTempData->location);
 
         if (myTempData->itemBuffer) {
             #ifndef FIRE_RED_LEAF_GREEN
-            myTempData->numTextBuff = myTempData->itemBuffer;
-            setCurrentMonData(ATTR_POKEBALL, &myTempData->numTextBuff);
+            setCurrentMonData(ATTR_POKEBALL, myTempData->itemBuffer);
             #else
             u8 *flag = ItemIdToBallId;
             if(flag[0] == 0xB5){
-                setCurrentMonData(ATTR_POKEBALL, &myTempData->itemBuffer);
+                setCurrentMonData(ATTR_POKEBALL, myTempData->itemBuffer);
             } else{
-                myTempData->numTextBuff = ItemIdToBallId(myTempData->itemBuffer);
-                setCurrentMonData(ATTR_POKEBALL, &myTempData->numTextBuff);
+                setCurrentMonData(ATTR_POKEBALL, ItemIdToBallId(myTempData->itemBuffer));
             }
             #endif
         }
@@ -535,12 +532,12 @@ void OnSureClick(){
         
         u8 *ivev = (u8 *)&myTempData->hp;
         for (u8 i = 0; i < 6; i++,request++){
-            setCurrentMonData(request,&ivev[i]);
+            setCurrentMonData(request,ivev[i]);
         }
         RefreshCurrentMonData();
     }break;
     case PAGE_MOVES:
-        setCurrentMonData(myTempData->attackSelect + 0xD, &myTempData->attackBuffer);
+        setCurrentMonData(myTempData->attackSelect + 0xD, myTempData->attackBuffer);
         UpdateCurrentPageText();
         break;
     case PAGE_SPECIE:{
@@ -548,9 +545,8 @@ void OnSureClick(){
             MonRenameBySpecies();
         }
         SetPokedexFlag(myTempData->attackBuffer);
-        setCurrentMonData(ATTR_SPECIES, &myTempData->attackBuffer);
-        myTempData->Num = 2;
-        setCurrentMonData(ATTR_FONT_LANG, &myTempData->Num);
+        setCurrentMonData(ATTR_SPECIES, myTempData->attackBuffer);
+        setCurrentMonData(ATTR_FONT_LANG, 2);
         RefreshCurrentMonData();
         initMonTempData();
         ShowMonName();
@@ -562,8 +558,7 @@ void OnSureClick(){
             SetMonNikename();
         else
             MonRenameBySpecies();
-        myTempData->Num = 2;
-        setCurrentMonData(ATTR_FONT_LANG, &myTempData->Num);
+        setCurrentMonData(ATTR_FONT_LANG, 2);
         loadMonName();
         RefreshCurrentPage();
     }

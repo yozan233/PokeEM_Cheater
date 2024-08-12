@@ -179,8 +179,14 @@ u32 getCurrentMonData(u8 request){
 	return GetMonData(getCurrentPlayerParty(),request);
 }
 
-void setCurrentMonData(u8 request, void* value){
-	SetMonData(getCurrentPlayerParty(),request,value);
+void setCurrentMonData2(u8 request, void *value){
+    SetMonData(getCurrentPlayerParty(),request,value);
+}
+
+void setCurrentMonData(u8 request, u32 value){
+    u32 valueAddr = value;
+//	SetMonData(getCurrentPlayerParty(),request,&valueAddr);
+    setCurrentMonData2(request,&valueAddr);
 }
 
 void RefreshCurrentMonData(){
