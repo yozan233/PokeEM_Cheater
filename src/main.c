@@ -1,9 +1,7 @@
-#include "header/funcs.h"
+#include "header/data.h"
 
-extern void obj_callback();
 extern void task_loader(u8);
 extern u32 GetMonData(struct Pokemon* poke_address, u8 request);
-void MainCB2(void);
 void initMonTempData();
 void loadMonName();
 void loadMonIconSprite();
@@ -21,9 +19,7 @@ void backupMonTempData();
 void main_func()
 {
 	*malloc_pointer_loc = (u8 *) AllocZeroed(0x1004);
-	ResetSpriteData();
-	ResetPaletteFade();
-	FreeAllSpritePalettes();
+    ResetAllSpriteData();
 	mySav->task_id = CreateTask(task_loader,1);
 	SetMainCallback2(MainCB2);
 }
@@ -84,6 +80,7 @@ void refreshMonTempData(){
 */
 void loadMonName(){
     struct Pokemon *party =	getCurrentPlayerParty();
+    struct TextBuffer *textBuffer = &myTempData->textBuffer;
 	StringCopy(textBuffer->monName,party->nickname);
 	u8* nameStr = textBuffer->monName;
 	nameStr[10] = 0xFF;
@@ -120,12 +117,19 @@ struct Sprite *getSprite(u8 id){
 	return &gSprites[id];
 }
 
+/**
+ * 加载精灵图标图块
+ * @param species 种族编号
+ */
 void loadMonIconTiles(u16 species){
 	u32* gMonIconTable = gMonIconTablePtr;
 	u32 monIconOffset = gMonIconTable[species];
 	CpuSet((void *) monIconOffset, (void *) 0x06010400, 0x200);
 }
 
+/**
+ * 加载精灵是否闪光
+ */
 void loadMonIsShiny(){
 	u16* pid = (u16*)&myTempData->PID;
 	u16 pidXor = pid[0]^pid[1];
@@ -139,6 +143,10 @@ void loadMonIsShiny(){
 	}
 }
 
+/**
+ * 加载精灵性别
+ * @param species 种族编号
+ */
 void loadMonGender(u16 species){
 	struct BaseStats* baseStats = getSpeciesBaseStats(species);
 	u8 genderRatio = baseStats->genderRatio;
@@ -171,8 +179,14 @@ u32 getCurrentMonData(u8 request){
 	return GetMonData(getCurrentPlayerParty(),request);
 }
 
-void setCurrentMonData(u8 request, void* value){
-	SetMonData(getCurrentPlayerParty(),request,value);
+void setCurrentMonData2(u8 request, void *value){
+    SetMonData(getCurrentPlayerParty(),request,value);
+}
+
+void setCurrentMonData(u8 request, u32 value){
+    u32 valueAddr = value;
+//	SetMonData(getCurrentPlayerParty(),request,&valueAddr);
+    setCurrentMonData2(request,&valueAddr);
 }
 
 void RefreshCurrentMonData(){
@@ -190,7 +204,7 @@ struct Pokemon *getCurrentPlayerParty(){
  * 获取种族值数据
 */
 struct BaseStats* getSpeciesBaseStats(u16 species){
-	u32 gBaseStats = gBaseStatsPtr[0];
+	u32 gBaseStats = gSpeciesInfoPtr[0];
 	gBaseStats += (0x1C*species);
 	return (struct BaseStats*)gBaseStats;
 }
@@ -211,6 +225,7 @@ void PlaySound(u16 soundID){
  * 获取战斗文本缓存
 */
 u8 *getBattleTextBuff(u8 type,u8 value){
+    struct TextBuffer *textBuffer = &myTempData->textBuffer;
 	CpuFastFill(-1,textBuffer->temp,16);
 	u8 data[] = {0,type,value,0xFF};
 	ExpandBattleTextBuffPlaceholders(data,textBuffer->temp);
@@ -228,12 +243,20 @@ u8 *getAttackName(u16 attackNum){
 	return (u8 *) moveNames;
 }
 
+/**
+ * 获取道具数据
+ * @param itemId 道具编号
+ */
 struct Item *getItemData(u16 itemId){
     struct Item *itemTable = (struct Item *)(gItemsPtr[0]);
     struct Item *item = itemTable + itemId;
     return item;
 }
 
+/**
+ * 获取道具名字
+ * @param itemId 道具编号
+ */
 u8 *getItemName(u16 itemId){
 	struct Item *item = getItemData(itemId);
 	return item->name;
@@ -244,6 +267,7 @@ u8 *getItemName(u16 itemId){
 */
 bool8 checkNameString(const u8 *str,u32 length){
 	u8 firstChar = str[0];
+    //如果第一个字符是空格、终止符、-，则名字无效
 	if(firstChar == 0 || firstChar == 0xAE || firstChar == 0xFF){
 		return FALSE;
 	}
@@ -255,47 +279,68 @@ bool8 checkNameString(const u8 *str,u32 length){
 	return FALSE;
 }
 
-u8 *getMonSpeciesNameValid(u16 species){
-	u32 limit = gQuantityLimit.pokemonCount;
-	if (limit != 0){
-		return (u8 *) (species < limit);
+/**
+ * 校验的种族名字
+ * @param species 种族编号
+ */
+bool8 validMonSpeciesNameValid(u16 species){
+	u32 count = gQuantityLimit.pokemonCount;
+	if (count != 0){
+		if(species <= count){
+            return TRUE;
+        } else{
+            return FALSE;
+        }
 	}
-	u8 *name = getMonSpeciesName(species);
-	if (checkNameString(name,gNameLengthConfig.pokemonNameLength)){
-		return name;
+	if (checkNameString(getMonSpeciesName(species),gNameLengthConfig.pokemonNameLength)){
+		return TRUE;
 	}
-	return 0;
+	return FALSE;
 }
 
-u8 *getAttackNameValid(u16 atackNum){
-	u32 limit = gQuantityLimit.moveCount;
-	if (limit != 0){
-		return (u8 *) (atackNum < limit);
+/**
+ * 校验的技能名字
+ * @param attackNum 技能编号
+ */
+bool8 validAttackName(u16 attackNum){
+	u32 count = gQuantityLimit.moveCount;
+	if (count != 0){
+		if(attackNum <= count){
+            return TRUE;
+        } else{
+            return FALSE;
+        }
 	}
-	u8 *name = getAttackName(atackNum);
-	if (checkNameString(name,gNameLengthConfig.moveNameLength)){
-		return name;
+	if (checkNameString(getAttackName(attackNum),gNameLengthConfig.moveNameLength)){
+		return TRUE;
 	}
-	return 0;
+	return FALSE;
 }
 
+/**
+ * 获取校验的道具名字地址
+ * @param itemId 道具编号
+ */
 u8 *getItemNameValid(u16 itemId){
-	u32 limit = gQuantityLimit.itemCount;
-	if (limit != 0){
-		return (u8 *) (itemId < limit);
-	}
+	u32 count = gQuantityLimit.itemCount;
 
     struct Item *item = getItemData(itemId);
-
-//    if(item->itemId != itemId){
-//        return (u8 *) ITEM_NAME_TEMP;
-//    }
-
     u8 *name = item->name;
-	u8 firstChar = name[0];
-	if(firstChar == 0x3D || firstChar == 0xAC || firstChar == 0xAE){
-		return (u8 *) ITEM_NAME_TEMP;
+
+    u8 firstChar = name[0];
+    //如果开头第一个字符是？?-，那么就是临时道具，需要跳过
+    if(firstChar == 0x3D || firstChar == 0xAC || firstChar == 0xAE){
+        return (u8 *) ITEM_NAME_TEMP;
+    }
+
+	if (count != 0){
+        if(itemId <= count) {
+            return name;
+        } else{
+            return (u8 *) ITEM_NAME_NONE;
+        }
 	}
+
 	u8 nameLen = gNameLengthConfig.itemNameLength;
 
 	if(name[nameLen] == itemId){

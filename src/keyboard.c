@@ -1,4 +1,4 @@
-#include "header/funcs.h"
+#include "header/data.h"
 #include "header/text.h"
 
 extern void PrintText(u8 x, u8 y, u8 *str);
@@ -7,7 +7,7 @@ extern void SetMousePos(u16 x,u16 y);
 extern bool8 IsPosChange();
 extern void UpdateString(u8 x, u8 y, u8 *str,u16 len);
 extern void PlaySound(u16 soundID);
-extern void ClearStringRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height);
+extern void ClearStringRect(u16 x, u16 y, u16 width, u16 height);
 extern void ShowPlayerName();
 extern void ShowMonName();
 extern void UpdateSmallString(u8 pos_x, u8 pos_y, u8 *str,u16 len);
@@ -66,7 +66,7 @@ void UpdateKeyboardMousePos(){
 
 
 void UpdateEnglishWordList(){
-    struct font *ft = (struct font *)textBuffer->wordList;
+    struct font *ft = (struct font *)myTempData->textBuffer.wordList;
 	u8 b = myTempData->fontBit2;
 	u8 i = 0;
 	while (i<26) //26字母
@@ -127,7 +127,7 @@ void UpdateEnglishWordList(){
 }
 
 void UpdateChineseWordList(){
-    struct font *ft = (struct font *)textBuffer->wordList;
+    struct font *ft = (struct font *)myTempData->textBuffer.wordList;
 	u8 a = myTempData->fontBit1;
 	u8 b = myTempData->fontBit2;
 	u8 i = 5;
@@ -307,12 +307,12 @@ void UpdateFontPageFlag(){
 }
 
 void ClearNewNameBuffer(){
-	CpuFastFill(-1,textBuffer->newName,16);
+	CpuFastFill(-1,myTempData->textBuffer.newName,16);
 }
 
 void PrintUnderline(u32 cur, u32 length){
 	length = length-cur;
-	u8 *text_g = textBuffer->temp;
+	u8 *text_g = myTempData->textBuffer.temp;
 	while (cur)
 	{
 		text_g[0] = 0xB0;
@@ -327,9 +327,9 @@ void PrintUnderline(u32 cur, u32 length){
 	}
 	text_g[0] = 0xFF;
     #ifdef RUBY_SAPPHIRE
-    PrintText(40,24,textBuffer->temp);
+    PrintText(40,24,myTempData->textBuffer.temp);
     #else
-	PrintText(46,24,textBuffer->temp);
+	PrintText(46,24,myTempData->textBuffer.temp);
     #endif
 }
 
@@ -344,14 +344,14 @@ void UpdateWordList(){
 	else
 		UpdateEnglishWordList();
 	#ifdef FIRE_RED_LEAF_GREEN
-	ClearStringRect(0,0,0,40,12*10+6*9,16*5);
-	PrintText(0,40,textBuffer->wordList);
+	ClearStringRect(0,40,12*10+6*9,16*5);
+	PrintText(0,40,myTempData->textBuffer.wordList);
     #elif RUBY_SAPPHIRE
-    ClearStringRect(0,0,0,40,16*10,16*5-8);
-	PrintText(8,40,textBuffer->wordList);
+    ClearStringRect(0,40,16*10,16*5-8);
+	PrintText(8,40,myTempData->textBuffer.wordList);
 	#else
-	ClearStringRect(0,0,0,40,12*10+5*9,16*5);
-	PrintText(10,40,textBuffer->wordList);
+	ClearStringRect(0,40,12*10+5*9,16*5);
+	PrintText(10,40,myTempData->textBuffer.wordList);
 	#endif
 	UpdateFontPageFlag();
 }
@@ -369,7 +369,7 @@ void InitKeyboard(){
 
 void UpdateKeyboardValue(){
 	UpdateWordList();
-	ClearStringRect(0,0,46,18,5*12,20);
+	ClearStringRect(46,18,5*12,20);
 
 	int name_len = 10;
 	if(myTempData->page == PAGE_PLAYER_NAME)
@@ -394,9 +394,9 @@ void UpdateKeyboardValue(){
 	PrintUnderline(myTempData->inputCursorIndex,name_len);//横线
 
     #ifdef RUBY_SAPPHIRE
-    PrintText(40,16,textBuffer->newName);//新名字
+    PrintText(40,16,myTempData->textBuffer.newName);//新名字
     #else
-    PrintText(46,18,textBuffer->newName);//新名字
+    PrintText(46,18,myTempData->textBuffer.newName);//新名字
     #endif
 }
 
@@ -470,7 +470,7 @@ void KeyboardNextPage(){
 void DeleteWord(){
 	if(myTempData->inputCursorIndex)
 	{
-		u8 *text_nd = textBuffer->newName;
+		u8 *text_nd = myTempData->textBuffer.newName;
 		u32 dm = 0;
 		if(myTempData->inputCursorIndex > 1)
 			dm = myTempData->inputCursorIndex-2;
@@ -516,9 +516,9 @@ void KeyboardButtonAEvent(){
 				name_len = 7;
 			if(myTempData->inputCursorIndex <= name_len-m)
 			{
-				struct font *wordList = (struct font *)textBuffer->wordList;
+				struct font *wordList = (struct font *)myTempData->textBuffer.wordList;
 				wordList += (u8)(~myTempData->select);
-				u8 *newName = (u8 *)textBuffer->newName;
+				u8 *newName = (u8 *)myTempData->textBuffer.newName;
 				newName += myTempData->inputCursorIndex;
 				
 				myTempData->inputCursorIndex += m;

@@ -1,4 +1,4 @@
-#include "header/funcs.h"
+#include "header/data.h"
 
 extern struct Pokemon *getCurrentPlayerParty();
 extern void PlaySound(u16 soundID);
@@ -16,11 +16,13 @@ extern void UpdatePageValue(u8 page);
 extern u32 getCurrentMonData(u8 request);
 extern void backupMonTempData();
 extern void InitPage(u8 page);
-extern void setCurrentMonData(u8 request, void* value);
+extern void setCurrentMonData(u8 request, u32 value);
+extern void setCurrentMonData2(u8 request, void *value);
 extern void ChangePid(u8 nature,u8 gender,u8 shininess);
 extern void RefreshCurrentMonData();
 extern void ShowMonName();
 extern u8 *getPlayerNameOffset();
+extern struct Sprite *getSprite(u8 id);
 extern void SetMonPidTid(struct Pokemon *mon,u32 pid,u32 tid);
 extern void loadMonName();
 extern void KeyboardButtonAEvent();
@@ -29,8 +31,8 @@ extern void KeyboardNextPage();
 extern void KeyboardNextFlag();
 extern void PrintSmallText(u8 x, u8 y, u8 *str);
 extern void DeleteWord();
-extern u8 *getAttackNameValid(u16 atackNum);
-extern u8 *getMonSpeciesNameValid(u16 species);
+extern bool8 validAttackName(u16 attackNum);
+extern bool8 validMonSpeciesNameValid(u16 species);
 extern u32 GetMonData(struct Pokemon* poke_address, u8 request);
 void loadRepelStepCount();
 void EggHatchNow();
@@ -49,26 +51,31 @@ const u8 ivevMap[] = {0,0,3,1,4,2,5};
  * @param x x坐标
  * @param y y坐标
 */
-void SetMousePos(u16 x,u16 y){
-    if(x != 0)
-        mouseXY->pos_x = x;
-    if(y != 0)
-        mouseXY->pos_y = y;
+void SetMousePos(s16 x,s16 y){
+    struct Sprite *sprite = getSprite(0);
+    if(x != 0) {
+        sprite->posX1 = x;
+    }
+    if(y != 0) {
+        sprite->posY1 = y;
+    }
 }
 
 /**
  * 缓存光标位置
 */
 void BufferPos(){
-	myTempData->posBuffer[0] = mouseXY->pos_x;
-	myTempData->posBuffer[1] = mouseXY->pos_y;
+    struct Sprite *sprite = getSprite(0);
+	myTempData->posBuffer[0] = sprite->posX1;
+	myTempData->posBuffer[1] = sprite->posY1;
 }
 
 /**
  * 判断光标位置是否改变
 */
 bool8 IsPosChange(){
-	return myTempData->posBuffer[0] != mouseXY->pos_x || myTempData->posBuffer[1] != mouseXY->pos_y;
+    struct Sprite *sprite = getSprite(0);
+	return myTempData->posBuffer[0] != sprite->posX1 || myTempData->posBuffer[1] != sprite->posY1;
 }
 
 
@@ -149,17 +156,9 @@ void SelectPreviousPartyMon(){
  * 检查精灵名字和种族是否相同
 */
 bool8 checkMonNameAndSpecies(){
-	u8 nickLength = textBuffer->monName[0x1F];
-	textBuffer->monName[nickLength] = 0xFF;
-	bool8 res;
-    u32 buffer = (u32) textBuffer;
-
-	if(StringCompare((const u8 *) (buffer + nickLength + 1), (const u8 *) buffer) != 0){
-		res = FALSE;
-	}
-	else
-		res = TRUE;
-	return res;
+	u8 nickLength = myTempData->textBuffer.monName[0x1F];
+    myTempData->textBuffer.monName[nickLength] = 0xFF;
+	return StringCompare(&myTempData->textBuffer.monName[nickLength + 1], &myTempData->textBuffer.monName) == 0;
 }
 
 /**
@@ -182,12 +181,6 @@ void SetPokedexFlag(u16 species){
 	GetSetPokedexFlag(index,3); //图鉴设置已捕获的标识
 }
 #ifdef BPEE0
-/**
- * 是否为绿宝石802
-*/
-bool8 check_802(){
-	return gBaseStatsPtr[0] == 0x08F186E0;
-}
 /**
  * 是否为究极绿宝石
 */
@@ -268,13 +261,13 @@ void loadRepelStepCount(){
 }
 
 void changeMouseColor(){
-	u16 color = OBJ_PaletteMem2[11];
+    u16 *mouseColor = GetOBJPaletteMem2(11);
 	u16 red = 0x109F;
-	if(color == red){
-		OBJ_PaletteMem2[11] = 0x6546;
+	if(mouseColor[0] == red){
+        mouseColor[0] = 0x6546;
 	}
 	else{
-		OBJ_PaletteMem2[11] = red;
+        mouseColor[0] = red;
 	}
 }
 
@@ -291,14 +284,14 @@ void reLoadPid(){
 }
 
 void SetMonNikename(){
-	CpuSet(&textBuffer->newName,&getCurrentPlayerParty()->nickname,5);
+	CpuSet(&myTempData->textBuffer.newName,&getCurrentPlayerParty()->nickname,5);
 }
 
 void SetCurrentMonLevel(u8 lvl){
 	struct Pokemon* temp = Alloc(MON_DATA_SIZE);
     CreateMon(temp,myTempData->species, lvl, 0, 0, 0, 0, 0);
     u32 exp = GetMonData(temp,ATTR_EXP);
-    setCurrentMonData(ATTR_EXP,&exp);
+    setCurrentMonData(ATTR_EXP,exp);
     Free(temp);
 }
 
@@ -330,7 +323,7 @@ void set_bingdu(){
     }
 }
 
-bool8 DelLastKeyitem(){
+void DelLastKeyitem(){
 	struct BagPocket *keyitemsPocket = &gBagPockets[KEYITEMS_POCKET];
 	u16 n = 0;
 	while (n < keyitemsPocket->capacity){
@@ -338,7 +331,8 @@ bool8 DelLastKeyitem(){
 			break;
 		n++;
 	}
-    return RemoveBagItem(keyitemsPocket->itemSlots[n-1].itemId,1);
+
+    ClearItemSlots(&keyitemsPocket->itemSlots[n-1],1);
 }
 
 void pause(){
@@ -347,18 +341,17 @@ void pause(){
 
 void SetText_MsgBox(u8 *str)
 {
-	u8 boxid_t = mySav->boxId;
     #ifdef RUBY_SAPPHIRE
     Menu_BlankWindowRect(1, 0x11, 0x1C, 0x12);
     #else
-	FillWindowPixelBuffer(boxid_t,0x11);
+    FillWindowPixelBuffer(mySav->boxId,0x11);
     #endif
     #ifdef FIRE_RED_LEAF_GREEN
-	AddTextPrinterParameterized(boxid_t,1,str,0,0,0,0); //按键提示
+    UpdateSecondWindowsText(str,0,0); //按键提示
     #elif RUBY_SAPPHIRE
     Menu_PrintTextPixelCoords(str,16,0x88,0);
     #else
-	AddTextPrinterParameterized(boxid_t,1,str,6,0,0,0); //按键提示
+    UpdateSecondWindowsText(str,6,0); //按键提示
     #endif
 }
 
@@ -427,10 +420,8 @@ void OnSureClick(){
         }
         struct Pokemon* party = getCurrentPlayerParty();
         party->padding = 0;
-        myTempData->Num = myTempData->ability;
-        setCurrentMonData(ATTR_ABILITY_BIT,&myTempData->Num);
-        myTempData->Num = myTempData->happiness;
-        setCurrentMonData(ATTR_HAPPINESS,&myTempData->Num);
+        setCurrentMonData(ATTR_ABILITY_BIT,myTempData->ability);
+        setCurrentMonData(ATTR_HAPPINESS,myTempData->happiness);
         if(myTempData->nature != myTempData->nature_2
             || myTempData->shiny != myTempData->shiny_2
             || myTempData->sex != myTempData->sex_2
@@ -445,8 +436,8 @@ void OnSureClick(){
     case PAGE_POKE_INFO2:{
         #ifndef RUBY_SAPPHIRE
         if(myTempData->obedience != myTempData->obedienceTemp){
-            myTempData->obedienceTemp = myTempData->obedienceTemp;
-            setCurrentMonData(ATTR_OBEDIENCE, &myTempData->obedience);
+            myTempData->obedienceTemp = myTempData->obedience;
+            setCurrentMonData(ATTR_OBEDIENCE, myTempData->obedience);
             u32 mTid = GetPlayerIDAsU32();
             u32 tidTemp = myTempData->TID;
             if (myTempData->obedience == 0xFF)
@@ -460,7 +451,7 @@ void OnSureClick(){
                 if (myTempData->TID != mTid){
                     tidTemp = mTid;
                 }
-                setCurrentMonData(ATTR_OT_NAME, getPlayerNameOffset());
+                setCurrentMonData2(ATTR_OT_NAME, getPlayerNameOffset());
             }
             if (myTempData->TID != tidTemp){
                 myTempData->TID = tidTemp;
@@ -477,10 +468,20 @@ void OnSureClick(){
         }
         #endif
         
-        setCurrentMonData(ATTR_CATCH_LOCATION, &myTempData->location);
+        setCurrentMonData(ATTR_CATCH_LOCATION, myTempData->location);
 
-        if (myTempData->itemBuffer)
-            setCurrentMonData(ATTR_POKEBALL, &myTempData->itemBuffer);
+        if (myTempData->itemBuffer) {
+            #ifndef FIRE_RED_LEAF_GREEN
+            setCurrentMonData(ATTR_POKEBALL, myTempData->itemBuffer);
+            #else
+            u8 *flag = ItemIdToBallId;
+            if(flag[0] == 0xB5){
+                setCurrentMonData(ATTR_POKEBALL, myTempData->itemBuffer);
+            } else{
+                setCurrentMonData(ATTR_POKEBALL, ItemIdToBallId(myTempData->itemBuffer));
+            }
+            #endif
+        }
 
         RefreshCurrentMonData();
 
@@ -531,12 +532,12 @@ void OnSureClick(){
         
         u8 *ivev = (u8 *)&myTempData->hp;
         for (u8 i = 0; i < 6; i++,request++){
-            setCurrentMonData(request,&ivev[i]);
+            setCurrentMonData(request,ivev[i]);
         }
         RefreshCurrentMonData();
     }break;
     case PAGE_MOVES:
-        setCurrentMonData(myTempData->attackSelect + 0xD, &myTempData->attackBuffer);
+        setCurrentMonData(myTempData->attackSelect + 0xD, myTempData->attackBuffer);
         UpdateCurrentPageText();
         break;
     case PAGE_SPECIE:{
@@ -544,9 +545,8 @@ void OnSureClick(){
             MonRenameBySpecies();
         }
         SetPokedexFlag(myTempData->attackBuffer);
-        setCurrentMonData(ATTR_SPECIES, &myTempData->attackBuffer);
-        myTempData->Num = 2;
-        setCurrentMonData(ATTR_FONT_LANG, &myTempData->Num);
+        setCurrentMonData(ATTR_SPECIES, myTempData->attackBuffer);
+        setCurrentMonData(ATTR_FONT_LANG, 2);
         RefreshCurrentMonData();
         initMonTempData();
         ShowMonName();
@@ -554,19 +554,18 @@ void OnSureClick(){
     }
     break;
     case PAGE_POKE_NAME:{
-        if(textBuffer->newName[0] != 0xFF)
+        if(myTempData->textBuffer.newName[0] != 0xFF)
             SetMonNikename();
         else
             MonRenameBySpecies();
-        myTempData->Num = 2;
-        setCurrentMonData(ATTR_FONT_LANG, &myTempData->Num);
+        setCurrentMonData(ATTR_FONT_LANG, 2);
         loadMonName();
         RefreshCurrentPage();
     }
     break;
     case PAGE_PLAYER_NAME:{
-        if(textBuffer->newName[0] != 0xFF)
-            StringCopy(getPlayerNameOffset(),textBuffer->newName);
+        if(myTempData->textBuffer.newName[0] != 0xFF)
+            StringCopy(getPlayerNameOffset(),myTempData->textBuffer.newName);
         RefreshCurrentPage();
     }
     break;
@@ -1101,7 +1100,7 @@ void ButtonRightEvent()
         case PAGE_MOVES:{
             u8 rt = 1;
             while (rt <= 4){
-                if(!getAttackNameValid(myTempData->attackBuffer+rt))
+                if(!validAttackName(myTempData->attackBuffer+rt))
                     break;
                 else
                     rt++;
@@ -1114,17 +1113,15 @@ void ButtonRightEvent()
         break;
         case PAGE_SPECIE:
             if(myTempData->select == 4){
-                u16 pmax = MON_COUNT;
-                #ifdef BPEE0
-                if(check_802())
-                    pmax-=2;
-                #endif
-                if(myTempData->attackBuffer < pmax-4){
-                    myTempData->attackBuffer += 4;
-                    UpdateCurrentPageTextAndPlaySound();
+                u8 rt = 1;
+                while (rt <= 4){
+                    if(!validMonSpeciesNameValid(myTempData->attackBuffer+rt))
+                        break;
+                    else
+                        rt++;
                 }
-                else if(myTempData->attackBuffer != pmax){
-                    myTempData->attackBuffer = pmax;
+                if(rt != 1){
+                    myTempData->attackBuffer+=(rt-1);
                     UpdateCurrentPageTextAndPlaySound();
                 }
             }
@@ -1613,13 +1610,13 @@ void ButtonDownEvent(){
             }
             break;
             case PAGE_MOVES:
-                if(getAttackNameValid(myTempData->attackBuffer+1)){
+                if(validAttackName(myTempData->attackBuffer+1)){
                     myTempData->attackBuffer++;
                     UpdateCurrentPageTextAndPlaySound();
                 }
                 break;
             case PAGE_SPECIE:{
-                if(getMonSpeciesNameValid(myTempData->attackBuffer+1)){
+                if(validMonSpeciesNameValid(myTempData->attackBuffer+1)){
                     myTempData->attackBuffer++;
                     UpdateCurrentPageTextAndPlaySound();
                 }

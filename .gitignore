@@ -1,10 +1,10 @@
-build
-.idea
-.vscode
+/build
+/.idea
+/.vscode
+/inner_cheater_bin
 *.gba
 *.sav
-*.bin
 *.exe
 *.map
 *.sgm
-test_01.png
+* - 副本*

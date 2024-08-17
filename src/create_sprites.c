@@ -1,4 +1,4 @@
-#include "header/funcs.h"
+#include "header/data.h"
 #include "header/sprite.h"
 
 extern struct Sprite *getSprite(u8 id);
@@ -63,7 +63,7 @@ u8 CreateNormalSprite(s16 x, s16 y){
 
 void CreateSprites(){
     u32* gMonIconPaletteTable = (u32 *) gMonIconPaletteTablePtr[0];
-    CpuSet((void *) gMonIconPaletteTable[0], &OBJ_PaletteMem[0x10], 16 * 3);
+    CpuSet((void *) gMonIconPaletteTable[0], GetOBJPaletteMem(0x10), 16 * 3);
     u8 curId = CreateNormalSprite(0x2E,0x4C);
     mySav->cursorPicId = curId;
     struct Sprite *sprite = getSprite(curId);
@@ -98,8 +98,8 @@ void CreateSprites(){
     sprite->oam.mosaic = TRUE;
     #endif
 
-
     CpuSet(&mouse_tile,(void *)0x06010000,0x40);
-    CpuSet(&mouse_pal,OBJ_PaletteMem,0x10);
+    CpuSet(&mouse_pal,GetOBJPaletteMem(0),0x10);
+
 
 }

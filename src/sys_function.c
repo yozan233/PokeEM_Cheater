@@ -1,4 +1,4 @@
-#include "header/data.h"
+#include "header/structs.h"
 
 void debug(){
 
@@ -30,44 +30,51 @@ void CpuFastFill(int value, void *dest, int size)
 extern u32 gBGTilemapBuffers[];
 
 struct MallocBlock {
-	int malloc;
-	int size;
+	void *malloc;
+	u32 size;
 };
 
-int Alloc(u32 size){
-	int head = (&gBGTilemapBuffers[21]);
-	int pointer = gBGTilemapBuffers[0];
+struct AllocMemory {
+    u32 pointer;
+    struct MallocBlock blocks[20];
+    u8 memory[0x8000];
+};
 
-	struct MallocBlock *block = &gBGTilemapBuffers;
+struct AllocMemory *gAllocMemory = (struct AllocMemory*)&gBGTilemapBuffers;
 
-	int malloc;
-	if(pointer == 0){
-		malloc = head;
+void *Alloc(u32 size){
+//	int head = (&gBGTilemapBuffers[21]);
+//	int pointer = gBGTilemapBuffers[0];
+//
+//	struct MallocBlock *block = &gBGTilemapBuffers;
+
+	void *malloc;
+	if(gAllocMemory->pointer == 0){
+		malloc = &gAllocMemory->memory;
 	}
 	else{
-		malloc = head + block[pointer].size;
+//		malloc = head + block[pointer].size;
+        struct MallocBlock *block = &gAllocMemory->blocks[gAllocMemory->pointer];
+        malloc = &(block->malloc) + block->size;
 	}
-	pointer++;
+    gAllocMemory->pointer++;
 
-	block[pointer].malloc = malloc;
-	block[pointer].size = size;
-
-	gBGTilemapBuffers[0] = pointer;
+    gAllocMemory->blocks[gAllocMemory->pointer].malloc = malloc;
+    gAllocMemory->blocks[gAllocMemory->pointer].size = size;
 
 	return malloc;
 }
 
-int AllocZeroed(u32 size){
-	int malloc = Alloc(size);
+void *AllocZeroed(u32 size){
+	void *malloc = Alloc(size);
 	CpuFastFill(0, malloc, size);
 	return malloc;
 }
 
-void Free(int malloc){
-	int pointer = gBGTilemapBuffers[0];
-	if(pointer == 0)
+void Free(void *malloc){
+	if(gAllocMemory->pointer == 0)
 		return;
-	gBGTilemapBuffers[0] = pointer - 1;
+    gAllocMemory->pointer--;
 }
 
 void SetGpuReg(u8 reg, u16 value){

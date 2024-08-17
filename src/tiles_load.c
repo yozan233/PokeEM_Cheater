@@ -1,4 +1,4 @@
-#include "header/funcs.h"
+#include "header/data.h"
 
 #ifndef RUBY_SAPPHIRE
 bool8 tiles_load()
@@ -6,9 +6,9 @@ bool8 tiles_load()
 	switch(*(*malloc_pointer_loc+1))
 	{
 		case 0:
-			ResetTempTileDataBuffers();
-			DecompressAndCopyTileDataToVram(1,sDiplomaTiles,0,0,0);
-			CopyToBgTilemapBuffer(1,sDiplomaTilemap,0,0);
+            ResetTempTileDataBuffers();
+            DecompressAndCopyTileDataToVram(1,sDiplomaTiles,0,0,0);
+            CopyDiplomaTilemapBuffer();
 			break;
 		case 1:
 			if(FreeTempTileDataBuffersIfPossible())

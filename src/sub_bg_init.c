@@ -1,4 +1,4 @@
-#include "header/funcs.h"
+#include "header/data.h"
 
 #ifndef RUBY_SAPPHIRE
 const u8 bg_config_table[][4] = {
@@ -10,13 +10,11 @@ void sub_bg_init()
 	InitBgsFromTemplates(0,bg_config_table,2);
 	for (int i=0;i<4;i++)
 	{
-		ChangeBgX(i,0,0);
-		ChangeBgY(i,0,0);
+        ChangeBgXY(i);
 	}
-	
-	SetBgTilemapBuffer(1,*malloc_pointer_loc+4);
-	ShowBg(0);
-	ShowBg(1);
+
+    SetBg1TilemapBuffer();
+    ShowBg01();
 }
 
 #else

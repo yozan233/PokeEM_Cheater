@@ -1,4 +1,4 @@
-#include "header/funcs.h"
+#include "header/data.h"
 
 extern u32 GetPenWuMax();
 extern struct Pokemon *getCurrentPlayerParty();
@@ -15,7 +15,8 @@ extern void InitKeyboard();
 extern void SetText_MsgBox(u8 *str);
 extern u8 *getBattleTextBuff(u8 type,u8 value);
 extern void UpDateSelectedMousePos();
-extern u8 *getAttackNameValid(u16 atackNum);
+extern bool8 validAttackName(u16 attackNum);
+extern bool8 validMonSpeciesNameValid(u16 species);
 extern void UpdateKeyboardValue();
 extern void restart(int i);
 u8 getMapId(u16 mapGroup, u16 mapNum);
@@ -34,7 +35,7 @@ void UpdatePageValue(u8 page);
 u8 *GetAuthorText();
 u8 *GetVersionText();
 void UpdateString(u8 x, u8 y, u8 *str,u16 len);
-void ClearStringRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height);
+void ClearStringRect(u16 x, u16 y, u16 width, u16 height);
 void UpdateNumString(u8 pos_x, u8 pos_y, u32 num);
 void UpdateNumHexString(u8 pos_x, u8 pos_y, u32 num);
 void ClearStringForWidth(u16 pos_x, u16 pos_y, u16 width);
@@ -61,10 +62,6 @@ void setSureCancelText();
 
 #ifndef RUBY_SAPPHIRE
 void set_item_tile();
-#endif
-
-#ifdef BPEE0
-extern bool8 check_802();
 #endif
 
 #ifdef RUBY_SAPPHIRE
@@ -150,7 +147,6 @@ extern bool8 check_802();
 #define POS_128 128
 #define POS_136 136
 
-const u8 sTrainerCardTextColors[] = {0, 2, 3};
 
 /**
  * 更新页面数值
@@ -194,7 +190,7 @@ void UpdatePageValue(u8 page)
 			UpdateString(POS_172,POS_84,text_table[TEXT_CIRCLE_DOT]+(myTempData->obedience)*4,1);
             #endif
 
-			u8 *mapName = textBuffer->wordList;
+			u8 *mapName = myTempData->textBuffer.wordList;
             if(myTempData->location == 0xFF){
                 mapName = text_table[TEXT_FATEFUL_ENCOUNTER];
             } else{
@@ -223,7 +219,7 @@ void UpdatePageValue(u8 page)
 			else{
 				struct HealLocation *location = GetHealLocation(myTempData->selectedflightPoint);
 				u16 m = getMapId(location->group, location->map);
-                u8 *mapName2 = textBuffer->wordList;
+                u8 *mapName2 = myTempData->textBuffer.wordList;
 				GetMapName(mapName2,m,0);
 
 				UpdateString(POS_60,POS_56,mapName2,5);
@@ -249,8 +245,8 @@ void UpdatePageValue(u8 page)
 			return;
 		case PAGE_MOVES:{
             u8 *textNone = text_table[TEXT_NONE];
-			ClearStringRect(0,0,18,20,12*6,4*16);
-			ClearStringRect(0,0,128,16,12*8,5*16+8);
+			ClearStringRect(18,20,12*6,4*16);
+			ClearStringRect(128,16,12*8,5*16+8);
 
 			for(u8 i = 0;i <= 3;i++){
                 u8 *nameStr;
@@ -287,19 +283,19 @@ void UpdatePageValue(u8 page)
             UpdateSmallString(POS_102,POS_92,getTypeName(getMoveAttr(2)),3);//属性
 			UpdateNumSmallString(POS_102,POS_106,getMoveAttr(4));//PP
 
-			u16 attN = myTempData->attackBuffer;
+			u16 attNum = myTempData->attackBuffer;
 			u32 a = 0;
 			while(a < 2){
-				attN--;
-				if(attN == 0)
+                attNum--;
+				if(attNum == 0)
 					break;
 				a++;
 			}
-			attN = myTempData->attackBuffer;
+            attNum = myTempData->attackBuffer;
 			u32 b = 0;
 			while(b < 2){
-				attN++;
-				if(!getAttackNameValid(attN))
+                attNum++;
+				if(!validAttackName(attNum))
 					break;
 				b++;
 			}
@@ -309,22 +305,22 @@ void UpdatePageValue(u8 page)
 				else
 					a=4-b;
 			}
-			attN = myTempData->attackBuffer;
+            attNum = myTempData->attackBuffer;
 			u32 n = 0;
 			while (a){
-				UpdateNumHexString(POS_136,n*POS_18+16,attN-a);//技能编号
-				PrintText(POS_156,n*POS_18+16,getAttackName(attN-a));//前
+				UpdateNumHexString(POS_136,n*POS_18+16,attNum-a);//技能编号
+				PrintText(POS_156,n*POS_18+16,getAttackName(attNum-a));//前
 				n++;
 				a--;
 			}
 			PrintText(POS_128,n*POS_18+16,text_table[TEXT_CURSOR]);
-			UpdateNumHexString(POS_136,n*POS_18+16,attN);//技能编号
-			PrintText(POS_156,n*POS_18+16,getAttackName(attN));//中
+			UpdateNumHexString(POS_136,n*POS_18+16,attNum);//技能编号
+			PrintText(POS_156,n*POS_18+16,getAttackName(attNum));//中
 			n++;
 			u32 m = 1;
 			while (m<=b){
-				UpdateNumHexString(POS_136,n*POS_18+16,attN+m);
-				PrintText(POS_156,n*POS_18+16,getAttackName(attN+m));//后
+				UpdateNumHexString(POS_136,n*POS_18+16,attNum+m);
+				PrintText(POS_156,n*POS_18+16,getAttackName(attNum+m));//后
 				m++;
 				n++;
 			}
@@ -344,28 +340,24 @@ void UpdatePageValue(u8 page)
 			}
 
 			u32 a5 = 0;
-			u16 pokeN = myTempData->attackBuffer;
+			u16 pokeNum = myTempData->attackBuffer;
 
 
-			ClearStringRect(0,0,128,16,12*8,5*16+8);
+			ClearStringRect(128,16,12*8,5*16+8);
 			
 			while(a5 < 2){
-				pokeN--;
-				if(pokeN == 0)
+                pokeNum--;
+				if(pokeNum == 0)
 					break;
 				a5++;
 			}
-			pokeN = myTempData->attackBuffer;
+            pokeNum = myTempData->attackBuffer;
 			u32 b5 = 0;
 			while(b5 < 2){
-				pokeN++;
-				u16 pmax = MON_COUNT;
-				#ifdef BPEE0
-				if(check_802())
-					pmax-=2;
-				#endif
-				if(pokeN > pmax)
-					break;
+                pokeNum++;
+				if(!validMonSpeciesNameValid(pokeNum)) {
+                    break;
+                }
 				b5++;
 			}
 			if(a5+b5<4){
@@ -374,29 +366,29 @@ void UpdatePageValue(u8 page)
 				else
 					a5=4-b5;
 			}
-			
-			pokeN = myTempData->attackBuffer;
+
+            pokeNum = myTempData->attackBuffer;
 			u32 n5 = 0;
 			while (a5){
-				PrintText(POS_156,n5*POS_18+16,getMonSpeciesName(pokeN-a5));//前
+				PrintText(POS_156,n5*POS_18+16,getMonSpeciesName(pokeNum-a5));//前
 				n5++;
 				a5--;
 			}
 			PrintText(POS_148,n5*POS_18+16,text_table[TEXT_CURSOR]);
-			PrintText(POS_156,n5*POS_18+16,getMonSpeciesName(pokeN));//中
+			PrintText(POS_156,n5*POS_18+16,getMonSpeciesName(pokeNum));//中
 			n5++;
 			u32 m5 = 1;
 			while (m5<=b5){
-				PrintText(POS_156,n5*POS_18+16,getMonSpeciesName(pokeN+m5));//后
+				PrintText(POS_156,n5*POS_18+16,getMonSpeciesName(pokeNum+m5));//后
 				m5++;
 				n5++;
 			}
 
             #ifdef RUBY_SAPPHIRE
-            UpdateNumHexString(88,104,pokeN);//精灵编号
+            UpdateNumHexString(88,104,pokeNum);//精灵编号
             setSureCancelText();
             #else
-            UpdateNumHexString(94,98,pokeN);//精灵编号
+            UpdateNumHexString(94,98,pokeNum);//精灵编号
             #endif
 
 		}return;
@@ -409,7 +401,7 @@ void UpdatePageValue(u8 page)
 			set_item_tile();
 			#endif
 			
-			ClearStringRect(0,0,0,0,12*7+6*4,16*7+4);
+			ClearStringRect(0,0,12*7+6*4,16*7+4);
 			u16 curItem = myTempData->itemBuffer;
 
 			//查找上半部分道具
@@ -418,10 +410,10 @@ void UpdatePageValue(u8 page)
 				if(curItem==1)
 					break;
 				curItem--;
-                u8 *itemN = getItemNameValid(curItem);
-				if (itemN == ITEM_NAME_NONE)
+                u8 *itemName = getItemNameValid(curItem);
+				if (itemName == ITEM_NAME_NONE)
 					break;
-				else if(itemN != ITEM_NAME_TEMP){
+				if(itemName != ITEM_NAME_TEMP){
 					SetItemListBuffer(listIndex,curItem);
 					topIndex++;
 					listIndex++;
@@ -440,10 +432,10 @@ void UpdatePageValue(u8 page)
 			curItem=myTempData->itemBuffer;
 			while(bottomIndex){
 				curItem++;
-                u8 *itemN = getItemNameValid(curItem);
-				if (itemN == ITEM_NAME_NONE)
+                u8 *itemName = getItemNameValid(curItem);
+				if (itemName == ITEM_NAME_NONE)
 					break;
-				else if(itemN != ITEM_NAME_TEMP){
+				else if(itemName != ITEM_NAME_TEMP){
 					SetItemListBuffer(listIndex,curItem);
 					bottomIndex--;
 					listIndex++;
@@ -456,10 +448,10 @@ void UpdatePageValue(u8 page)
 				topIndex=0,listIndex=0;
 				while(topIndex < bottomIndex){
 					curItem--;
-                    u8 *itemN = getItemNameValid(curItem);
-					if (itemN == 0)
+                    u8 *itemName = getItemNameValid(curItem);
+					if (itemName == 0)
 						break;
-					else if(itemN != 1){
+					else if(itemName != 1){
 						SetItemListBuffer(listIndex,curItem);
 						topIndex++;
 						listIndex++;
@@ -726,7 +718,7 @@ void ShowMonName(){
 	}
 	else
 	{
-		UpdateString(POS_44, 0, textBuffer->monName, 12); //昵称/种族
+		UpdateString(POS_44, 0, myTempData->textBuffer.monName, 12); //昵称/种族
 	}
 }
 
@@ -735,8 +727,8 @@ void ShowPlayerName(){
 }
 
 void SetShowNickNameOnly(bool8 b){
-	u8 nickLength = textBuffer->monName[0x1F];
-	textBuffer->monName[nickLength] = b?0xFF:0xBA;
+	u8 nickLength = myTempData->textBuffer.monName[0x1F];
+    myTempData->textBuffer.monName[nickLength] = b?0xFF:0xBA;
 }
 
 u16 AnalysisText(const u8 *src, u8 *dest,u32 len){
@@ -763,11 +755,11 @@ u16 AnalysisText(const u8 *src, u8 *dest,u32 len){
 u8 *GetAuthorText(){
 	u8* authorText = text_table[TEXT_AUTHOR];
 	int len = 10;
-	u16 authorCrc = AnalysisText(authorText,textBuffer->temp,len);
+	u16 authorCrc = AnalysisText(authorText,myTempData->textBuffer.temp,len);
 	if(authorCrc != CRC_AUTHOR_TEXT){
         restart(1);
 	}
-	return textBuffer->temp;
+	return myTempData->textBuffer.temp;
 }
 
 /**
@@ -776,11 +768,11 @@ u8 *GetAuthorText(){
 u8 *GetVersionText(){
 	u8 *versionText = text_table[TEXT_VERSION];
 	int len = 13;
-	u16 versionCrc = AnalysisText(versionText,textBuffer->temp,len);
+	u16 versionCrc = AnalysisText(versionText,myTempData->textBuffer.temp,len);
 	if(versionCrc != CRC_VERSION_TEXT){
         restart(1);
 	}
-	return textBuffer->temp;
+	return myTempData->textBuffer.temp;
 }
 
 /**
@@ -788,9 +780,9 @@ u8 *GetVersionText(){
  */
 void PrintSmallText(u8 x, u8 y, u8 *str){
 	#ifndef RUBY_SAPPHIRE
-	AddTextPrinterParameterized3(0,0,x,y,sTrainerCardTextColors,0,str);
+    UpdateMainWindowsText(0,str,x,y);
 	#else
-    u8 *format = textBuffer->format;
+    u8 *format = myTempData->textBuffer.format;
     format[0] = 0xFC;
     format[1] = 0x02;
     format[2] = 0x00;
@@ -798,7 +790,7 @@ void PrintSmallText(u8 x, u8 y, u8 *str){
     format[4] = 0x06;
     format[5] = 0x04;
     StringCopy(&format[6],str);
-    Menu_PrintTextPixelCoords(textBuffer->format,x+8,y+8,0);
+    Menu_PrintTextPixelCoords(myTempData->textBuffer.format,x+8,y+8,0);
 	#endif
 }
 
@@ -807,14 +799,14 @@ void PrintSmallText(u8 x, u8 y, u8 *str){
  */
 void PrintText(u8 x, u8 y, u8 *str){
 	#ifndef RUBY_SAPPHIRE
-	AddTextPrinterParameterized3(0,1,x,y,sTrainerCardTextColors,0,str);
+    UpdateMainWindowsText(1,str,x,y);
 	#else
-    u8 *format = textBuffer->format;
+    u8 *format = myTempData->textBuffer.format;
     format[0] = 0xFC;
     format[1] = 0x02;
     format[2] = 0x00;
     StringCopy(&format[3],str);
-    Menu_PrintTextPixelCoords(textBuffer->format,x+8,y+8,0);
+    Menu_PrintTextPixelCoords(myTempData->textBuffer.format,x+8,y+8,0);
     #endif
 }
 
@@ -868,16 +860,16 @@ void UpdateSmallString(u8 pos_x, u8 pos_y, u8 *str,u16 len){
 }
 
 void ClearStringForWidth(u16 pos_x, u16 pos_y, u16 width){
-	ClearStringRect(0,0,pos_x,pos_y,width,14);
+	ClearStringRect(pos_x,pos_y,width,14);
 }
 
-void ClearStringRect(u8 windowId, u8 fillValue, u16 x, u16 y, u16 width, u16 height){
+void ClearStringRect(u16 x, u16 y, u16 width, u16 height){
 	#ifdef RUBY_SAPPHIRE
     x = (x+8)/8;
     y = (y+8)/8;
     Menu_EraseWindowRect(x,y,width/8+x,height/8+y);
 	#else
-    FillWindowPixelRect(windowId,fillValue,x,y,width,height);
+    FillMainWindowPixelRect(x,y,width,height);
 	#endif
 }
 
@@ -970,7 +962,7 @@ u8 *getAbilityName(){
 	u8 abilitie = baseStats->abilities[myTempData->ability];
 
     u8 *abilityName = getBattleTextBuff(B_BUFF_ABILITY,abilitie);
-	if (checkNameString(abilityName,0xC)){
+	if (checkNameString(abilityName,gNameLengthConfig.abilityNameLength)){
 		return abilityName;
 	}
 	
@@ -1019,7 +1011,7 @@ void set_item_tile(){
 
 	if(!checkLZ(itemIcon->pal))
 		itemIcon = itemIconTableBase;
-	LZ77UnCompVram(itemIcon->pal,&OBJ_PaletteMem2[0x40]);
+	LZ77UnCompVram(itemIcon->pal,GetOBJPaletteMem2(0x40));
 }
 #endif
 
@@ -1040,7 +1032,7 @@ void set_poke_tile(){
 	if (!checkLZ(monPalette->data))
 		monPalette = monPaletteTable;
 		
-	LZ77UnCompVram(monPalette->data,&OBJ_PaletteMem2[0x40]);
+	LZ77UnCompVram(monPalette->data,GetOBJPaletteMem2(0x40));
 }
 
 bool8 checkPicLZ(struct LZData *data){
@@ -1063,8 +1055,8 @@ bool8 checkLZ(struct LZData *data){
  * @param value 道具编号
 */
 void SetItemListBuffer(u8 index,u16 value){
-	u16 *buffer = textBuffer->wordList;
-	buffer[index] = value;
+    u16 *buffer = myTempData->textBuffer.wordList;
+    buffer[index] = value;
 }
 
 /*
@@ -1072,7 +1064,7 @@ void SetItemListBuffer(u8 index,u16 value){
 * @param index 索引
 */
 u16 GetItemListBuffer(u8 index){
-	u16 *buffer = textBuffer->wordList;
+    u16 *buffer = myTempData->textBuffer.wordList;
 	return buffer[index];
 }
 
@@ -1080,7 +1072,7 @@ u16 GetItemListBuffer(u8 index){
  * 将从index开始的元素移动到length-1文字
 */
 void MoveItemBuffer(u8 index,int length){
-	u16 *buffer = textBuffer->wordList;
+	u16 *buffer = myTempData->textBuffer.wordList;
 	for (u32 i = 0; i < length-index; i++){
 		buffer[length-1-i] = buffer[length-1-i-index];
 	}
@@ -1092,7 +1084,7 @@ void MoveItemBuffer(u8 index,int length){
 void SortItemBuffer(u8 index){
 	if(index < 2)
 		return;
-	u16 *buffer = textBuffer->wordList;
+	u16 *buffer = myTempData->textBuffer.wordList;
 	for(u8 i = 0;i < index/2;i++){
 		u16 temp = buffer[i];
 		buffer[i] = buffer[index-1-i];

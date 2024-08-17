@@ -1,5 +1,5 @@
-#include "data.h"
-void SetMainCallback2(void(*func)(void));
+#include "structs.h"
+void SetMainCallback2(void(*func));
 void * AllocZeroed(u32 size);
 void * Alloc(u32 size);
 void Free(void *);
@@ -27,10 +27,11 @@ void LoadPalette(void *src, u16 dst_index, u16 num_bytes);
 u8 CreateTask(void(*func)(u8),u8 priority);
 void DestroyTask(u8 task_id);
 u32 GiveMonToPlayer(struct Pokemon*);
-void SetVBlankCallback(void(*)(void));
+void MainCB2(void);
+void SetVBlankCallback(void(*));
 //lcd_io_set
 void SetGpuReg(u8 reg, u16 value);
-void InitBgsFromTemplates(u8 bg_mode, struct bg_cfg *config_data, u8 config_num_entries);
+void InitBgsFromTemplates(u8 bg_mode, u8 *config_data, u8 config_num_entries);
 u32 ChangeBgX(u8 bg_id, u32 delta, u8 mode);
 u32 ChangeBgY(u8 bg_id, u32 delta, u8 mode);
 void CopyBgTilemapBufferToVram(u8 bg_id);
@@ -64,7 +65,7 @@ void CopyItemIconPicTo4x4Buffer(void *src, void *dest);
 s32 StringCompare(const u8 *str1, const u8 *str2);
 u16 SpeciesToNationalPokedexNum(u16 species);
 s8 GetSetPokedexFlag(u16 nationalNum, u8 caseId);
-bool8 RemoveBagItem(u16 itemId, u16 count);
+void ClearItemSlots(struct ItemSlot *slots, u8 capacity);
 void ZeroMonData(struct Pokemon *mon);
 extern s16 udivsi3(s16 a, s16 b);
 void ItemUseCB_RareCandy(void);
@@ -90,7 +91,7 @@ extern void Menu_DrawStdWindowFrame(u8 left, u8 top, u8 right, u8 bottom);
 extern void Menu_BlankWindowRect(u8 left, u8 top, u8 right, u8 bottom);
 extern void Menu_EraseWindowRect(u8 left, u8 top, u8 right, u8 bottom);
 extern void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst);
-extern void MainCB2();
+extern u8 ItemIdToBallId(u16 ballItem);
 
 extern void debug();
 
@@ -99,11 +100,7 @@ extern struct fade_ctrl *gPaletteFade;
 extern u16 *gSpecialVar_0x8004;
 extern struct Sprite gSprites[];
 extern u16 gPlttBufferUnfaded[];
-extern u16 BG_PaletteMem[];
-extern u16 OBJ_PaletteMem[];
 extern u16 gPlttBufferFaded[];
-extern u16 BG_PaletteMem2[];
-extern u16 OBJ_PaletteMem2[];
 
 extern u8 gPlayerPartyCount[];
 extern struct Pokemon gPlayerParty[];
@@ -126,7 +123,7 @@ extern u32 *gMonFrontPicTablePtr;
 extern u32 gItemIconTablePtr;
 extern u32 *gMonPaletteTablePtr;
 extern u32 gSpeciesNamesPtr[];
-extern u32 gBaseStatsPtr[];
+extern u32 gSpeciesInfoPtr[];
 extern u32 gMonIconPaletteIndicesPtr[];
 extern u32 gMonIconPaletteTablePtr[];
 extern u32 gMoveNamesPtr[];
@@ -139,6 +136,11 @@ extern u8 sDiplomaPalettes[];
 extern u8 sDiplomaTilemap[];
 extern u8 sDiplomaTiles[];
 extern u8 sWindowFrames[];
+
+extern u8 gBattleBufferA[4][0x200];
+extern u8 gActiveBattler[];
+
+
 
 
 
