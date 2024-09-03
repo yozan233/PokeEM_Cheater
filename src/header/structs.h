@@ -212,6 +212,16 @@ struct SpriteTemplate
     /*0x14*/ void (*callback)(void*);
 };
 
+struct MonIconSpriteTemplate
+{
+    const struct OamData *oam;
+    const u8 *image;
+    const union AnimCmd *const *anims;
+    const union AffineAnimCmd *const *affineAnims;
+    void (*callback)(struct Sprite *);
+    u16 paletteTag;
+};
+
 struct Coords16
 {
     s16 x;
@@ -291,6 +301,17 @@ struct rbox
 {
 	struct rbox_short rs;
 	void * pixels;
+};
+
+struct WindowTemplate
+{
+    u8 bg;
+    u8 tilemapLeft;
+    u8 tilemapTop;
+    u8 width;
+    u8 height;
+    u8 paletteNum;
+    u16 baseBlock;
 };
 
 struct superstate
@@ -431,20 +452,8 @@ struct font
 
 struct Pokemon
 {
-/* 0x00 */  u32 personality;
-/* 0x04 */  u32 OTID;
-/* 0x08 */  u8 nickname[10];
-/* 0x12 */  u8 language;
-/* 0x13 */  u8 isBadEgg:1;
-            u8 hasSpecies:1;
-            u8 isEgg:1;
-            u8 unused:5;
-/* 0x14 */  u8 OT_name[7];
-/* 0x1B */  u8 markings;
-/* 0x1C */  u16 checksum;
-/* 0x1E */	u16 padding;
-/* 0x20 */	u8 enc_data[48];
-/* 0x50 */	u32 status;
+    u8 unknown[0x54];
+
 
 };
 
@@ -517,34 +526,7 @@ union DISPCNT_CON
 
 struct BaseStats
 {
- /* 0x00 */ u8 baseHP;
- /* 0x01 */ u8 baseAttack;
- /* 0x02 */ u8 baseDefense;
- /* 0x03 */ u8 baseSpeed;
- /* 0x04 */ u8 baseSpAttack;
- /* 0x05 */ u8 baseSpDefense;
- /* 0x06 */ u8 type1;
- /* 0x07 */ u8 type2;
- /* 0x08 */ u8 catchRate;
- /* 0x09 */ u8 expYield;
- /* 0x0A */ u16 evYield_HP:2;
- /* 0x0A */ u16 evYield_Attack:2;
- /* 0x0A */ u16 evYield_Defense:2;
- /* 0x0A */ u16 evYield_Speed:2;
- /* 0x0B */ u16 evYield_SpAttack:2;
- /* 0x0B */ u16 evYield_SpDefense:2;
- /* 0x0C */ u16 item1;
- /* 0x0E */ u16 item2;
- /* 0x10 */ u8 genderRatio;
- /* 0x11 */ u8 eggCycles;
- /* 0x12 */ u8 friendship;
- /* 0x13 */ u8 growthRate;
- /* 0x14 */ u8 eggGroup1;
- /* 0x15 */ u8 eggGroup2;
- /* 0x16 */ u8 abilities[2];
- /* 0x18 */ u8 safariZoneFleeRate;
- /* 0x19 */ u8 bodyColor : 7;
-            u8 noFlip : 1;
+ /* 0x00 */ u8 unknown
 };
 
 struct MapHeader
@@ -711,6 +693,15 @@ struct NameLengthConfig
     u8 itemNameLength;
     u8 abilityNameLength;
 };
+
+struct DataSizeConfig
+{
+    u8 monDataSize;
+    u8 speciesDataSize;
+    u8 moveDataSize;
+    u8 moveDataDiff;
+};
+
 
 
 

@@ -1,5 +1,8 @@
 #include "header/data.h"
 
+extern const u8 mouse_tile[];
+extern const u8 mouse_pal[];
+
 #ifndef RUBY_SAPPHIRE
 bool8 tiles_load()
 {
@@ -9,6 +12,7 @@ bool8 tiles_load()
             ResetTempTileDataBuffers();
             DecompressAndCopyTileDataToVram(1,sDiplomaTiles,0,0,0);
             CopyDiplomaTilemapBuffer();
+            CpuSet(&mouse_tile,(void *)cursorTilesArm,0x40);
 			break;
 		case 1:
 			if(FreeTempTileDataBuffersIfPossible())
@@ -16,7 +20,10 @@ bool8 tiles_load()
 			else 
 				break;
 		case 2:
+            TryLoadAllMonIconPalettesAtOffset(0);
+            CpuSet(GetBGPaletteMem(0),GetOBJPaletteMem(0),0x80);
 			LoadPalette(sDiplomaPalettes,0,0x40);
+            LoadPalette(&mouse_pal,0x1C0,0x20);
 			return TRUE;
 		default:
 			return TRUE;

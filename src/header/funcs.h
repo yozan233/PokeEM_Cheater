@@ -51,8 +51,8 @@ void AddTextPrinterParameterized3(u8 foo, u8 font, u8 x_in_pixel_inbox, u8 y_in_
 void PutWindowTilemap(u8 rbox_id);
 void FillWindowPixelBuffer(u8 rbox_id,u8 filler);
 void LoadBgTiles(u8 bgid, u8 *src, u16 size, u16 offset);
-void DrawStdFrameWithCustomTileAndPalette(u8 rbox_id, u8 unk, u16 char_name, u8 pal);
-u8 AddWindow(struct rbox_short *);
+void DrawStdFrameWithCustomTileAndPalette(u8 windowId, bool8 copyToVram, u16 baseTileNum, u8 paletteNum);
+u8 AddWindow(void *);
 u8 *ConvertIntToDecimalStringN(u8 *dest, u32 value, u8 mode, u8 charlength);
 u8 *ConvertIntToHexStringN(u8 *dest, u32 value, u8 mode, u8 n);
 u8 *StringCopy(u8 *dest, u8 *src);
@@ -92,6 +92,17 @@ extern void Menu_BlankWindowRect(u8 left, u8 top, u8 right, u8 bottom);
 extern void Menu_EraseWindowRect(u8 left, u8 top, u8 right, u8 bottom);
 extern void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst);
 extern u8 ItemIdToBallId(u16 ballItem);
+extern void SetUpItemUseOnFieldCallback(u8 taskId);
+extern u8 CreateMonIcon(u16 species, void (*callback)(struct Sprite *), s16 x, s16 y, u8 subpriority, u32 personality, bool32 handleDeoxys);
+extern void DestroySprite(struct Sprite *sprite);
+extern u8 CreateMonIconSprite(struct MonIconSpriteTemplate *iconTemplate, s16 x, s16 y, u8 subpriority);
+extern void TryLoadAllMonIconPalettesAtOffset(u16 offset);
+extern void LoadWindowGfx(u8 windowId, u8 frameId, u16 destOffset, u8 palOffset);
+extern u8 GetGenderFromSpeciesAndPersonality(u16 species, u32 personality);
+extern void SetMonMoveSlot(struct Pokemon *mon, u16 move, u8 slot);
+extern u16 GetAbilityBySpecies(u16 species, u8 abilityNum);
+extern u16 BagGetItemIdByPocketPosition(u8 pocketId, u16 pocketPos);
+extern bool8 RemoveBagItem(u16 itemId, u16 count);
 
 extern void debug();
 
@@ -105,6 +116,8 @@ extern u16 gPlttBufferFaded[];
 extern u8 gPlayerPartyCount[];
 extern struct Pokemon gPlayerParty[];
 extern struct BagPocket gBagPockets[];
+
+extern void* sItemUseOnFieldCB[];
 
 extern u8 gStringVar1[];
 
@@ -122,6 +135,7 @@ extern u32 *gMonIconTablePtr;
 extern u32 *gMonFrontPicTablePtr;
 extern u32 gItemIconTablePtr;
 extern u32 *gMonPaletteTablePtr;
+extern u32 *gMonShinyPaletteTablePtr;
 extern u32 gSpeciesNamesPtr[];
 extern u32 gSpeciesInfoPtr[];
 extern u32 gMonIconPaletteIndicesPtr[];

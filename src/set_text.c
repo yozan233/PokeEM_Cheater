@@ -13,12 +13,13 @@ extern void loadRepelStepCount();
 extern u8 *getItemNameValid(u16 itemId);
 extern void InitKeyboard();
 extern void SetText_MsgBox(u8 *str);
-extern u8 *getBattleTextBuff(u8 type,u8 value);
+extern u8 *getBattleTextBuff(u8 type,u16 value,u8 bitSize);
 extern void UpDateSelectedMousePos();
 extern bool8 validAttackName(u16 attackNum);
 extern bool8 validMonSpeciesNameValid(u16 species);
 extern void UpdateKeyboardValue();
 extern void restart(int i);
+extern void destroyMonIconSprite();
 u8 getMapId(u16 mapGroup, u16 mapNum);
 u8 *getPlayerNameOffset();
 u16 get_ballNum(u8 index);
@@ -511,12 +512,12 @@ void InitPage(u8 page){
 		#ifndef RUBY_SAPPHIRE
 		HideSprite(mySav->itemPicId);
 		#endif
-		HideSprite(mySav->monIconId);
+        destroyMonIconSprite();
 		HideSprite(mySav->monPicId);
 		break;
 	case PAGE_POKE_INFO:
 		initMonTempData();
-		ShowSprite(mySav->monIconId);
+//		ShowSprite(mySav->monIconId);
 		break;
 	case PAGE_POKE_INFO2:
 		get_ball_addr();
@@ -533,7 +534,7 @@ void InitPage(u8 page){
 		break;
 	case PAGE_MOVES:
 		myTempData->attackSelect = 0;
-		if(myTempData->select > 4)
+		if(myTempData->select != 0)
 			myTempData->select = 7;
 		HideSprite(mySav->monPicId);
             getSelectAttackNum();
@@ -958,10 +959,9 @@ u16 getAttackNum(u8 n){
 
 
 u8 *getAbilityName(){
-	struct BaseStats* baseStats = getSpeciesBaseStats(myTempData->species);
-	u8 abilitie = baseStats->abilities[myTempData->ability];
+	u16 abilitie = GetAbilityBySpecies(myTempData->species,myTempData->ability);
 
-    u8 *abilityName = getBattleTextBuff(B_BUFF_ABILITY,abilitie);
+    u8 *abilityName = getBattleTextBuff(B_BUFF_ABILITY,abilitie,2);
 	if (checkNameString(abilityName,gNameLengthConfig.abilityNameLength)){
 		return abilityName;
 	}
@@ -970,7 +970,9 @@ u8 *getAbilityName(){
 }
 
 u8 *getTypeName(u8 type){
-    u8 *typeNames = getBattleTextBuff(B_BUFF_TYPE,type);
+    if (type > 0x17)
+        type &= 0xF;
+    u8 *typeNames = getBattleTextBuff(B_BUFF_TYPE,type,1);
 	return typeNames;
 }
 
@@ -993,8 +995,8 @@ void LoadMonIVEV(){
 //0 effect; 1 power; 2 type; 3 accuracy;4 pp; 5 secondaryEffectChance;6 target;7 priority;8 flags;
 u8 getMoveAttr(u8 n){
 	u32 battleMovespecies = gBattleMovesPtr[0];
-	battleMovespecies += myTempData->attackBuffer*MOVE_DATA_SIZE;
-	u8 attr = ((u8 *)battleMovespecies)[n];
+	battleMovespecies += myTempData->attackBuffer*gDataSizeConfig.moveDataSize;
+	u8 attr = ((u8 *)battleMovespecies)[n+gDataSizeConfig.moveDataDiff];
 	return attr;
 }
 
@@ -1011,7 +1013,7 @@ void set_item_tile(){
 
 	if(!checkLZ(itemIcon->pal))
 		itemIcon = itemIconTableBase;
-	LZ77UnCompVram(itemIcon->pal,GetOBJPaletteMem2(0x40));
+	LZ77UnCompVram(itemIcon->pal,GetOBJPaletteMem2(0xD0));
 }
 #endif
 
@@ -1023,8 +1025,7 @@ void set_poke_tile(){
 	
 	LZ77UnCompVram(monFrontPic->data, (void *) monTilesArm);
 	
-	u32 *palPtr = &gMonPaletteTablePtr;
-	palPtr += myTempData->shiny_2;
+	u32 *palPtr = myTempData->shiny_2 ? &gMonShinyPaletteTablePtr : &gMonPaletteTablePtr;
 
 	struct CompressedSpritePalette *monPaletteTable = (struct CompressedSpritePalette *)(palPtr[0]);
 	struct CompressedSpritePalette *monPalette = monPaletteTable + myTempData->attackBuffer;
@@ -1032,7 +1033,7 @@ void set_poke_tile(){
 	if (!checkLZ(monPalette->data))
 		monPalette = monPaletteTable;
 		
-	LZ77UnCompVram(monPalette->data,GetOBJPaletteMem2(0x40));
+	LZ77UnCompVram(monPalette->data,GetOBJPaletteMem2(0xD0));
 }
 
 bool8 checkPicLZ(struct LZData *data){

@@ -2,6 +2,7 @@
 
 extern u8 **malloc_pointer_loc;
 extern struct rbox_short rbox_table[];
+extern struct WindowTemplate gButtonWindowTemplate[];
 extern struct MySaveblock *mySav;
 extern const u8 sTrainerCardTextColors[];
 
@@ -43,7 +44,7 @@ void InitMainWindows(){
 }
 
 u8 InitSecondWindows(){
-    return AddWindow(rbox_table+2);
+    return AddWindow(gButtonWindowTemplate);
 }
 
 void FillMainWindowPixelRect(u16 x, u16 y, u16 width, u16 height){

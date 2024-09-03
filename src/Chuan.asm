@@ -3,28 +3,29 @@
 .thumb_func @make the assembler know that the function is in thumb
 
 @;穿墙：
-@;08AF0C | 00 49 08 47 [ASM+1]
+@;0B31B4 | 00 49 08 47 [ASM+1]
 	Chuan:
 	ldr r1, =throughWallFlag
 	ldrb r1, [r1]
 	cmp r1, #0
-	beq notChang
+	beq this_end
 	mov r0, #0
-	b this_end
-	notChang:
-	ldr r3, =CheckForPlayerAvatarCollision
-	bl BX_R3
-	
+
 	this_end:
-	lsl r0, r0,#0x18
-	.ifdef FIRE_RED_LEAF_GREEN
-	lsr r0, r0,#0x18
-	.else
-	lsr r4, r0,#0x18
-	.endif
-	ldr r3, =PlayerNotOnBikeMoving
-	add r3, #0x14
-	
-BX_R3:
-	bx r3
-	
+    mov sp, r7
+    add sp, #0xC
+
+	ldr r1, =CheckForPlayerAvatarCollision
+	add r1, #0x88
+
+BX_R1:
+	bx r1
+
+.pool
+
+@;填充字节，方便以后代码扩展
+.word 0
+.word 0
+.word 0
+.word 0
+

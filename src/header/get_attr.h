@@ -86,7 +86,6 @@
 #define MON_GIVEN_TO_PC         1
 #define MON_CANT_GIVE           2
 
-#define MON_DATA_SIZE 0x64
-#define MOVE_DATA_SIZE 0xC
+
 
 

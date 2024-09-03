@@ -47,7 +47,6 @@ build_rom_fb:
  -T linker.lsc \
  -T ${GAME_VERSION}.ld \
  -o "build\linked.o" \
- "build\exit_asm.o" \
  "build\sys_function.o" \
  "build\func_proxy.o" \
  "build\main.o" \
@@ -61,7 +60,7 @@ build_rom_fb:
  "build\set_text.o" \
  "build\keyboard.o" \
  "build\resource.o"
-	java -jar SetInsertAsmOffset.jar ${GAME_VERSION} 0x8FB0000
+	#java -jar SetInsertAsmOffset.jar ${GAME_VERSION} 0x9A66200
 	armips insert_${GAME_VERSION}.asm
 	@echo "Build Complete FB."
 	VisualBoyAdvance $(GAME_VERSION)_TEST.gba
@@ -82,7 +81,6 @@ objects:
 	$(CC) $(CFLAGS) -c "src\task_02.c" -o "build\task_02.o"
 	$(CC) $(CFLAGS) -c "src\button_events.c" -o "build\button_events.o"
 	$(CC) $(CFLAGS) -c "src\resource.c" -o "build\resource.o"
-	$(AS) $(ASFLAGS) -c "src\exit_asm.s" -o "build\exit_asm.o"
 	$(AS) $(ASFLAGS) -c "src\Chuan.asm" -o "build\Chuan.o"
 	@echo "Object Complete."
 
@@ -94,4 +92,5 @@ bpre0:              ; @$(MAKE) GAME_VERSION=BPRE0 EMERALD=0 FIRE_RED=1 FIRE_RED_
 axve0:              ; @$(MAKE) GAME_VERSION=AXVE0 EMERALD=0 RUBY=1 RUBY_SAPPHIRE=1
 axpe0:              ; @$(MAKE) GAME_VERSION=AXPE0 EMERALD=0 SAPPHIRE=1 RUBY_SAPPHIRE=1
 bpge0:				; @$(MAKE) GAME_VERSION=BPGE0 EMERALD=0 LEAF_GREEN=1 FIRE_RED_LEAF_GREEN=1
+bpeex:				; @$(MAKE) GAME_VERSION=BPEEX EMERALD=1
 

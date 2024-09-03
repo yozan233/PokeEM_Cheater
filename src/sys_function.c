@@ -1,5 +1,14 @@
 #include "header/structs.h"
 
+void CpuSet(void *src, void *dest, int control);
+//
+//#define CPU_SET_SRC_FIXED 0x01000000
+//#define CPU_SET_16BIT     0x00000000
+//#define CPU_SET_32BIT     0x04000000
+//#define CPU_COPY_UNCHECKED(src, dest, size, bit) CpuSet(src, dest, CPU_SET_##bit##BIT | ((size)/(bit/8) & 0x1FFFFF))
+//#define CPU_COPY(src, dest, size, bit) CPU_COPY_UNCHECKED(src, dest, size, bit)
+//#define CpuCopy16(src, dest, size) CPU_COPY(src, dest, size, 16)
+
 void debug(){
 
 }
@@ -24,6 +33,16 @@ void CpuFastFill(int value, void *dest, int size)
 {                                                                  
     int tmp = value;                                     
     CpuFastSet(&tmp,dest,0x01000000 | ((size)/(32/8) & 0x1FFFFF));
+}
+
+void CopyItemIconPicTo4x4Buffer(void *src, void *dest)
+{
+    u8 i;
+
+    for (i = 0; i < 3; i++) {
+        //CpuCopy16(src + i * 96, dest + i * 128, 0x60);
+        CpuSet(src + i * 96, dest + i * 128, 0x00000000 | ((0x60) / (16 / 8) & 0x1FFFFF));
+    }
 }
 
 #ifdef RUBY_SAPPHIRE

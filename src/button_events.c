@@ -33,10 +33,11 @@ extern void PrintSmallText(u8 x, u8 y, u8 *str);
 extern void DeleteWord();
 extern bool8 validAttackName(u16 attackNum);
 extern bool8 validMonSpeciesNameValid(u16 species);
-extern u32 GetMonData(struct Pokemon* poke_address, u8 request);
+extern u32 GetMonData(struct Pokemon* poke_address, u8 request, const void* data);
 void loadRepelStepCount();
 void EggHatchNow();
 void pause();
+struct ItemSlot *getKeyItemSlot();
 
 const u8 ivevMap[] = {0,0,3,1,4,2,5};
 
@@ -167,10 +168,11 @@ bool8 checkMonNameAndSpecies(){
 bool8 MonRenameBySpecies(){
 	u8 *speciesName = (u8 *) getMonSpeciesName(myTempData->attackBuffer);
 	struct Pokemon* party = getCurrentPlayerParty();
-	u8 *nickName = party->nickname;
-	for (u32 n = 0; n < 0xB; n++){
+	u8 nickName[11];
+	for (u32 n = 0; n < 11; n++){
 		nickName[n] = speciesName[n];
 	}
+    SetMonData(party,ATTR_NAME,nickName);
 }
 /**
  * 设置图鉴flag
@@ -237,19 +239,20 @@ void RefreshCurrentPage(){
 }
 
 u16 GetPenWuMax(){
-    void *fun = ItemUseOutOfBattle_Repel;
-    #ifdef FIRE_RED_LEAF_GREEN
-    fun += 0xC;
-    #else
-    fun += 0xE;
-    #endif
-	u8 penWuFlag = ((u8 *)(fun))[0];
-	if(penWuFlag == 6){
-		return 0xFF;
-	}
-	else{
-		return 0xFFFF;
-	}
+//    void *fun = ItemUseOutOfBattle_Repel;
+//    #ifdef FIRE_RED_LEAF_GREEN
+//    fun += 0xC;
+//    #else
+//    fun += 0xE;
+//    #endif
+//	u8 penWuFlag = ((u8 *)(fun))[0];
+//	if(penWuFlag == 6){
+//		return 0xFF;
+//	}
+//	else{
+//		return 0xFFFF;
+//	}
+    return 0xFFFF;
 }
 
 void loadRepelStepCount(){
@@ -261,7 +264,7 @@ void loadRepelStepCount(){
 }
 
 void changeMouseColor(){
-    u16 *mouseColor = GetOBJPaletteMem2(11);
+    u16 *mouseColor = GetOBJPaletteMem2(0xC0+11);
 	u16 red = 0x109F;
 	if(mouseColor[0] == red){
         mouseColor[0] = 0x6546;
@@ -284,13 +287,13 @@ void reLoadPid(){
 }
 
 void SetMonNikename(){
-	CpuSet(&myTempData->textBuffer.newName,&getCurrentPlayerParty()->nickname,5);
+    SetMonData(getCurrentPlayerParty(),ATTR_NAME,&myTempData->textBuffer.newName);
 }
 
 void SetCurrentMonLevel(u8 lvl){
-	struct Pokemon* temp = Alloc(MON_DATA_SIZE);
+	struct Pokemon* temp = Alloc(gDataSizeConfig.monDataSize);
     CreateMon(temp,myTempData->species, lvl, 0, 0, 0, 0, 0);
-    u32 exp = GetMonData(temp,ATTR_EXP);
+    u32 exp = GetMonData(temp,ATTR_EXP,0);
     setCurrentMonData(ATTR_EXP,exp);
     Free(temp);
 }
@@ -324,15 +327,23 @@ void set_bingdu(){
 }
 
 void DelLastKeyitem(){
-	struct BagPocket *keyitemsPocket = &gBagPockets[KEYITEMS_POCKET];
-	u16 n = 0;
-	while (n < keyitemsPocket->capacity){
-		if (keyitemsPocket->itemSlots[n].itemId == 0)
-			break;
-		n++;
-	}
+    struct ItemSlot *itemSlots = getKeyItemSlot();
+    u16 pos = 0;
+    u16 lastItem = 0;
+    while (1) {
+        u16 item = itemSlots[pos].itemId;
+        if (item == 0)
+            break;
+        lastItem = item;
+        pos++;
+    }
 
-    ClearItemSlots(&keyitemsPocket->itemSlots[n-1],1);
+//    ClearItemSlots(&itemSlots[pos-1],1);
+    RemoveBagItem(lastItem,1);
+}
+
+struct ItemSlot *getKeyItemSlot(){
+    asm("push {lr}\nldr r0, =gBagPockets\nadd r0, #0x1C\nldr r0, [r0]\npop {pc}\n.pool");
 }
 
 void pause(){
@@ -418,8 +429,8 @@ void OnSureClick(){
         if (myTempData->lvl != myTempData->lvl_2){
             SetCurrentMonLevel(myTempData->lvl);
         }
-        struct Pokemon* party = getCurrentPlayerParty();
-        party->padding = 0;
+//        struct Pokemon* party = getCurrentPlayerParty();
+//        party->padding = 0;
         setCurrentMonData(ATTR_ABILITY_BIT,myTempData->ability);
         setCurrentMonData(ATTR_HAPPINESS,myTempData->happiness);
         if(myTempData->nature != myTempData->nature_2
@@ -537,7 +548,8 @@ void OnSureClick(){
         RefreshCurrentMonData();
     }break;
     case PAGE_MOVES:
-        setCurrentMonData(myTempData->attackSelect + 0xD, myTempData->attackBuffer);
+//        setCurrentMonData(myTempData->attackSelect + 0xD, myTempData->attackBuffer);
+        SetMonMoveSlot(getCurrentPlayerParty(), myTempData->attackBuffer, myTempData->attackSelect);
         UpdateCurrentPageText();
         break;
     case PAGE_SPECIE:{

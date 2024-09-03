@@ -4,9 +4,11 @@ extern bool8 tiles_load(void);
 extern void task_02(u8 task_id);
 extern void CreateSprites();
 extern void InitPage(u8 page);
+extern u8 gTextWindowFrame1_Gfx[];
+extern u8 gTextWindowFrame1_Pal[];
 
 #ifndef RUBY_SAPPHIRE
-void box_draw(u8,u8);
+void box_draw(u8);
 #endif
 
 
@@ -52,7 +54,7 @@ void task_loader(u8 task_id)
 			//活动盒子
 			u8 boxId = InitSecondWindows();
 			mySav->boxId = boxId;
-			box_draw(boxId,0xE);
+			box_draw(boxId);
 
 			SetGpuReg(0,0x3341);
 			
@@ -82,14 +84,13 @@ void task_loader(u8 task_id)
 }
 
 #ifndef RUBY_SAPPHIRE
-void box_draw(u8 box_id, u8 pal)
+void box_draw(u8 box_id)
 {
-	struct TilesPal tilesPal = ((struct TilesPal *)sWindowFrames)[0];
-	LoadBgTiles(0, tilesPal.tiles, 0x120, 0x2FF);
-    LoadPalette(tilesPal.pal, pal*0x10, 0x20);
+	LoadBgTiles(0, gTextWindowFrame1_Gfx, 0x180, 0x2FF);
+    LoadPalette(gTextWindowFrame1_Pal, 0xE*0x10, 0x40);
 
 	FillWindowPixelBuffer(box_id,0);
 	PutWindowTilemap(box_id);
-	DrawStdFrameWithCustomTileAndPalette(box_id,0,0x300,pal);
+	DrawStdFrameWithCustomTileAndPalette(box_id,0,0x300,0xE);
 }
 #endif
