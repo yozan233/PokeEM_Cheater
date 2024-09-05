@@ -533,7 +533,7 @@ void InitPage(u8 page){
 		break;
 	case PAGE_MOVES:
 		myTempData->attackSelect = 0;
-		if(myTempData->select > 4)
+		if(myTempData->select != 0)
 			myTempData->select = 7;
 		HideSprite(mySav->monPicId);
             getSelectAttackNum();
@@ -969,6 +969,8 @@ u8 *getAbilityName(){
 }
 
 u8 *getTypeName(u8 type){
+    if (type > 0x17)
+        type &= 0xF;
     u8 *typeNames = getBattleTextBuff(B_BUFF_TYPE,type);
 	return typeNames;
 }
@@ -1010,7 +1012,7 @@ void set_item_tile(){
 
 	if(!checkLZ(itemIcon->pal))
 		itemIcon = itemIconTableBase;
-	LZ77UnCompVram(itemIcon->pal,GetOBJPaletteMem2(0x40));
+	LZ77UnCompVram(itemIcon->pal,GetOBJPaletteMem2(0xD0));
 }
 #endif
 
@@ -1021,9 +1023,8 @@ void set_poke_tile(){
 		monFrontPic = monFrontPicTable;
 	
 	LZ77UnCompVram(monFrontPic->data, (void *) monTilesArm);
-	
-	u32 *palPtr = &gMonPaletteTablePtr;
-	palPtr += myTempData->shiny_2;
+
+    u32 *palPtr = myTempData->shiny_2 ? &gMonShinyPaletteTablePtr : &gMonPaletteTablePtr;
 
 	struct CompressedSpritePalette *monPaletteTable = (struct CompressedSpritePalette *)(palPtr[0]);
 	struct CompressedSpritePalette *monPalette = monPaletteTable + myTempData->attackBuffer;
@@ -1031,7 +1032,7 @@ void set_poke_tile(){
 	if (!checkLZ(monPalette->data))
 		monPalette = monPaletteTable;
 		
-	LZ77UnCompVram(monPalette->data,GetOBJPaletteMem2(0x40));
+	LZ77UnCompVram(monPalette->data,GetOBJPaletteMem2(0xD0));
 }
 
 bool8 checkPicLZ(struct LZData *data){

@@ -6,8 +6,13 @@ extern struct task *tasks;
 extern u8 **malloc_pointer_loc;
 extern struct fade_ctrl *pal_fade_control;
 
-#define itemTilesArm 0x06012000
-#define monTilesArm  0x06010C00
+#define VRAM         0x06000000
+#define OBJ_VRAM0      (VRAM + 0x10000)
+#define OBJ_VRAM0_SIZE 0x8000
+
+#define cursorTilesArm  (OBJ_VRAM0 + 0x0800)
+#define monTilesArm     (OBJ_VRAM0 + 0x0C00) //0x06010C00
+#define itemTilesArm    (OBJ_VRAM0 + 0x2000) //0x06012000
 
 
 extern const u8 *text_table[];

@@ -90,6 +90,7 @@ gTasks = 0x03004b20;
 
 gMonFrontPicTablePtr = 0x0800D324; /*精灵正面图*/
 gMonPaletteTablePtr = 0x08040954; /*精灵普通调色板*/
+gMonShinyPaletteTablePtr = 0x0804098C; /*精灵闪光调色板*/
 gMonIconTablePtr = 0x08099AA0; /*精灵小图标*/
 gMonIconPaletteIndicesPtr = 0x08099BB0; /*精灵小图标调色板编号*/
 gMonIconPaletteTablePtr = 0x0809D53C; /*精灵小图标调色板*/
@@ -109,5 +110,8 @@ sStartMenuItems = 0x08376D24;
 HandleStartMenuInput = 0x08071338|1; /*StartMenu_InputProcessCallback*/
 
 GetAbilityBySpecies = 0x803db14|1;
+
+LoadMonIconPalettes = 0x809d51c|1; /*sub_809D51C*/
+
 
 

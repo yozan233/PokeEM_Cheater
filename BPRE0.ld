@@ -101,6 +101,7 @@ gTasks = 0x03005090;
 
 gMonFrontPicTablePtr = 0x8000128; /*精灵正面图*/
 gMonPaletteTablePtr = 0x8000130; /*精灵普通调色板*/
+gMonShinyPaletteTablePtr = 0x8000134; /*精灵闪光调色板*/
 gMonIconTablePtr = 0x8000138; /*精灵小图标*/
 gMonIconPaletteIndicesPtr = 0x800013C; /*精灵小图标调色板编号*/
 gMonIconPaletteTablePtr = 0x8000140; /*精灵小图标调色板*/
@@ -126,4 +127,5 @@ ItemIdToBallId = 0x080ef52c|1;
 
 GetAbilityBySpecies = 0x8040d38|1;
 
+LoadMonIconPalettes = 0x809707c|1;
 

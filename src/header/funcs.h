@@ -93,6 +93,7 @@ extern void Menu_EraseWindowRect(u8 left, u8 top, u8 right, u8 bottom);
 extern void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst);
 extern u8 ItemIdToBallId(u16 ballItem);
 extern u16 GetAbilityBySpecies(u16 species, u8 abilityNum);
+extern void LoadMonIconPalettes(void);
 
 extern void debug();
 
@@ -123,6 +124,7 @@ extern u32 *gMonIconTablePtr;
 extern u32 *gMonFrontPicTablePtr;
 extern u32 gItemIconTablePtr;
 extern u32 *gMonPaletteTablePtr;
+extern u32 *gMonShinyPaletteTablePtr;
 extern u32 gSpeciesNamesPtr[];
 extern u32 gSpeciesInfoPtr[];
 extern u32 gMonIconPaletteIndicesPtr[];

@@ -64,19 +64,19 @@ u8 CreateNormalSprite(s16 x, s16 y){
 }
 
 void CreateSprites(){
-    u32* gMonIconPaletteTable = (u32 *) gMonIconPaletteTablePtr[0];
-    CpuSet((void *) gMonIconPaletteTable[0], GetOBJPaletteMem(0x10), 16 * 3);
+    LoadMonIconPalettes();
+
     u8 curId = CreateNormalSprite(0x2E,0x4C);
     mySav->cursorPicId = curId;
     struct Sprite *sprite = getSprite(curId);
-    sprite->oam.paletteNum = 0;
-    sprite->oam.tileNum = 0;
+    sprite->oam.paletteNum = 0xC;
+    sprite->oam.tileNum = 64;
     sprite->oam.matrixNum = 0x10;
 
     u8 monPicId = CreateNormalSprite(0x52,0x32);
     mySav->monPicId = monPicId;
     sprite = getSprite(monPicId);
-    sprite->oam.paletteNum = 4;
+    sprite->oam.paletteNum = 0xD;
     sprite->oam.tileNum = 96;
     sprite->oam.matrixNum = 0x8;
     sprite->oam.size = SPRITE_SIZE(64x64);
@@ -85,7 +85,7 @@ void CreateSprites(){
     u8 monIconId = CreateNormalSprite(0x1A,0x4);
     mySav->monIconId = monIconId;
     sprite = getSprite(monIconId);
-    sprite->oam.tileNum = 32;
+    sprite->oam.tileNum = 0;
     sprite->oam.size = SPRITE_SIZE(32x32);
     sprite->oam.mosaic = TRUE;
     sprite->callback = (void *) MonIconSpriteCallback;
@@ -94,18 +94,18 @@ void CreateSprites(){
     u8 itemPicId = CreateNormalSprite(0x70,0x28);
     mySav->itemPicId = itemPicId;
     sprite = getSprite(itemPicId);
-    sprite->oam.paletteNum = 4;
+    sprite->oam.paletteNum = 0xD;
     sprite->oam.tileNum = 256;
     sprite->oam.size = SPRITE_SIZE(32x32);
     sprite->oam.mosaic = TRUE;
     #endif
 
     #ifdef EMERALD
-    LZ77UnCompVram(sCursor_Gfx, (void *) 0x06010000);
-    CpuSet(gFrontierPassCursor_Pal,GetOBJPaletteMem(0),0x10);
+    LZ77UnCompVram(sCursor_Gfx, (void *) cursorTilesArm);
+    LoadPalette(gFrontierPassCursor_Pal,0x1C0,0x20);
     #else
-    CpuSet(&mouse_tile,0x06010000,0x40);
-    CpuSet(&mouse_pal,GetOBJPaletteMem(0),0x10);
+    CpuSet(&mouse_tile,cursorTilesArm,0x40);
+    LoadPalette(&mouse_pal,0x1C0,0x20);
     #endif
 
 }

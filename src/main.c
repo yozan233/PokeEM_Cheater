@@ -105,12 +105,11 @@ u8 *getMonSpeciesName(u16 species){
 */
 void loadMonIconSprite(){
 	u16 species = getCurrentMonData(ATTR_SPECIES_2);
-	u32 monIconPaletteIndices = gMonIconPaletteIndicesPtr[0];
-	u32 monIconPaletteIndex = ((u8*)(myTempData->species+monIconPaletteIndices))[0];
-	monIconPaletteIndex += 1;
 	
 	loadMonIconTiles(species);
 	struct Sprite* sprites = getSprite(mySav->monIconId);
+    u32 monIconPaletteIndices = gMonIconPaletteIndicesPtr[0];
+    u32 monIconPaletteIndex = ((u8*)(myTempData->species+monIconPaletteIndices))[0];
 	sprites->oam.paletteNum = monIconPaletteIndex;
 }
 
@@ -358,7 +357,10 @@ u8 *getItemNameValid(u16 itemId){
 
 	if (count != 0){
         if(itemId <= count) {
-            return name;
+            if (firstChar == 0 || firstChar == 0xFF)
+                return (u8 *) ITEM_NAME_TEMP;
+            else
+                return name;
         } else{
             return (u8 *) ITEM_NAME_NONE;
         }

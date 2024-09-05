@@ -261,7 +261,7 @@ void loadRepelStepCount(){
 }
 
 void changeMouseColor(){
-    u16 *mouseColor = GetOBJPaletteMem2(11);
+    u16 *mouseColor = GetOBJPaletteMem2(0xC0+11);
 	u16 red = 0x109F;
 	if(mouseColor[0] == red){
         mouseColor[0] = 0x6546;
