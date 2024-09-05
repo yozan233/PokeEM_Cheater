@@ -169,7 +169,7 @@ void UpdatePageValue(u8 page)
             //特性
             u8 *abilityName = getAbilityName();
 			if(!abilityName){
-                abilityName = text_table[TEXT_UNKNOWN_ABILITY]+6*myTempData->ability;
+                abilityName = text_table[TEXT_UNKNOWN_ABILITY]+6*myTempData->abilityNumPos;
 			}
 			UpdateString(POS_60, POS_84, abilityName, 5);
 
@@ -958,8 +958,7 @@ u16 getAttackNum(u8 n){
 
 
 u8 *getAbilityName(){
-	struct BaseStats* baseStats = getSpeciesBaseStats(myTempData->species);
-	u8 abilitie = baseStats->abilities[myTempData->ability];
+    u16 abilitie = GetAbilityBySpecies(myTempData->species,myTempData->abilityNums.nums[myTempData->abilityNumPos]);
 
     u8 *abilityName = getBattleTextBuff(B_BUFF_ABILITY,abilitie);
 	if (checkNameString(abilityName,gNameLengthConfig.abilityNameLength)){

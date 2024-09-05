@@ -124,6 +124,6 @@ HandleStartMenuInput = 0x0806f394|1; /*StartMenu_FadeScreenIfLeavingOverworld*/
 
 ItemIdToBallId = 0x080ef52c|1;
 
-
+GetAbilityBySpecies = 0x8040d38|1;
 
 

@@ -5,6 +5,7 @@ extern u32 GetMonData(struct Pokemon* poke_address, u8 request);
 void initMonTempData();
 void loadMonName();
 void loadMonIconSprite();
+void loadAbilityNums();
 void loadMonIconTiles(u16 species);
 void loadMonIsShiny();
 void loadMonGender(u16 species);
@@ -50,7 +51,6 @@ void initMonTempData(){
 	myTempData->TID = getCurrentMonData(ATTR_TID);
 	myTempData->egg = getCurrentMonData(ATTR_IS_EGG);
 	myTempData->lvl = getCurrentMonData(ATTR_LEVEL);
-	myTempData->ability = getCurrentMonData(ATTR_ABILITY_BIT);
 	myTempData->happiness = getCurrentMonData(ATTR_HAPPINESS);
 
 	myTempData->nature = umodsi3(myTempData->PID,25);
@@ -59,6 +59,7 @@ void initMonTempData(){
 	loadMonGender(species);
 	loadMonIsShiny();
 	loadMonIconSprite();
+    loadAbilityNums();
 
 	loadMonName();
 	backupMonTempData();
@@ -111,6 +112,28 @@ void loadMonIconSprite(){
 	loadMonIconTiles(species);
 	struct Sprite* sprites = getSprite(mySav->monIconId);
 	sprites->oam.paletteNum = monIconPaletteIndex;
+}
+
+void loadAbilityNums(){
+    ((u32*)&myTempData->abilityNums)[0] = 0;
+    myTempData->abilityNumPos = 0;
+    u8 pos = 0;
+    u8 abilityNum = getCurrentMonData(ATTR_ABILITY_BIT);
+    int ability = 0;
+    for (int num = 0;num<3;num++){
+        int abilityTemp = GetAbilityBySpecies(myTempData->species,num);
+        if(abilityTemp == 0)
+            continue;
+        if (abilityTemp != ability){
+            ability = abilityTemp;
+            if (abilityNum == num){
+                myTempData->abilityNumPos = pos;
+            }
+            myTempData->abilityNums.nums[pos] = num;
+            pos++;
+        }
+    }
+    myTempData->abilityNums.size_1 = pos-1;
 }
 
 struct Sprite *getSprite(u8 id){

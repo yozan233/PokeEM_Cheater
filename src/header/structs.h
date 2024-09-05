@@ -352,6 +352,11 @@ struct TextBuffer{
     u8 format[0x20];
 };
 
+struct AbilityNums {
+    u8 nums[3];
+    u8 size_1;
+};
+
 struct MyDatastruct
 {
 	u8 page;			//0x00
@@ -369,7 +374,7 @@ struct MyDatastruct
 	u16 species;		//0x12
 	u8 lvl;				//0x14
 	u8 nature;			//0x15
-	u8 ability;			//0x16
+    u8 abilityNumPos;   //0x16
 	u8 happiness;		//0x17
 	u8 shiny;			//0x18
 	u8 sex;				//0x19
@@ -391,7 +396,7 @@ struct MyDatastruct
 	u16 species_2;		//0x32
 	u8 lvl_2;			//0x34
 	u8 nature_2;		//0x35
-	u8 ability_2;		//0x36
+    u8 abilityNumPos_2; //0x36
 	u8 happiness_2;		//0x37
 	u8 shiny_2;			//0x38
 	u8 sex_2;			//0x39
@@ -418,7 +423,8 @@ struct MyDatastruct
     u8 fontBit2;        //0x49
     u8 fontPage[2];     //0x4A
     u8 inputCursorIndex;//0x4C
-	u8 field_B3[0xB3];
+    struct AbilityNums abilityNums; //0x4D
+    u8 field_space[0xAF];
 	struct TextBuffer textBuffer; //0x100
 };
 

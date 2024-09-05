@@ -108,3 +108,6 @@ sDiplomaTiles = 0x0840d288; /*gDiplomaTiles*/
 sStartMenuItems = 0x08376D24;
 HandleStartMenuInput = 0x08071338|1; /*StartMenu_InputProcessCallback*/
 
+GetAbilityBySpecies = 0x803db14|1;
+
+

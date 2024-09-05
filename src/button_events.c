@@ -377,30 +377,21 @@ u32 getIvOrEvSum(){
     return sum;    
 }
 
-void SetAbilitySelect(){
-    #ifdef BPEE0
-	if(check_Ultra_Emerald())
-	{
-		switch (myTempData->ability)
-		{
-		case 0:
-			myTempData->ability = 1;
-			break;
-		case 1:
-			myTempData->ability = 4;
-			break;
-		case 4:
-			myTempData->ability = 0;
-		default:
-			break;
-		}
-	}
-	else{
-		myTempData->ability = !myTempData->ability;
-	}
-    #else
-    myTempData->ability = !myTempData->ability;
-	#endif
+void SetAbilitySelect(bool8 isAdd){
+    u8 abilityNum = myTempData->abilityNumPos;
+    if (isAdd){
+        if (abilityNum < myTempData->abilityNums.size_1){
+            myTempData->abilityNumPos++;
+        } else{
+            myTempData->abilityNumPos = 0;
+        }
+    } else{
+        if (abilityNum == 0){
+            myTempData->abilityNumPos = myTempData->abilityNums.size_1;
+        } else{
+            myTempData->abilityNumPos--;
+        }
+    }
 }
 
 /**
@@ -420,7 +411,7 @@ void OnSureClick(){
         }
         struct Pokemon* party = getCurrentPlayerParty();
         party->padding = 0;
-        setCurrentMonData(ATTR_ABILITY_BIT,myTempData->ability);
+        setCurrentMonData(ATTR_ABILITY_BIT,myTempData->abilityNums.nums[myTempData->abilityNumPos]);
         setCurrentMonData(ATTR_HAPPINESS,myTempData->happiness);
         if(myTempData->nature != myTempData->nature_2
             || myTempData->shiny != myTempData->shiny_2
@@ -1299,7 +1290,7 @@ void ButtonUpEvent(){
                     UpdateCurrentPageTextAndPlaySound();
                     break;
                 case 5:
-                    SetAbilitySelect();
+                    SetAbilitySelect(FALSE);
                     UpdateCurrentPageTextAndPlaySound();
                     break;
                 case 6:
@@ -1534,7 +1525,7 @@ void ButtonDownEvent(){
                     UpdateCurrentPageTextAndPlaySound();
                     break;
                 case 5:
-                    SetAbilitySelect();
+                    SetAbilitySelect(TRUE);
                     UpdateCurrentPageTextAndPlaySound();
                     break;
                 case 6:

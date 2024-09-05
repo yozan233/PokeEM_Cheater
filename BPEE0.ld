@@ -128,6 +128,7 @@ HandleStartMenuInput = 0x0809fac4|1;
 
 ItemIdToBallId = 0x08170d84|1;
 
+GetAbilityBySpecies = 0x806b694|1;
 
 
 
