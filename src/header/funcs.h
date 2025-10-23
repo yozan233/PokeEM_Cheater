@@ -93,6 +93,7 @@ extern void Menu_EraseWindowRect(u8 left, u8 top, u8 right, u8 bottom);
 extern void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst);
 extern u8 ItemIdToBallId(u16 ballItem);
 extern u16 GetAbilityBySpecies(u16 species, u8 abilityNum);
+extern u16 GetMonAbility(struct Pokemon *mon);
 extern void LoadMonIconPalettes(void);
 
 extern void debug();

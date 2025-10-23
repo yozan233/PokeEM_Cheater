@@ -160,7 +160,8 @@ const struct rbox_short rbox_table[] = {
 const struct ListQuantityLimit gQuantityLimit = {
 	.pokemonCount = 0,
 	.moveCount = 0,
-	.itemCount = 0
+	.itemCount = 0,
+	.abilityHook = FALSE
 };
 
 const struct NameLengthConfig gNameLengthConfig = {

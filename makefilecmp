@@ -44,7 +44,7 @@ all: objects build_rom_f2 build_rom_fb
 	@echo "Enforcement Complete."
 	java -jar CheaterBinFileTest.jar ${GAME_VERSION}
 	rm ${GAME_VERSION}_TEST_0x8F20000.gba
-	rm ${GAME_VERSION}_TEST_0x8FB0000.gba
+	rm ${GAME_VERSION}_TEST_0x8FC0000.gba
 	@echo "CheaterBinFile Complete."
 
 build_rom_f2:
@@ -72,10 +72,10 @@ build_rom_f2:
 	cp ${GAME_VERSION}_TEST.gba ${GAME_VERSION}_TEST_0x8F20000.gba
 
 build_rom_fb:
-	java -jar SetInsertAsmOffset.jar ${GAME_VERSION} 0x8FB0000
+	java -jar SetInsertAsmOffset.jar ${GAME_VERSION} 0x8FC0000
 	armips insert_${GAME_VERSION}.asm
 	@echo "Build Complete FB."
-	cp ${GAME_VERSION}_TEST.gba ${GAME_VERSION}_TEST_0x8FB0000.gba
+	cp ${GAME_VERSION}_TEST.gba ${GAME_VERSION}_TEST_0x8FC0000.gba
 
 
 objects:

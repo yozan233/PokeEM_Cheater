@@ -9,6 +9,19 @@
 6. 生成的`BPEE_TEST.gba`，即为输出的ROM
 7. 进入游戏打开菜单，选择作弊选项即可
 
+### 绿宝石
+```shell
+make
+```
+### 火红
+```shell
+make bpre0
+```
+### 红宝石
+```shell
+make axve0
+```
+
 ## 生成bin文件和info文件
 ### 绿宝石
 ```shell

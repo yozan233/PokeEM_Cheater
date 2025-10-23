@@ -2,6 +2,7 @@
 
 extern void task_loader(u8);
 extern u32 GetMonData(struct Pokemon* poke_address, u8 request);
+extern void SetMonPidTid(struct Pokemon *mon,u32 pid,u32 tid);
 void initMonTempData();
 void loadMonName();
 void loadMonIconSprite();
@@ -116,23 +117,63 @@ void loadMonIconSprite(){
 void loadAbilityNums(){
     ((u32*)&myTempData->abilityNums)[0] = 0;
     myTempData->abilityNumPos = 0;
-    u8 pos = 0;
-    u8 abilityNum = getCurrentMonData(ATTR_ABILITY_BIT);
     int ability = 0;
+	struct Pokemon *curMon = getCurrentPlayerParty();
+
+	#ifdef FIRE_RED_LEAF_GREEN
+	struct Pokemon *tempMon = NULL;
+    #endif
+
+	u8 size = 0;
     for (int num = 0;num<3;num++){
-        int abilityTemp = GetAbilityBySpecies(myTempData->species,num);
-        if(abilityTemp == 0)
-            continue;
-        if (abilityTemp != ability){
-            ability = abilityTemp;
-            if (abilityNum == num){
-                myTempData->abilityNumPos = pos;
-            }
-            myTempData->abilityNums.nums[pos] = num;
-            pos++;
-        }
+		myTempData->abilityNums.nums[num] = 0;
+
+		#ifdef FIRE_RED_LEAF_GREEN
+		if(gQuantityLimit.abilityHook == TRUE){
+			if(tempMon == NULL){
+				tempMon = Alloc(MON_DATA_SIZE);
+				memcpy(tempMon, curMon, MON_DATA_SIZE);
+			}
+			SetMonPidTid(tempMon,num,myTempData->TID);
+			((struct Pokemon2*)tempMon)->hiddenAbility = num == 2;
+			int abilityIdTemp = GetMonAbility(tempMon);
+			if(abilityIdTemp == 0)
+				continue;
+			if (abilityIdTemp != ability){
+				ability = abilityIdTemp;
+				if(abilityIdTemp == GetMonAbility(curMon)){
+					myTempData->abilityNumPos = num;
+				}
+				myTempData->abilityNums.nums[num] = abilityIdTemp;
+				size++;
+			}
+		}
+		else
+		#endif
+		{
+			int abilityTemp = GetAbilityBySpecies(myTempData->species,num);
+			if(abilityTemp == 0)
+				continue;
+			if (abilityTemp != ability){
+				ability = abilityTemp;
+				if(GetMonData(curMon,ATTR_ABILITY_BIT) == num){
+					myTempData->abilityNumPos = num;
+				}
+				myTempData->abilityNums.nums[num] = abilityTemp;
+				size++;
+			}
+		}
+
     }
-    myTempData->abilityNums.size_1 = pos-1;
+
+	myTempData->abilityNums.size_1 = size;
+
+	#ifdef FIRE_RED_LEAF_GREEN
+	if(tempMon != NULL){
+		Free(tempMon);
+	}
+	#endif
+
 }
 
 struct Sprite *getSprite(u8 id){

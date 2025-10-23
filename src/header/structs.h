@@ -462,6 +462,89 @@ struct Pokemon
 /* 0x62 */	u16 spDefense;
 };
 
+struct Pokemon2
+{
+	u32 personality;	//0x0
+	u32 otid;			//0x4
+	u8 nickname[10];	//0x8
+	u8 language;		//0x12
+	u8 sanity;			//0x13
+	u8 otname[7];       //0x14
+	u8 markings;
+	u16 backupSpecies;
+	u16 unused;
+//Substructure Growth
+    u16 species;
+    u16 item;
+    u32 experience;
+    u8 pp_bonuses;
+    u8 friendship;
+	u8 pokeball; //This is new
+    u8 unknown;
+//Substructure Attacks
+    u16 moves[4];
+    u8 pp[4];
+//Substructure Condition
+    u8 hpEv;
+    u8 atkEv;
+    u8 defEv;
+    u8 spdEv;
+    u8 spAtkEv;
+    u8 spDefEv;
+    u8 coolness;
+    u8 beauty;
+    u8 cuteness;
+    u8 smartness;
+    u8 toughness;
+    u8 feel;
+//Substructure Misc
+ /* 0x00 */ u8 pokerusDays : 4;
+ /* 0x00 */ u8 pokerusStrain : 4;
+ /* 0x01 */	u8 metLocation;
+ /* 0x02 */ u16 metLevel:7;
+ /* 0x02 */ u16 metGame:4;
+ /* 0x03 */ u16 gigantamax:1;
+ /* 0x03 */ u16 blank:3;
+ /* 0x03 */ u16 otGender:1;
+ /* 0x04 */ u32 hpIV:5;
+ /* 0x04 */ u32 attackIV:5;
+ /* 0x05 */ u32 defenseIV:5;
+ /* 0x05 */ u32 speedIV:5;
+ /* 0x05 */ u32 spAttackIV:5;
+ /* 0x06 */ u32 spDefenseIV:5;
+ /* 0x07 */ u32 isEgg:1;
+ /* 0x07 */ u32 hiddenAbility:1;
+ /* 0x08 */ u32 coolRibbon:3;
+ /* 0x08 */ u32 beautyRibbon:3;
+ /* 0x08 */ u32 cuteRibbon:3;
+ /* 0x09 */ u32 smartRibbon:3;
+ /* 0x09 */ u32 toughRibbon:3;
+ /* 0x09 */ u32 championRibbon:1;
+ /* 0x0A */ u32 winningRibbon:1;
+ /* 0x0A */ u32 victoryRibbon:1;
+ /* 0x0A */ u32 artistRibbon:1;
+ /* 0x0A */ u32 effortRibbon:1;
+ /* 0x0A */ u32 giftRibbon1:1;
+ /* 0x0A */ u32 giftRibbon2:1;
+ /* 0x0A */ u32 giftRibbon3:1;
+ /* 0x0A */ u32 giftRibbon4:1;
+ /* 0x0B */ u32 giftRibbon5:1;
+ /* 0x0B */ u32 giftRibbon6:1;
+ /* 0x0B */ u32 giftRibbon7:1;
+ /* 0x0B */ u32 fatefulEncounter:4;
+ /* 0x0B */ u32 obedient:1;
+	u32 condition;
+	u8 level;
+	u8 pokerus_timer;
+	u16 hp;
+	u16 maxHP;
+	u16 attack;
+	u16 defense;
+	u16 speed;
+	u16 spAttack;
+	u16 spDefense;
+};
+
 struct task
 {
 	void (*fptr) (u8);
@@ -716,6 +799,8 @@ struct ListQuantityLimit
     u32 pokemonCount;
     u32 moveCount;
     u32 itemCount;
+    bool8 abilityHook;
+	u8 padding[3];
 };
 
 struct NameLengthConfig

@@ -23,7 +23,7 @@ bx r1
 
 
 /* 这里填所用的ROM空位地址 */
-.org 0x8FB0000
+.org 0x8FC0000
 .pool
 .importobj "build/linked.o"
 .close

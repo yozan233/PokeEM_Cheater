@@ -369,20 +369,28 @@ u32 getIvOrEvSum(){
 }
 
 void SetAbilitySelect(bool8 isAdd){
-    u8 abilityNum = myTempData->abilityNumPos;
+    if(myTempData->abilityNums.size_1 <= 1)
+        return;
+    u8 pos = myTempData->abilityNumPos;
     if (isAdd){
-        if (abilityNum < myTempData->abilityNums.size_1){
-            myTempData->abilityNumPos++;
-        } else{
-            myTempData->abilityNumPos = 0;
+        while(1){
+            pos++;
+            if(pos > 2)
+                pos = 0;
+            if(myTempData->abilityNums.nums[pos] != 0)
+                break;
         }
     } else{
-        if (abilityNum == 0){
-            myTempData->abilityNumPos = myTempData->abilityNums.size_1;
-        } else{
-            myTempData->abilityNumPos--;
+        while(1){
+            if(pos == 0)
+                pos = 2;
+            else
+                pos--;
+            if(myTempData->abilityNums.nums[pos] != 0)
+                break;
         }
     }
+    myTempData->abilityNumPos = pos;
 }
 
 /**
@@ -402,11 +410,31 @@ void OnSureClick(){
         }
         struct Pokemon* party = getCurrentPlayerParty();
         party->padding = 0;
-        setCurrentMonData(ATTR_ABILITY_BIT,myTempData->abilityNums.nums[myTempData->abilityNumPos]);
         setCurrentMonData(ATTR_HAPPINESS,myTempData->happiness);
+
+        #ifdef FIRE_RED_LEAF_GREEN
+        bool8 abilityPid = FALSE;
+        if(gQuantityLimit.abilityHook == TRUE){
+            if(myTempData->abilityNumPos == 2){
+                ((struct Pokemon2*)party)->hiddenAbility = TRUE;
+            }
+            else{
+                ((struct Pokemon2*)party)->hiddenAbility = FALSE;
+                abilityPid = (myTempData->PID & 1) != myTempData->abilityNumPos;
+            }
+        }
+        else
+        #endif
+        {
+            setCurrentMonData(ATTR_ABILITY_BIT,myTempData->abilityNumPos);
+        }
+
         if(myTempData->nature != myTempData->nature_2
             || myTempData->shiny != myTempData->shiny_2
             || myTempData->sex != myTempData->sex_2
+            #ifdef FIRE_RED_LEAF_GREEN
+            || abilityPid
+            #endif
         ){
             ChangePid(myTempData->nature,myTempData->sex,myTempData->shiny);
         }

@@ -958,8 +958,7 @@ u16 getAttackNum(u8 n){
 
 
 u8 *getAbilityName(){
-    u16 abilitie = GetAbilityBySpecies(myTempData->species,myTempData->abilityNums.nums[myTempData->abilityNumPos]);
-
+    u16 abilitie = myTempData->abilityNums.nums[myTempData->abilityNumPos];
     u8 *abilityName = getBattleTextBuff(B_BUFF_ABILITY,abilitie);
 	if (checkNameString(abilityName,gNameLengthConfig.abilityNameLength)){
 		return abilityName;

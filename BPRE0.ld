@@ -119,6 +119,7 @@ sDiplomaTilemap = 0x84154E8; /*sDiplomaTilemap*/
 sDiplomaTiles = 0x84147C0; /*sDiplomaGfx*/
 sWindowFrames = 0x08471E8C; /*gUserFrames*/
 
+/* 0x083a7344 0x09dd8f78 */
 sStartMenuItems = 0x083a7344; /*sStartMenuActionTable*/
 
 HandleStartMenuInput = 0x0806f394|1; /*StartMenu_FadeScreenIfLeavingOverworld*/
@@ -126,6 +127,7 @@ HandleStartMenuInput = 0x0806f394|1; /*StartMenu_FadeScreenIfLeavingOverworld*/
 ItemIdToBallId = 0x080ef52c|1;
 
 GetAbilityBySpecies = 0x8040d38|1;
+GetMonAbility = 0x8040d38|1;
 
 LoadMonIconPalettes = 0x809707c|1;
 

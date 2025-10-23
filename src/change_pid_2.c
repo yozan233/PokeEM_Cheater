@@ -4,6 +4,7 @@ extern struct Pokemon *getCurrentPlayerParty();
 extern struct BaseStats* getSpeciesBaseStats(u16 species);
 extern u32 GetMonData(struct Pokemon* poke_address, u8 request, const void* data);
 u32 CreateShinyPid(u8 nature, u8 gender, u8 ratio, u32 TiD);
+bool8 checkAbilityNumInvalid(u32 pid);
 
 #define CalcNature(PiD)((umodsi3(PiD, 25)))
 #define BIC(value, bit)(value & (~(bit)))
@@ -91,7 +92,7 @@ void ChangePid(u8 nature,u8 gender,u8 shininess){
     if (!shininess){
         do{
             PiD = Random() | (Random() << 0x10);
-        } while((nature <= 25 && nature != CalcNature(PiD)) || (gender != CalcGender(PiD, ratio)));
+        } while((nature <= 25 && nature != CalcNature(PiD)) || (gender != CalcGender(PiD, ratio)) || checkAbilityNumInvalid(PiD));
     }
     else{
         PiD = CreateShinyPid(nature, gender, ratio, TiD);
@@ -130,7 +131,16 @@ u32 CreateShinyPid(u8 nature, u8 gender, u8 ratio, u32 TiD){
             PiD = (pid1) | (pid2 << 0x10);
         else
             PiD = (pid2) | (pid1 << 0x10);
-    } while((nature <= 25 && nature != CalcNature(PiD)) || (gender != CalcGender(PiD, ratio)));
+    } while((nature <= 25 && nature != CalcNature(PiD)) || (gender != CalcGender(PiD, ratio)) || checkAbilityNumInvalid(PiD));
 
     return PiD;
+}
+
+bool8 checkAbilityNumInvalid(u32 pid){
+    #ifdef FIRE_RED_LEAF_GREEN
+    if(gQuantityLimit.abilityHook == TRUE && myTempData->abilityNumPos != 2){
+        return (pid & 1) != myTempData->abilityNumPos;
+    }
+    #endif
+    return FALSE;
 }
