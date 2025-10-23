@@ -12,15 +12,15 @@
 ## 生成bin文件和info文件
 ### 绿宝石
 ```shell
-make -f MakefileCmp bpee0
+make -f makefilecmp bpee0
 ```
 ### 火红
 ```shell
-make -f MakefileCmp bpre0
+make -f makefilecmp bpre0
 ```
 ### 红宝石
 ```shell
-make -f MakefileCmp axve0
+make -f makefilecmp axve0
 ```
 
 

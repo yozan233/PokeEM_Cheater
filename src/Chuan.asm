@@ -17,10 +17,10 @@
 	
 	this_end:
 	lsl r0, r0,#0x18
-	.ifdef FIRE_RED_LEAF_GREEN
-	lsr r0, r0,#0x18
-	.else
+	.ifdef EMERALD
 	lsr r4, r0,#0x18
+	.else
+	lsr r0, r0,#0x18
 	.endif
 	ldr r3, =PlayerNotOnBikeMoving
 	add r3, #0x14
