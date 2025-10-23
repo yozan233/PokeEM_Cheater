@@ -66,7 +66,7 @@ void set_item_tile();
 
 #ifdef RUBY_SAPPHIRE
 #define CRC_AUTHOR_TEXT 0xF3D3
-#define CRC_VERSION_TEXT 0x63C2
+#define CRC_VERSION_TEXT 0x49AA
 
 #define POS_04 0
 #define POS_09 8
@@ -102,7 +102,7 @@ void set_item_tile();
 
 #else
 #define CRC_AUTHOR_TEXT 0x0710
-#define CRC_VERSION_TEXT 0x3653
+#define CRC_VERSION_TEXT 0x1C3B
 
 #define POS_04 4
 #define POS_09 9

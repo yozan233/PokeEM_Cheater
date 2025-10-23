@@ -180,15 +180,6 @@ void SetPokedexFlag(u16 species){
 	GetSetPokedexFlag(index,2); //图鉴设置已发现的标识
 	GetSetPokedexFlag(index,3); //图鉴设置已捕获的标识
 }
-#ifdef BPEE0
-/**
- * 是否为究极绿宝石
-*/
-bool8 check_Ultra_Emerald(){
-	u32 ultraEmerald = ((u32*)0x080BB100)[0];
-	return ultraEmerald == 0x09E0FF80;
-}
-#endif
 
 /**
  * 刷新当前页面
