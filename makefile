@@ -61,7 +61,6 @@ build_rom_fc:
  "build\set_text.o" \
  "build\keyboard.o" \
  "build\resource.o"
-	java -jar SetInsertAsmOffset.jar ${GAME_VERSION} 0x8FC0000
 	armips insert_${GAME_VERSION}.asm
 	@echo "Build Complete FC."
 	VisualBoyAdvance $(GAME_VERSION)_TEST.gba

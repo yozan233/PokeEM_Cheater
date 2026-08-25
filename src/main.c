@@ -94,6 +94,31 @@ void loadMonName(){
 	nameStr[0x1F] = len;
 	StringCopy(nameStr+len+1,getMonSpeciesName(myTempData->species));
 }
+
+/**
+ * 获取性格名称
+ */
+void getNatureName(u8 nature,u8 *dest){
+	u32* gNatureNamePointers = *gNatureNamePointersPtr;
+	u32* namePtr = (u32*)(gNatureNamePointers + nature);
+	u8* name = (u8*)namePtr[0];
+	//ch<0x20 && ch!=0 && ch != 0x6 && ch != 0x1B //中文
+	bool8 chinesFlag = FALSE;
+	while (*name != 0xFF){
+		u8 ch = *name;
+		if(!chinesFlag && (ch == 0x5C || ch == 0x85))
+			break;
+		if(chinesFlag)
+			chinesFlag = FALSE;
+		else 
+			chinesFlag = ch<0x20 && ch!=0 && ch != 0x6 && ch != 0x1B;
+		*dest = ch;
+		dest++;
+		name++;
+	}
+	*dest = 0xFF;
+}
+
 /**
  * 获取种族名字
 */

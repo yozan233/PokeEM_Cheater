@@ -99,6 +99,7 @@ gMoveNamesPtr = 0x0802E18C; /*技能名称*/
 gSpeciesInfoPtr = 0x08010B64; /*精灵种族值*/
 gItemsPtr = 0x080A98F0; /*道具表*/
 gBattleMovesPtr = 0x0800CA54; /*技能表*/
+gNatureNamePointersPtr = 0x080443D8; /*性格名称*/
 
 ItemUseOutOfBattle_Repel = 0x080ca014|1;
 

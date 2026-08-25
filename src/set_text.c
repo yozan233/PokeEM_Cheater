@@ -162,8 +162,10 @@ void UpdatePageValue(u8 page)
             UpdateNumber(POS_168, POS_28, myTempData->happiness, 3);
 
             //性格
-			u8 *naturesTable = text_table[TEXT_NATURES_TABLE];
-            u8 *naturesStr = naturesTable+5*myTempData->nature;
+			//u8 *naturesTable = text_table[TEXT_NATURES_TABLE];
+            //u8 *naturesStr = naturesTable+5*myTempData->nature;
+			u8 *naturesStr = myTempData->textBuffer.wordList;
+			getNatureName(myTempData->nature,naturesStr);
 			UpdateString(POS_60, POS_56, naturesStr, 5);
 
             //特性

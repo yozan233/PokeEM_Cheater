@@ -111,6 +111,7 @@ gSpeciesInfoPtr = 0x080001BC; /*精灵种族值*/
 gItemsPtr = 0x080001C8; /*道具表*/
 gBattleMovesPtr = 0x080001CC; /*技能表*/
 gItemIconTablePtr = 0x0809899C; /*道具图标*/
+gNatureNamePointersPtr = 0x080488B8; /*性格名称*/
 
 ItemUseOutOfBattle_Repel = 0x080a1998|1; /*FieldUseFunc_Repel*/
 

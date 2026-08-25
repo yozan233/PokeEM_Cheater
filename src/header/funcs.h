@@ -133,6 +133,7 @@ extern u32 gMonIconPaletteTablePtr[];
 extern u32 gMoveNamesPtr[];
 extern u32 gItemsPtr[];
 extern u32 gBattleMovesPtr[];
+extern u32 gNatureNamePointersPtr[];
 
 extern u8 sCursor_Gfx[];
 extern u8 gFrontierPassCursor_Pal[];
