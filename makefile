@@ -1,96 +1,66 @@
 AS=arm-none-eabi-as
 LD=arm-none-eabi-ld
-OBJCOPY=arm-none-eabi-objcopy
 CC=arm-none-eabi-gcc
+ARMIPS=armips
 
 ASFLAGS=-mthumb
-CFLAGS= -std=gnu11 -mthumb -mthumb-interwork -mcpu=arm7tdmi -fno-inline -mlong-calls -march=armv4t -Wall -Wextra -Wconversion -O2 -w
+CFLAGS=-std=gnu11 -mthumb -mthumb-interwork -mcpu=arm7tdmi -fno-inline -mlong-calls -march=armv4t -Wall -Wextra -Wconversion -O2 -w
 LDFLAGS=-z muldefs --relocatable
-GAME_VERSION = BPEE0
-EMERALD = 1
 
-MAPFILE=-Map $(GAME_VERSION)_TEST.map
+GAME_VERSION?=BPEE0
+DEFINES?=EMERALD
+BUILD_DIR=build
+MAP_FILE=$(BUILD_DIR)/$(GAME_VERSION).map
 
-CFLAGS += -D $(GAME_VERSION)
-ASFLAGS += --defsym $(GAME_VERSION)=1
+C_DEFINE_FLAGS=$(foreach name,$(GAME_VERSION) $(DEFINES),-D $(name))
+AS_DEFINE_FLAGS=$(foreach name,$(GAME_VERSION) $(DEFINES),--defsym $(name)=1)
 
-ifeq ($(EMERALD),1)
-CFLAGS += -D EMERALD
-ASFLAGS += --defsym EMERALD=1
-endif
-ifeq ($(RUBY),1)
-CFLAGS += -D RUBY
-ASFLAGS += --defsym RUBY=1
-endif
-ifeq ($(RUBY_SAPPHIRE),1)
-CFLAGS += -D RUBY_SAPPHIRE
-ASFLAGS += --defsym RUBY_SAPPHIRE=1
-endif
-ifeq ($(FIRE_RED),1)
-CFLAGS += -D FIRE_RED
-ASFLAGS += --defsym FIRE_RED=1
-endif
-ifeq ($(FIRE_RED_LEAF_GREEN),1)
-CFLAGS += -D FIRE_RED_LEAF_GREEN
-ASFLAGS += --defsym FIRE_RED_LEAF_GREEN=1
-endif
+.PHONY: all objects link armips clean
 
-.NOTPARALLEL:
-
-.PHONY: clean,objects
-
-all: objects build_rom_fc
-	@echo "Enforcement Complete."
-
-build_rom_fc:
-	$(LD) $(LDFLAGS) $(MAPFILE) \
- -T linker.lsc \
- -T ${GAME_VERSION}.ld \
- -o "build\linked.o" \
- "build\exit_asm.o" \
- "build\sys_function.o" \
- "build\func_proxy.o" \
- "build\main.o" \
- "build\sub_bg_init.o" \
- "build\task_loader.o" \
- "build\change_pid_2.o" \
- "build\tiles_load.o" \
- "build\create_sprites.o" \
- "build\Chuan.o" "build\task_02.o" \
- "build\button_events.o" \
- "build\set_text.o" \
- "build\keyboard.o" \
- "build\resource.o"
-	armips insert_${GAME_VERSION}.asm
-	@echo "Build Complete FC."
-	VisualBoyAdvance $(GAME_VERSION)_TEST.gba
-
+all: link
 
 objects:
-	mkdir -p build
-	$(CC) $(CFLAGS) -c "src\main.c" -o "build\main.o"
-	$(CC) $(CFLAGS) -c "src\sys_function.c" -o "build\sys_function.o"
-	$(CC) $(CFLAGS) -c "src\func_proxy.c" -o "build\func_proxy.o"
-	$(CC) $(CFLAGS) -c "src\create_sprites.c" -o "build\create_sprites.o"
-	$(CC) $(CFLAGS) -c "src\set_text.c" -o "build\set_text.o"
-	$(CC) $(CFLAGS) -c "src\keyboard.c" -o "build\keyboard.o"
-	$(CC) $(CFLAGS) -c "src\sub_bg_init.c" -o "build\sub_bg_init.o"
-	$(CC) $(CFLAGS) -c "src\task_loader.c" -o "build\task_loader.o"
-	$(CC) $(CFLAGS) -c "src\tiles_load.c" -o "build\tiles_load.o"
-	$(CC) $(CFLAGS) -c "src\change_pid_2.c" -o "build\change_pid_2.o"
-	$(CC) $(CFLAGS) -c "src\task_02.c" -o "build\task_02.o"
-	$(CC) $(CFLAGS) -c "src\button_events.c" -o "build\button_events.o"
-	$(CC) $(CFLAGS) -c "src\resource.c" -o "build\resource.o"
-	$(AS) $(ASFLAGS) -c "src\exit_asm.s" -o "build\exit_asm.o"
-	$(AS) $(ASFLAGS) -c "src\Chuan.asm" -o "build\Chuan.o"
-	@echo "Object Complete."
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/main.c" -o "$(BUILD_DIR)/main.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/sys_function.c" -o "$(BUILD_DIR)/sys_function.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/func_proxy.c" -o "$(BUILD_DIR)/func_proxy.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/create_sprites.c" -o "$(BUILD_DIR)/create_sprites.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/set_text.c" -o "$(BUILD_DIR)/set_text.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/keyboard.c" -o "$(BUILD_DIR)/keyboard.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/sub_bg_init.c" -o "$(BUILD_DIR)/sub_bg_init.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/task_loader.c" -o "$(BUILD_DIR)/task_loader.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/tiles_load.c" -o "$(BUILD_DIR)/tiles_load.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/change_pid_2.c" -o "$(BUILD_DIR)/change_pid_2.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/task_02.c" -o "$(BUILD_DIR)/task_02.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/button_events.c" -o "$(BUILD_DIR)/button_events.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/resource.c" -o "$(BUILD_DIR)/resource.o"
+	$(AS) $(ASFLAGS) $(AS_DEFINE_FLAGS) -c "src/exit_asm.s" -o "$(BUILD_DIR)/exit_asm.o"
+	$(AS) $(ASFLAGS) $(AS_DEFINE_FLAGS) -c "src/Chuan.asm" -o "$(BUILD_DIR)/Chuan.o"
+
+link: objects
+	$(LD) $(LDFLAGS) -Map "$(MAP_FILE)" \
+	 -T linker.lsc \
+	 -T rom_offsets.ld \
+	 -o "$(BUILD_DIR)/linked.o" \
+	 "$(BUILD_DIR)/exit_asm.o" \
+	 "$(BUILD_DIR)/sys_function.o" \
+	 "$(BUILD_DIR)/func_proxy.o" \
+	 "$(BUILD_DIR)/main.o" \
+	 "$(BUILD_DIR)/sub_bg_init.o" \
+	 "$(BUILD_DIR)/task_loader.o" \
+	 "$(BUILD_DIR)/change_pid_2.o" \
+	 "$(BUILD_DIR)/tiles_load.o" \
+	 "$(BUILD_DIR)/create_sprites.o" \
+	 "$(BUILD_DIR)/Chuan.o" \
+	 "$(BUILD_DIR)/task_02.o" \
+	 "$(BUILD_DIR)/button_events.o" \
+	 "$(BUILD_DIR)/set_text.o" \
+	 "$(BUILD_DIR)/keyboard.o" \
+	 "$(BUILD_DIR)/resource.o"
+
+armips:
+	$(ARMIPS) insert.asm
 
 clean:
-	rm build//*
-
-bpee0:              ; @$(MAKE) GAME_VERSION=BPEE0 EMERALD=1
-bpre0:              ; @$(MAKE) GAME_VERSION=BPRE0 EMERALD=0 FIRE_RED=1 FIRE_RED_LEAF_GREEN=1
-axve0:              ; @$(MAKE) GAME_VERSION=AXVE0 EMERALD=0 RUBY=1 RUBY_SAPPHIRE=1
-axpe0:              ; @$(MAKE) GAME_VERSION=AXPE0 EMERALD=0 SAPPHIRE=1 RUBY_SAPPHIRE=1
-bpge0:				; @$(MAKE) GAME_VERSION=BPGE0 EMERALD=0 LEAF_GREEN=1 FIRE_RED_LEAF_GREEN=1
-
+	rm -rf "$(BUILD_DIR)"
+	rm -f rom_offsets.ld insert.asm

@@ -1,0 +1,2321 @@
+{
+  "BPEE0": {
+    "project": "EMERALD",
+    "publish": true,
+    "defines": [
+      "EMERALD"
+    ],
+    "symbols": {
+      "SetMainCallback2": {
+        "address": "0x08000540",
+        "thumb": true
+      },
+      "SetVBlankCallback": {
+        "address": "0x080006F0",
+        "thumb": true
+      },
+      "Alloc": {
+        "address": "0x08000B38",
+        "thumb": true
+      },
+      "AllocZeroed": {
+        "address": "0x08000B4C",
+        "thumb": true
+      },
+      "Free": {
+        "address": "0x08000B60",
+        "thumb": true
+      },
+      "SetGpuReg": {
+        "address": "0x080010B4",
+        "thumb": true
+      },
+      "InitBgsFromTemplates": {
+        "address": "0x080017E8",
+        "thumb": true
+      },
+      "LoadBgTiles": {
+        "address": "0x08001944",
+        "thumb": true
+      },
+      "ShowBg": {
+        "address": "0x08001B30",
+        "thumb": true
+      },
+      "ChangeBgX": {
+        "address": "0x08001D04",
+        "thumb": true
+      },
+      "ChangeBgY": {
+        "address": "0x08001E7C",
+        "thumb": true
+      },
+      "SetBgTilemapBuffer": {
+        "address": "0x08002250",
+        "thumb": true
+      },
+      "CopyToBgTilemapBuffer": {
+        "address": "0x080022F0",
+        "thumb": true
+      },
+      "CopyBgTilemapBufferToVram": {
+        "address": "0x0800236C",
+        "thumb": true
+      },
+      "InitWindows": {
+        "address": "0x080031C0",
+        "thumb": true
+      },
+      "AddWindow": {
+        "address": "0x08003380",
+        "thumb": true
+      },
+      "FreeAllWindowBuffers": {
+        "address": "0x08003604",
+        "thumb": true
+      },
+      "PutWindowTilemap": {
+        "address": "0x0800378C",
+        "thumb": true
+      },
+      "FillWindowPixelRect": {
+        "address": "0x08003B64",
+        "thumb": true
+      },
+      "FillWindowPixelBuffer": {
+        "address": "0x08003C48",
+        "thumb": true
+      },
+      "DeactivateAllTextPrinters": {
+        "address": "0x080045B0",
+        "thumb": true
+      },
+      "AddTextPrinterParameterized": {
+        "address": "0x080045D0",
+        "thumb": true
+      },
+      "ResetSpriteData": {
+        "address": "0x08006974",
+        "thumb": true
+      },
+      "CreateSprite": {
+        "address": "0x08006DF4",
+        "thumb": true
+      },
+      "FreeAllSpritePalettes": {
+        "address": "0x0800870C",
+        "thumb": true
+      },
+      "StringCopy": {
+        "address": "0x08008BA0",
+        "thumb": true
+      },
+      "StringCompare": {
+        "address": "0x08008C44",
+        "thumb": true
+      },
+      "ConvertIntToDecimalStringN": {
+        "address": "0x08008CC0",
+        "thumb": true
+      },
+      "ConvertIntToHexStringN": {
+        "address": "0x08008E20",
+        "thumb": true
+      },
+      "VBlankCB_SelectScreen": {
+        "address": "0x080096BC",
+        "thumb": true
+      },
+      "RtcInitLocalTimeOffset": {
+        "address": "0x0802F5B4",
+        "thumb": true
+      },
+      "ZeroMonData": {
+        "address": "0x08067A8C",
+        "thumb": true
+      },
+      "CreateMon": {
+        "address": "0x08067B4C",
+        "thumb": true
+      },
+      "CalculateBoxMonChecksum": {
+        "address": "0x08068C78",
+        "thumb": true
+      },
+      "CalculateMonStats": {
+        "address": "0x08068D0C",
+        "thumb": true
+      },
+      "EncryptBoxMon": {
+        "address": "0x0806A228",
+        "thumb": true
+      },
+      "DecryptBoxMon": {
+        "address": "0x0806A24C",
+        "thumb": true
+      },
+      "GetMonData": {
+        "address": "0x0806A518",
+        "thumb": true
+      },
+      "SetMonData": {
+        "address": "0x0806ACAC",
+        "thumb": true
+      },
+      "GiveMonToPlayer": {
+        "address": "0x0806B414",
+        "thumb": true
+      },
+      "SpeciesToNationalPokedexNum": {
+        "address": "0x0806D4A4",
+        "thumb": true
+      },
+      "Random": {
+        "address": "0x0806F5CC",
+        "thumb": true
+      },
+      "GetMapHeaderByGroupAndId": {
+        "address": "0x08084A90",
+        "thumb": true
+      },
+      "SetWarpDestination": {
+        "address": "0x08084BEC",
+        "thumb": true
+      },
+      "ResetInitialPlayerAvatarState": {
+        "address": "0x08085268",
+        "thumb": true
+      },
+      "CB2_ReturnToFieldContinueScript": {
+        "address": "0x080861B0",
+        "thumb": true
+      },
+      "ScriptContext_SetupScript": {
+        "address": "0x08098EF8",
+        "thumb": true
+      },
+      "EnableNationalPokedex": {
+        "address": "0x0809D3E8",
+        "thumb": true
+      },
+      "VarGet": {
+        "address": "0x0809D694",
+        "thumb": true
+      },
+      "VarSet": {
+        "address": "0x0809D6B0",
+        "thumb": true
+      },
+      "StartMenuExitCallback": {
+        "address": "0x0809FD64",
+        "thumb": true
+      },
+      "LoadPalette": {
+        "address": "0x080A1938",
+        "thumb": true
+      },
+      "MainCB2": {
+        "address": "0x08177A08",
+        "thumb": true
+      },
+      "ResetPaletteFade": {
+        "address": "0x080A1A74",
+        "thumb": true
+      },
+      "BeginNormalPaletteFade": {
+        "address": "0x080A1AD4",
+        "thumb": true
+      },
+      "PlaySE": {
+        "address": "0x080A37A4",
+        "thumb": true
+      },
+      "CreateTask": {
+        "address": "0x080A8FB0",
+        "thumb": true
+      },
+      "DestroyTask": {
+        "address": "0x080A909C",
+        "thumb": true
+      },
+      "DoWarp": {
+        "address": "0x080AF734",
+        "thumb": true
+      },
+      "GetSetPokedexFlag": {
+        "address": "0x080C0664",
+        "thumb": true
+      },
+      "ClearItemSlots": {
+        "address": "0x080D6C7C",
+        "thumb": true
+      },
+      "AddBagItem": {
+        "address": "0x080D6928",
+        "thumb": true
+      },
+      "GetPlayerIDAsU32": {
+        "address": "0x080F0020",
+        "thumb": true
+      },
+      "HealPlayerParty": {
+        "address": "0x080F9180",
+        "thumb": true
+      },
+      "GetMapName": {
+        "address": "0x0812456C",
+        "thumb": true
+      },
+      "DrawStdFrameWithCustomTileAndPalette": {
+        "address": "0x08197E80",
+        "thumb": true
+      },
+      "ResetTempTileDataBuffers": {
+        "address": "0x08199A20",
+        "thumb": true
+      },
+      "FreeTempTileDataBuffersIfPossible": {
+        "address": "0x08199A44",
+        "thumb": true
+      },
+      "DecompressAndCopyTileDataToVram": {
+        "address": "0x08199A90",
+        "thumb": true
+      },
+      "AddTextPrinterParameterized3": {
+        "address": "0x08199E64",
+        "thumb": true
+      },
+      "CopyItemIconPicTo4x4Buffer": {
+        "address": "0x081AFE44",
+        "thumb": true
+      },
+      "CheckForPlayerAvatarCollision": {
+        "address": "0x0808AFBC",
+        "thumb": true
+      },
+      "PlayerNotOnBikeMoving": {
+        "address": "0x0808AF00",
+        "thumb": true
+      },
+      "udivsi3": {
+        "address": "0x082E7B68",
+        "thumb": true
+      },
+      "umodsi3": {
+        "address": "0x082E7BE0",
+        "thumb": true
+      },
+      "memcpy": {
+        "address": "0x082E93D4",
+        "thumb": true
+      },
+      "GetHealLocation": {
+        "address": "0x08122CBC",
+        "thumb": true
+      },
+      "ExpandBattleTextBuffPlaceholders": {
+        "address": "0x0814F648",
+        "thumb": true
+      },
+      "ItemUseCB_RareCandy": {
+        "address": "0x081B7404",
+        "thumb": true
+      },
+      "throughWallFlag": {
+        "address": "0x020322D6",
+        "thumb": false
+      },
+      "gSpecialVar_0x8004": {
+        "address": "0x020375E0",
+        "thumb": false
+      },
+      "gPaletteFade": {
+        "address": "0x02037FD4",
+        "thumb": false
+      },
+      "gSprites": {
+        "address": "0x02020630",
+        "thumb": false
+      },
+      "gPlttBufferUnfaded": {
+        "address": "0x02037714",
+        "thumb": false
+      },
+      "gPlttBufferFaded": {
+        "address": "0x02037B14",
+        "thumb": false
+      },
+      "gPlayerParty": {
+        "address": "0x020244EC",
+        "thumb": false,
+        "note": "精灵队伍"
+      },
+      "gPlayerPartyCount": {
+        "address": "0x020244E9",
+        "thumb": false,
+        "note": "精灵数量"
+      },
+      "gBagPockets": {
+        "address": "0x02039DD8",
+        "thumb": false
+      },
+      "gStringVar1": {
+        "address": "0x02021CC4",
+        "thumb": false
+      },
+      "gSaveBlock1Ptr": {
+        "address": "0x03005D8C",
+        "thumb": false
+      },
+      "gSaveBlock2Ptr": {
+        "address": "0x03005D90",
+        "thumb": false
+      },
+      "gLocalTime": {
+        "address": "0x03005CF8",
+        "thumb": false
+      },
+      "gMain": {
+        "address": "0x030022C0",
+        "thumb": false
+      },
+      "gTasks": {
+        "address": "0x03005E00",
+        "thumb": false
+      },
+      "gMonFrontPicTablePtr": {
+        "address": "0x08000128",
+        "thumb": false,
+        "note": "精灵正面图"
+      },
+      "gMonPaletteTablePtr": {
+        "address": "0x08000130",
+        "thumb": false,
+        "note": "精灵普通调色板"
+      },
+      "gMonShinyPaletteTablePtr": {
+        "address": "0x08000134",
+        "thumb": false,
+        "note": "精灵闪光调色板"
+      },
+      "gMonIconTablePtr": {
+        "address": "0x08000138",
+        "thumb": false,
+        "note": "精灵小图标"
+      },
+      "gMonIconPaletteIndicesPtr": {
+        "address": "0x0800013C",
+        "thumb": false,
+        "note": "精灵小图标调色板编号"
+      },
+      "gMonIconPaletteTablePtr": {
+        "address": "0x08000140",
+        "thumb": false,
+        "note": "精灵小图标调色板"
+      },
+      "gSpeciesNamesPtr": {
+        "address": "0x08000144",
+        "thumb": false,
+        "note": "精灵种族名字"
+      },
+      "gMoveNamesPtr": {
+        "address": "0x08000148",
+        "thumb": false,
+        "note": "技能名称"
+      },
+      "gSpeciesInfoPtr": {
+        "address": "0x080001BC",
+        "thumb": false,
+        "note": "精灵种族值"
+      },
+      "gItemsPtr": {
+        "address": "0x080001C8",
+        "thumb": false,
+        "note": "道具表"
+      },
+      "gBattleMovesPtr": {
+        "address": "0x080001CC",
+        "thumb": false,
+        "note": "技能表"
+      },
+      "gItemIconTablePtr": {
+        "address": "0x081B0034",
+        "thumb": false,
+        "note": "道具图标"
+      },
+      "gNatureNamePointersPtr": {
+        "address": "0x08073188",
+        "thumb": false,
+        "note": "性格名称"
+      },
+      "ItemUseOutOfBattle_Repel": {
+        "address": "0x080FE0BC",
+        "thumb": true
+      },
+      "sCursor_Gfx": {
+        "address": "0x08570BA8",
+        "thumb": false
+      },
+      "gFrontierPassCursor_Pal": {
+        "address": "0x08DC1674",
+        "thumb": false
+      },
+      "sDiplomaPalettes": {
+        "address": "0x085E7088",
+        "thumb": false
+      },
+      "sDiplomaTilemap": {
+        "address": "0x085E70C8",
+        "thumb": false
+      },
+      "sDiplomaTiles": {
+        "address": "0x085E7804",
+        "thumb": false
+      },
+      "sWindowFrames": {
+        "address": "0x0851021C",
+        "thumb": false
+      },
+      "sStartMenuItems": {
+        "address": "0x08510540",
+        "thumb": false
+      },
+      "HandleStartMenuInput": {
+        "address": "0x0809FAC4",
+        "thumb": true
+      },
+      "ItemIdToBallId": {
+        "address": "0x08170D84",
+        "thumb": true
+      },
+      "GetAbilityBySpecies": {
+        "address": "0x0806B694",
+        "thumb": true
+      },
+      "LoadMonIconPalettes": {
+        "address": "0x080D2F04",
+        "thumb": true
+      }
+    }
+  },
+  "BPRE0": {
+    "project": "FIRE_RED",
+    "publish": true,
+    "defines": [
+      "FIRE_RED",
+      "FIRE_RED_LEAF_GREEN"
+    ],
+    "symbols": {
+      "SetMainCallback2": {
+        "address": "0x08000544",
+        "thumb": true
+      },
+      "SetVBlankCallback": {
+        "address": "0x080006F4",
+        "thumb": true
+      },
+      "Alloc": {
+        "address": "0x08002B9C",
+        "thumb": true
+      },
+      "AllocZeroed": {
+        "address": "0x08002BB0",
+        "thumb": true
+      },
+      "Free": {
+        "address": "0x08002BC4",
+        "thumb": true
+      },
+      "SetGpuReg": {
+        "address": "0x08000A38",
+        "thumb": true
+      },
+      "InitBgsFromTemplates": {
+        "address": "0x08001658",
+        "thumb": true
+      },
+      "LoadBgTiles": {
+        "address": "0x080017D0",
+        "thumb": true
+      },
+      "ShowBg": {
+        "address": "0x080019BC",
+        "thumb": true
+      },
+      "ChangeBgX": {
+        "address": "0x08001B90",
+        "thumb": true
+      },
+      "ChangeBgY": {
+        "address": "0x08001D08",
+        "thumb": true
+      },
+      "SetBgTilemapBuffer": {
+        "address": "0x08001FA0",
+        "thumb": true
+      },
+      "CopyToBgTilemapBuffer": {
+        "address": "0x08002040",
+        "thumb": true
+      },
+      "CopyBgTilemapBufferToVram": {
+        "address": "0x080020BC",
+        "thumb": true
+      },
+      "InitWindows": {
+        "address": "0x08003B24",
+        "thumb": true
+      },
+      "AddWindow": {
+        "address": "0x08003CE4",
+        "thumb": true
+      },
+      "FreeAllWindowBuffers": {
+        "address": "0x08003ECC",
+        "thumb": true
+      },
+      "PutWindowTilemap": {
+        "address": "0x08003FA0",
+        "thumb": true
+      },
+      "FillWindowPixelRect": {
+        "address": "0x08004378",
+        "thumb": true
+      },
+      "FillWindowPixelBuffer": {
+        "address": "0x0800445C",
+        "thumb": true
+      },
+      "DeactivateAllTextPrinters": {
+        "address": "0x08002C28",
+        "thumb": true
+      },
+      "AddTextPrinterParameterized": {
+        "address": "0x08002C48",
+        "thumb": true
+      },
+      "ResetSpriteData": {
+        "address": "0x08006B10",
+        "thumb": true
+      },
+      "CreateSprite": {
+        "address": "0x08006F8C",
+        "thumb": true
+      },
+      "FreeAllSpritePalettes": {
+        "address": "0x080088F0",
+        "thumb": true
+      },
+      "StringCopy": {
+        "address": "0x08008D84",
+        "thumb": true
+      },
+      "StringCompare": {
+        "address": "0x08008E28",
+        "thumb": true
+      },
+      "ConvertIntToDecimalStringN": {
+        "address": "0x08008E78",
+        "thumb": true
+      },
+      "ConvertIntToHexStringN": {
+        "address": "0x08008F18",
+        "thumb": true
+      },
+      "VBlankCB_SelectScreen": {
+        "address": "0x080F4BFC",
+        "thumb": true,
+        "note": "VBlankCB_Diploma"
+      },
+      "ZeroMonData": {
+        "address": "0x0803D994",
+        "thumb": true
+      },
+      "CreateMon": {
+        "address": "0x0803DA54",
+        "thumb": true
+      },
+      "CalculateBoxMonChecksum": {
+        "address": "0x0803E3E8",
+        "thumb": true
+      },
+      "CalculateMonStats": {
+        "address": "0x0803E47C",
+        "thumb": true
+      },
+      "EncryptBoxMon": {
+        "address": "0x0803F8F8",
+        "thumb": true
+      },
+      "DecryptBoxMon": {
+        "address": "0x0803F91C",
+        "thumb": true
+      },
+      "GetMonData": {
+        "address": "0x0803FBE8",
+        "thumb": true
+      },
+      "SetMonData": {
+        "address": "0x0804037C",
+        "thumb": true
+      },
+      "GiveMonToPlayer": {
+        "address": "0x08040B14",
+        "thumb": true
+      },
+      "SpeciesToNationalPokedexNum": {
+        "address": "0x08043298",
+        "thumb": true
+      },
+      "Random": {
+        "address": "0x08044EC8",
+        "thumb": true
+      },
+      "GetMapHeaderByGroupAndId": {
+        "address": "0x08055238",
+        "thumb": true
+      },
+      "SetWarpDestination": {
+        "address": "0x0805538C",
+        "thumb": true
+      },
+      "ResetInitialPlayerAvatarState": {
+        "address": "0x080559E4",
+        "thumb": true
+      },
+      "CB2_ReturnToFieldContinueScript": {
+        "address": "0x080568C4",
+        "thumb": true
+      },
+      "ScriptContext_SetupScript": {
+        "address": "0x08069AE4",
+        "thumb": true
+      },
+      "EnableNationalPokedex": {
+        "address": "0x0806E22C",
+        "thumb": true
+      },
+      "VarGet": {
+        "address": "0x0806E568",
+        "thumb": true
+      },
+      "VarSet": {
+        "address": "0x0806E584",
+        "thumb": true
+      },
+      "StartMenuExitCallback": {
+        "address": "0x0806F540",
+        "thumb": true
+      },
+      "LoadPalette": {
+        "address": "0x080703EC",
+        "thumb": true
+      },
+      "ResetPaletteFade": {
+        "address": "0x08070528",
+        "thumb": true
+      },
+      "BeginNormalPaletteFade": {
+        "address": "0x08070588",
+        "thumb": true
+      },
+      "PlaySE": {
+        "address": "0x080722CC",
+        "thumb": true
+      },
+      "CreateTask": {
+        "address": "0x0807741C",
+        "thumb": true
+      },
+      "DestroyTask": {
+        "address": "0x08077508",
+        "thumb": true
+      },
+      "DoWarp": {
+        "address": "0x0807E438",
+        "thumb": true
+      },
+      "GetSetPokedexFlag": {
+        "address": "0x08088E74",
+        "thumb": true
+      },
+      "ClearItemSlots": {
+        "address": "0x0809A274",
+        "thumb": true
+      },
+      "AddBagItem": {
+        "address": "0x0809A084",
+        "thumb": true
+      },
+      "GetPlayerIDAsU32": {
+        "address": "0x080CC1E4",
+        "thumb": true,
+        "note": "GetPlayerTrainerId"
+      },
+      "HealPlayerParty": {
+        "address": "0x080A0058",
+        "thumb": true
+      },
+      "GetMapName": {
+        "address": "0x080C4D78",
+        "thumb": true
+      },
+      "DrawStdFrameWithCustomTileAndPalette": {
+        "address": "0x0810F2E8",
+        "thumb": true
+      },
+      "ResetTempTileDataBuffers": {
+        "address": "0x080F6808",
+        "thumb": true
+      },
+      "FreeTempTileDataBuffersIfPossible": {
+        "address": "0x080F682C",
+        "thumb": true
+      },
+      "DecompressAndCopyTileDataToVram": {
+        "address": "0x080F6878",
+        "thumb": true
+      },
+      "AddTextPrinterParameterized3": {
+        "address": "0x0812E51C",
+        "thumb": true
+      },
+      "CopyItemIconPicTo4x4Buffer": {
+        "address": "0x0809872C",
+        "thumb": true
+      },
+      "CheckForPlayerAvatarCollision": {
+        "address": "0x0805BB1C",
+        "thumb": true
+      },
+      "PlayerNotOnBikeMoving": {
+        "address": "0x0805B9D4",
+        "thumb": true
+      },
+      "udivsi3": {
+        "address": "0x081E460C",
+        "thumb": true
+      },
+      "umodsi3": {
+        "address": "0x081E4684",
+        "thumb": true
+      },
+      "memcpy": {
+        "address": "0x081E5E78",
+        "thumb": true
+      },
+      "GetHealLocation": {
+        "address": "0x080BFCB0",
+        "thumb": true
+      },
+      "ExpandBattleTextBuffPlaceholders": {
+        "address": "0x080D8418",
+        "thumb": true
+      },
+      "ItemUseCB_RareCandy": {
+        "address": "0x081262AC",
+        "thumb": true
+      },
+      "MainCB2": {
+        "address": "0x080F4C50",
+        "thumb": true,
+        "note": "CB2_Diploma"
+      },
+      "throughWallFlag": {
+        "address": "0x0203F465",
+        "thumb": false
+      },
+      "gSpecialVar_0x8004": {
+        "address": "0x020370C0",
+        "thumb": false
+      },
+      "gPaletteFade": {
+        "address": "0x02037AB8",
+        "thumb": false
+      },
+      "gSprites": {
+        "address": "0x0202063C",
+        "thumb": false
+      },
+      "gPlttBufferUnfaded": {
+        "address": "0x020371F8",
+        "thumb": false
+      },
+      "gPlttBufferFaded": {
+        "address": "0x020375F8",
+        "thumb": false
+      },
+      "gPlayerParty": {
+        "address": "0x02024284",
+        "thumb": false
+      },
+      "gPlayerPartyCount": {
+        "address": "0x02024029",
+        "thumb": false
+      },
+      "gBagPockets": {
+        "address": "0x0203988C",
+        "thumb": false
+      },
+      "gStringVar1": {
+        "address": "0x02021CD0",
+        "thumb": false
+      },
+      "gSaveBlock1Ptr": {
+        "address": "0x03005008",
+        "thumb": false
+      },
+      "gSaveBlock2Ptr": {
+        "address": "0x0300500C",
+        "thumb": false
+      },
+      "gMain": {
+        "address": "0x030030F0",
+        "thumb": false
+      },
+      "gTasks": {
+        "address": "0x03005090",
+        "thumb": false
+      },
+      "gMonFrontPicTablePtr": {
+        "address": "0x08000128",
+        "thumb": false,
+        "note": "精灵正面图"
+      },
+      "gMonPaletteTablePtr": {
+        "address": "0x08000130",
+        "thumb": false,
+        "note": "精灵普通调色板"
+      },
+      "gMonShinyPaletteTablePtr": {
+        "address": "0x08000134",
+        "thumb": false,
+        "note": "精灵闪光调色板"
+      },
+      "gMonIconTablePtr": {
+        "address": "0x08000138",
+        "thumb": false,
+        "note": "精灵小图标"
+      },
+      "gMonIconPaletteIndicesPtr": {
+        "address": "0x0800013C",
+        "thumb": false,
+        "note": "精灵小图标调色板编号"
+      },
+      "gMonIconPaletteTablePtr": {
+        "address": "0x08000140",
+        "thumb": false,
+        "note": "精灵小图标调色板"
+      },
+      "gSpeciesNamesPtr": {
+        "address": "0x08000144",
+        "thumb": false,
+        "note": "精灵种族名字"
+      },
+      "gMoveNamesPtr": {
+        "address": "0x08000148",
+        "thumb": false,
+        "note": "技能名称"
+      },
+      "gSpeciesInfoPtr": {
+        "address": "0x080001BC",
+        "thumb": false,
+        "note": "精灵种族值"
+      },
+      "gItemsPtr": {
+        "address": "0x080001C8",
+        "thumb": false,
+        "note": "道具表"
+      },
+      "gBattleMovesPtr": {
+        "address": "0x080001CC",
+        "thumb": false,
+        "note": "技能表"
+      },
+      "gItemIconTablePtr": {
+        "address": "0x0809899C",
+        "thumb": false,
+        "note": "道具图标"
+      },
+      "gNatureNamePointersPtr": {
+        "address": "0x080488B8",
+        "thumb": false,
+        "note": "性格名称"
+      },
+      "ItemUseOutOfBattle_Repel": {
+        "address": "0x080A1998",
+        "thumb": true,
+        "note": "FieldUseFunc_Repel"
+      },
+      "sDiplomaPalettes": {
+        "address": "0x08415954",
+        "thumb": false,
+        "note": "sDiplomaPal"
+      },
+      "sDiplomaTilemap": {
+        "address": "0x084154E8",
+        "thumb": false,
+        "note": "sDiplomaTilemap"
+      },
+      "sDiplomaTiles": {
+        "address": "0x084147C0",
+        "thumb": false,
+        "note": "sDiplomaGfx"
+      },
+      "sWindowFrames": {
+        "address": "0x08471E8C",
+        "thumb": false,
+        "note": "gUserFrames"
+      },
+      "sStartMenuItems": {
+        "address": "0x083A7344",
+        "thumb": false,
+        "note": "sStartMenuActionTable"
+      },
+      "HandleStartMenuInput": {
+        "address": "0x0806F394",
+        "thumb": true,
+        "note": "StartMenu_FadeScreenIfLeavingOverworld"
+      },
+      "ItemIdToBallId": {
+        "address": "0x080EF52C",
+        "thumb": true
+      },
+      "GetAbilityBySpecies": {
+        "address": "0x08040D38",
+        "thumb": true
+      },
+      "GetMonAbility": {
+        "address": "0x08040D38",
+        "thumb": true
+      },
+      "LoadMonIconPalettes": {
+        "address": "0x0809707C",
+        "thumb": true
+      }
+    }
+  },
+  "BPGE0": {
+    "project": "FIRE_RED",
+    "publish": false,
+    "defines": [
+      "FIRE_RED_LEAF_GREEN"
+    ],
+    "symbols": {
+      "SetMainCallback2": {
+        "address": "0x08000544",
+        "thumb": true
+      },
+      "SetVBlankCallback": {
+        "address": "0x080006F4",
+        "thumb": true
+      },
+      "Alloc": {
+        "address": "0x08002B9C",
+        "thumb": true
+      },
+      "AllocZeroed": {
+        "address": "0x08002BB0",
+        "thumb": true
+      },
+      "Free": {
+        "address": "0x08002BC4",
+        "thumb": true
+      },
+      "SetGpuReg": {
+        "address": "0x08000A38",
+        "thumb": true
+      },
+      "InitBgsFromTemplates": {
+        "address": "0x08001658",
+        "thumb": true
+      },
+      "LoadBgTiles": {
+        "address": "0x080017D0",
+        "thumb": true
+      },
+      "ShowBg": {
+        "address": "0x080019BC",
+        "thumb": true
+      },
+      "ChangeBgX": {
+        "address": "0x08001B90",
+        "thumb": true
+      },
+      "ChangeBgY": {
+        "address": "0x08001D08",
+        "thumb": true
+      },
+      "SetBgTilemapBuffer": {
+        "address": "0x08001FA0",
+        "thumb": true
+      },
+      "CopyToBgTilemapBuffer": {
+        "address": "0x08002040",
+        "thumb": true
+      },
+      "CopyBgTilemapBufferToVram": {
+        "address": "0x080020BC",
+        "thumb": true
+      },
+      "InitWindows": {
+        "address": "0x08003B24",
+        "thumb": true
+      },
+      "AddWindow": {
+        "address": "0x08003CE4",
+        "thumb": true
+      },
+      "FreeAllWindowBuffers": {
+        "address": "0x08003ECC",
+        "thumb": true
+      },
+      "PutWindowTilemap": {
+        "address": "0x08003FA0",
+        "thumb": true
+      },
+      "FillWindowPixelRect": {
+        "address": "0x08004378",
+        "thumb": true
+      },
+      "FillWindowPixelBuffer": {
+        "address": "0x0800445C",
+        "thumb": true
+      },
+      "DeactivateAllTextPrinters": {
+        "address": "0x08002C28",
+        "thumb": true
+      },
+      "AddTextPrinterParameterized": {
+        "address": "0x08002C48",
+        "thumb": true
+      },
+      "ResetSpriteData": {
+        "address": "0x08006B10",
+        "thumb": true
+      },
+      "CreateSprite": {
+        "address": "0x08006F8C",
+        "thumb": true
+      },
+      "FreeAllSpritePalettes": {
+        "address": "0x080088F0",
+        "thumb": true
+      },
+      "StringCopy": {
+        "address": "0x08008D84",
+        "thumb": true
+      },
+      "StringCompare": {
+        "address": "0x08008E28",
+        "thumb": true
+      },
+      "ConvertIntToDecimalStringN": {
+        "address": "0x08008E78",
+        "thumb": true
+      },
+      "ConvertIntToHexStringN": {
+        "address": "0x08008F18",
+        "thumb": true
+      },
+      "VBlankCB_SelectScreen": {
+        "address": "0x080F4BD4",
+        "thumb": true,
+        "note": "VBlankCB_Diploma"
+      },
+      "ZeroMonData": {
+        "address": "0x0803D994",
+        "thumb": true
+      },
+      "CreateMon": {
+        "address": "0x0803DA54",
+        "thumb": true
+      },
+      "CalculateBoxMonChecksum": {
+        "address": "0x0803E3E8",
+        "thumb": true
+      },
+      "CalculateMonStats": {
+        "address": "0x0803E47C",
+        "thumb": true
+      },
+      "EncryptBoxMon": {
+        "address": "0x0803F8F8",
+        "thumb": true
+      },
+      "DecryptBoxMon": {
+        "address": "0x0803F91C",
+        "thumb": true
+      },
+      "GetMonData": {
+        "address": "0x0803FBE8",
+        "thumb": true
+      },
+      "SetMonData": {
+        "address": "0x0804037C",
+        "thumb": true
+      },
+      "GiveMonToPlayer": {
+        "address": "0x08040B14",
+        "thumb": true
+      },
+      "SpeciesToNationalPokedexNum": {
+        "address": "0x08043298",
+        "thumb": true
+      },
+      "Random": {
+        "address": "0x08044EC8",
+        "thumb": true
+      },
+      "GetMapHeaderByGroupAndId": {
+        "address": "0x08055238",
+        "thumb": true
+      },
+      "SetWarpDestination": {
+        "address": "0x0805538C",
+        "thumb": true
+      },
+      "ResetInitialPlayerAvatarState": {
+        "address": "0x080559E4",
+        "thumb": true
+      },
+      "CB2_ReturnToFieldContinueScript": {
+        "address": "0x080568C4",
+        "thumb": true
+      },
+      "ScriptContext_SetupScript": {
+        "address": "0x08069AE4",
+        "thumb": true
+      },
+      "EnableNationalPokedex": {
+        "address": "0x0806E22C",
+        "thumb": true
+      },
+      "VarGet": {
+        "address": "0x0806E568",
+        "thumb": true
+      },
+      "VarSet": {
+        "address": "0x0806E584",
+        "thumb": true
+      },
+      "StartMenuExitCallback": {
+        "address": "0x0806F540",
+        "thumb": true
+      },
+      "LoadPalette": {
+        "address": "0x080703EC",
+        "thumb": true
+      },
+      "MainCB2": {
+        "address": "0x080F4C28",
+        "thumb": true
+      },
+      "ResetPaletteFade": {
+        "address": "0x08070528",
+        "thumb": true
+      },
+      "BeginNormalPaletteFade": {
+        "address": "0x08070588",
+        "thumb": true
+      },
+      "PlaySE": {
+        "address": "0x080722CC",
+        "thumb": true
+      },
+      "CreateTask": {
+        "address": "0x0807741C",
+        "thumb": true
+      },
+      "DestroyTask": {
+        "address": "0x08077508",
+        "thumb": true
+      },
+      "DoWarp": {
+        "address": "0x0807E40C",
+        "thumb": true
+      },
+      "GetSetPokedexFlag": {
+        "address": "0x08088E48",
+        "thumb": true
+      },
+      "ClearItemSlots": {
+        "address": "0x0809A248",
+        "thumb": true
+      },
+      "AddBagItem": {
+        "address": "0x0809A058",
+        "thumb": true
+      },
+      "GetPlayerIDAsU32": {
+        "address": "0x080CC1B8",
+        "thumb": true,
+        "note": "GetPlayerTrainerId"
+      },
+      "HealPlayerParty": {
+        "address": "0x080A002C",
+        "thumb": true
+      },
+      "GetMapName": {
+        "address": "0x080C4D4C",
+        "thumb": true
+      },
+      "DrawStdFrameWithCustomTileAndPalette": {
+        "address": "0x0810F2C0",
+        "thumb": true
+      },
+      "ResetTempTileDataBuffers": {
+        "address": "0x080F67E0",
+        "thumb": true
+      },
+      "FreeTempTileDataBuffersIfPossible": {
+        "address": "0x080F6804",
+        "thumb": true
+      },
+      "DecompressAndCopyTileDataToVram": {
+        "address": "0x080F6850",
+        "thumb": true
+      },
+      "AddTextPrinterParameterized3": {
+        "address": "0x0812E4F4",
+        "thumb": true
+      },
+      "CopyItemIconPicTo4x4Buffer": {
+        "address": "0x08098700",
+        "thumb": true
+      },
+      "CheckForPlayerAvatarCollision": {
+        "address": "0x0805BB1C",
+        "thumb": true
+      },
+      "PlayerNotOnBikeMoving": {
+        "address": "0x0805B9D4",
+        "thumb": true
+      },
+      "udivsi3": {
+        "address": "0x081E45E8",
+        "thumb": true
+      },
+      "umodsi3": {
+        "address": "0x081E4660",
+        "thumb": true
+      },
+      "memcpy": {
+        "address": "0x081E5E54",
+        "thumb": true
+      },
+      "GetHealLocation": {
+        "address": "0x080BFC84",
+        "thumb": true
+      },
+      "ExpandBattleTextBuffPlaceholders": {
+        "address": "0x080D83EC",
+        "thumb": true
+      },
+      "ItemUseCB_RareCandy": {
+        "address": "0x08126284",
+        "thumb": true
+      },
+      "throughWallFlag": {
+        "address": "0x0203F465",
+        "thumb": false
+      },
+      "gSpecialVar_0x8004": {
+        "address": "0x020370C0",
+        "thumb": false
+      },
+      "gPaletteFade": {
+        "address": "0x02037AB8",
+        "thumb": false
+      },
+      "gSprites": {
+        "address": "0x0202063C",
+        "thumb": false
+      },
+      "gPlttBufferUnfaded": {
+        "address": "0x020371F8",
+        "thumb": false
+      },
+      "BG_PaletteMem": {
+        "address": "0x020371F8",
+        "thumb": false
+      },
+      "OBJ_PaletteMem": {
+        "address": "0x020373F8",
+        "thumb": false
+      },
+      "gPlttBufferFaded": {
+        "address": "0x020375F8",
+        "thumb": false
+      },
+      "BG_PaletteMem2": {
+        "address": "0x020375F8",
+        "thumb": false
+      },
+      "OBJ_PaletteMem2": {
+        "address": "0x020377F8",
+        "thumb": false
+      },
+      "gPlayerParty": {
+        "address": "0x02024284",
+        "thumb": false
+      },
+      "gPlayerPartyCount": {
+        "address": "0x02024029",
+        "thumb": false
+      },
+      "gBagPockets": {
+        "address": "0x0203988C",
+        "thumb": false
+      },
+      "gStringVar1": {
+        "address": "0x02021CD0",
+        "thumb": false
+      },
+      "gSaveBlock1Ptr": {
+        "address": "0x03005008",
+        "thumb": false
+      },
+      "gSaveBlock2Ptr": {
+        "address": "0x0300500C",
+        "thumb": false
+      },
+      "gMain": {
+        "address": "0x030030F0",
+        "thumb": false
+      },
+      "gTasks": {
+        "address": "0x03005090",
+        "thumb": false
+      },
+      "gMonFrontPicTablePtr": {
+        "address": "0x08000128",
+        "thumb": false,
+        "note": "精灵正面图"
+      },
+      "gMonPaletteTablePtr": {
+        "address": "0x08000130",
+        "thumb": false,
+        "note": "精灵普通调色板"
+      },
+      "gMonIconTablePtr": {
+        "address": "0x08000138",
+        "thumb": false,
+        "note": "精灵小图标"
+      },
+      "gMonIconPaletteIndicesPtr": {
+        "address": "0x0800013C",
+        "thumb": false,
+        "note": "精灵小图标调色板编号"
+      },
+      "gMonIconPaletteTablePtr": {
+        "address": "0x08000140",
+        "thumb": false,
+        "note": "精灵小图标调色板"
+      },
+      "gSpeciesNamesPtr": {
+        "address": "0x08000144",
+        "thumb": false,
+        "note": "精灵种族名字"
+      },
+      "gMoveNamesPtr": {
+        "address": "0x08000148",
+        "thumb": false,
+        "note": "技能名称"
+      },
+      "gSpeciesInfoPtr": {
+        "address": "0x080001BC",
+        "thumb": false,
+        "note": "精灵种族值"
+      },
+      "gItemsPtr": {
+        "address": "0x080001C8",
+        "thumb": false,
+        "note": "道具表"
+      },
+      "gBattleMovesPtr": {
+        "address": "0x080001CC",
+        "thumb": false,
+        "note": "技能表"
+      },
+      "gItemIconTablePtr": {
+        "address": "0x08098970",
+        "thumb": false,
+        "note": "道具图标"
+      },
+      "ItemUseOutOfBattle_Repel": {
+        "address": "0x080A196C",
+        "thumb": true,
+        "note": "FieldUseFunc_Repel"
+      },
+      "sDiplomaPalettes": {
+        "address": "0x08415790",
+        "thumb": false,
+        "note": "sDiplomaPal"
+      },
+      "sDiplomaTilemap": {
+        "address": "0x08415324",
+        "thumb": false,
+        "note": "sDiplomaTilemap"
+      },
+      "sDiplomaTiles": {
+        "address": "0x084145FC",
+        "thumb": false,
+        "note": "sDiplomaGfx"
+      },
+      "sWindowFrames": {
+        "address": "0x08471768",
+        "thumb": false,
+        "note": "gUserFrames"
+      },
+      "sStartMenuItems": {
+        "address": "0x083A7324",
+        "thumb": false,
+        "note": "sStartMenuActionTable"
+      },
+      "HandleStartMenuInput": {
+        "address": "0x0806F394",
+        "thumb": true,
+        "note": "StartMenu_FadeScreenIfLeavingOverworld"
+      }
+    }
+  },
+  "AXVE0": {
+    "project": "RUBY",
+    "publish": true,
+    "defines": [
+      "RUBY",
+      "RUBY_SAPPHIRE"
+    ],
+    "symbols": {
+      "SetMainCallback2": {
+        "address": "0x080003CC",
+        "thumb": true
+      },
+      "SetVBlankCallback": {
+        "address": "0x08000540",
+        "thumb": true
+      },
+      "gBGTilemapBuffers": {
+        "address": "0x020211CC",
+        "thumb": false
+      },
+      "Text_LoadWindowTemplate": {
+        "address": "0x08002A34",
+        "thumb": true
+      },
+      "InitMenuWindow": {
+        "address": "0x08071C4C",
+        "thumb": true
+      },
+      "ScanlineEffect_Stop": {
+        "address": "0x08089578",
+        "thumb": true
+      },
+      "Menu_DrawStdWindowFrame": {
+        "address": "0x08071F08",
+        "thumb": true
+      },
+      "Menu_BlankWindowRect": {
+        "address": "0x08071EBC",
+        "thumb": true
+      },
+      "Menu_EraseWindowRect": {
+        "address": "0x08071E84",
+        "thumb": true
+      },
+      "ResetSpriteData": {
+        "address": "0x08000748",
+        "thumb": true
+      },
+      "CreateSprite": {
+        "address": "0x08000BDC",
+        "thumb": true
+      },
+      "FreeAllSpritePalettes": {
+        "address": "0x080025C8",
+        "thumb": true
+      },
+      "StringCopy": {
+        "address": "0x08006AB0",
+        "thumb": true
+      },
+      "StringCompare": {
+        "address": "0x08006B74",
+        "thumb": true
+      },
+      "ConvertIntToDecimalStringN": {
+        "address": "0x08006BC4",
+        "thumb": true
+      },
+      "ConvertIntToHexStringN": {
+        "address": "0x08006D28",
+        "thumb": true
+      },
+      "VBlankCB_SelectScreen": {
+        "address": "0x08145D74",
+        "thumb": true
+      },
+      "RtcInitLocalTimeOffset": {
+        "address": "0x080095E0",
+        "thumb": true
+      },
+      "ZeroMonData": {
+        "address": "0x0803A6D8",
+        "thumb": true
+      },
+      "CreateMon": {
+        "address": "0x0803A798",
+        "thumb": true
+      },
+      "CalculateBoxMonChecksum": {
+        "address": "0x0803B124",
+        "thumb": true
+      },
+      "CalculateMonStats": {
+        "address": "0x0803B1B8",
+        "thumb": true
+      },
+      "EncryptBoxMon": {
+        "address": "0x0803C5F0",
+        "thumb": true
+      },
+      "DecryptBoxMon": {
+        "address": "0x0803C614",
+        "thumb": true
+      },
+      "GetMonData": {
+        "address": "0x0803CB60",
+        "thumb": true
+      },
+      "SetMonData": {
+        "address": "0x0803D1FC",
+        "thumb": true
+      },
+      "GiveMonToPlayer": {
+        "address": "0x0803D91C",
+        "thumb": true
+      },
+      "SpeciesToNationalPokedexNum": {
+        "address": "0x0803F898",
+        "thumb": true
+      },
+      "Random": {
+        "address": "0x08040E84",
+        "thumb": true
+      },
+      "GetMapHeaderByGroupAndId": {
+        "address": "0x08053310",
+        "thumb": true
+      },
+      "SetWarpDestination": {
+        "address": "0x08053454",
+        "thumb": true
+      },
+      "ResetInitialPlayerAvatarState": {
+        "address": "0x08053A3C",
+        "thumb": true
+      },
+      "CB2_ReturnToFieldContinueScript": {
+        "address": "0x080546D4",
+        "thumb": true
+      },
+      "ScriptContext_SetupScript": {
+        "address": "0x080655B8",
+        "thumb": true,
+        "note": "ScriptContext1_SetupScript"
+      },
+      "EnableNationalPokedex": {
+        "address": "0x080690F0",
+        "thumb": true
+      },
+      "VarGet": {
+        "address": "0x08069254",
+        "thumb": true
+      },
+      "VarSet": {
+        "address": "0x08069270",
+        "thumb": true
+      },
+      "StartMenuExitCallback": {
+        "address": "0x08071554",
+        "thumb": true,
+        "note": "StartMenu_ExitCallback"
+      },
+      "LoadPalette": {
+        "address": "0x08073A58",
+        "thumb": true
+      },
+      "MainCB2": {
+        "address": "0x08145EFC",
+        "thumb": true
+      },
+      "ResetPaletteFade": {
+        "address": "0x08073B94",
+        "thumb": true
+      },
+      "BeginNormalPaletteFade": {
+        "address": "0x08073BF4",
+        "thumb": true
+      },
+      "PlaySE": {
+        "address": "0x08075494",
+        "thumb": true
+      },
+      "CreateTask": {
+        "address": "0x0807AA88",
+        "thumb": true
+      },
+      "DestroyTask": {
+        "address": "0x0807AB74",
+        "thumb": true
+      },
+      "DoWarp": {
+        "address": "0x08080E88",
+        "thumb": true,
+        "note": "sub_8080E88"
+      },
+      "GetSetPokedexFlag": {
+        "address": "0x08090D90",
+        "thumb": true
+      },
+      "ClearItemSlots": {
+        "address": "0x080A9684",
+        "thumb": true
+      },
+      "AddBagItem": {
+        "address": "0x080A9424",
+        "thumb": true
+      },
+      "GetPlayerIDAsU32": {
+        "address": "0x080BFB94",
+        "thumb": true,
+        "note": "GetPlayerTrainerId"
+      },
+      "HealPlayerParty": {
+        "address": "0x080C52B0",
+        "thumb": true
+      },
+      "GetMapName": {
+        "address": "0x080FBFF8",
+        "thumb": true,
+        "note": "CopyMapName"
+      },
+      "CheckForPlayerAvatarCollision": {
+        "address": "0x08058DB4",
+        "thumb": true
+      },
+      "PlayerNotOnBikeMoving": {
+        "address": "0x08058D0C",
+        "thumb": true,
+        "note": "sub_8058D0C"
+      },
+      "udivsi3": {
+        "address": "0x081E0E90",
+        "thumb": true
+      },
+      "umodsi3": {
+        "address": "0x081E0F08",
+        "thumb": true
+      },
+      "memcpy": {
+        "address": "0x081E26FC",
+        "thumb": true
+      },
+      "GetHealLocation": {
+        "address": "0x080FA8CC",
+        "thumb": true
+      },
+      "ExpandBattleTextBuffPlaceholders": {
+        "address": "0x08121A68",
+        "thumb": true
+      },
+      "ItemUseCB_RareCandy": {
+        "address": "0x08070680",
+        "thumb": true,
+        "note": "DoRareCandyItemEffect"
+      },
+      "Menu_PrintTextPixelCoords": {
+        "address": "0x080729D8",
+        "thumb": true
+      },
+      "throughWallFlag": {
+        "address": "0x02024E6D",
+        "thumb": false
+      },
+      "gSpecialVar_0x8004": {
+        "address": "0x0202E8CC",
+        "thumb": false
+      },
+      "gPaletteFade": {
+        "address": "0x0202F388",
+        "thumb": false
+      },
+      "gSprites": {
+        "address": "0x02020004",
+        "thumb": false
+      },
+      "gPlttBufferUnfaded": {
+        "address": "0x0202EAC8",
+        "thumb": false
+      },
+      "gPlttBufferFaded": {
+        "address": "0x0202EEC8",
+        "thumb": false
+      },
+      "gPlayerParty": {
+        "address": "0x03004360",
+        "thumb": false,
+        "note": "精灵队伍"
+      },
+      "gPlayerPartyCount": {
+        "address": "0x03004350",
+        "thumb": false,
+        "note": "精灵数量"
+      },
+      "gBagPockets": {
+        "address": "0x083C1618",
+        "thumb": false
+      },
+      "gStringVar1": {
+        "address": "0x020231CC",
+        "thumb": false
+      },
+      "gSaveBlock2": {
+        "address": "0x02024EA4",
+        "thumb": false
+      },
+      "gSaveBlock1": {
+        "address": "0x02025734",
+        "thumb": false
+      },
+      "gLocalTime": {
+        "address": "0x03004038",
+        "thumb": false
+      },
+      "gMain": {
+        "address": "0x03001770",
+        "thumb": false
+      },
+      "gTasks": {
+        "address": "0x03004B20",
+        "thumb": false
+      },
+      "gMonFrontPicTablePtr": {
+        "address": "0x0800D324",
+        "thumb": false,
+        "note": "精灵正面图"
+      },
+      "gMonPaletteTablePtr": {
+        "address": "0x08040954",
+        "thumb": false,
+        "note": "精灵普通调色板"
+      },
+      "gMonShinyPaletteTablePtr": {
+        "address": "0x0804098C",
+        "thumb": false,
+        "note": "精灵闪光调色板"
+      },
+      "gMonIconTablePtr": {
+        "address": "0x08099AA0",
+        "thumb": false,
+        "note": "精灵小图标"
+      },
+      "gMonIconPaletteIndicesPtr": {
+        "address": "0x08099BB0",
+        "thumb": false,
+        "note": "精灵小图标调色板编号"
+      },
+      "gMonIconPaletteTablePtr": {
+        "address": "0x0809D53C",
+        "thumb": false,
+        "note": "精灵小图标调色板"
+      },
+      "gSpeciesNamesPtr": {
+        "address": "0x0800FA58",
+        "thumb": false,
+        "note": "精灵种族名字"
+      },
+      "gMoveNamesPtr": {
+        "address": "0x0802E18C",
+        "thumb": false,
+        "note": "技能名称"
+      },
+      "gSpeciesInfoPtr": {
+        "address": "0x08010B64",
+        "thumb": false,
+        "note": "精灵种族值"
+      },
+      "gItemsPtr": {
+        "address": "0x080A98F0",
+        "thumb": false,
+        "note": "道具表"
+      },
+      "gBattleMovesPtr": {
+        "address": "0x0800CA54",
+        "thumb": false,
+        "note": "技能表"
+      },
+      "gNatureNamePointersPtr": {
+        "address": "0x080443D8",
+        "thumb": false,
+        "note": "性格名称"
+      },
+      "ItemUseOutOfBattle_Repel": {
+        "address": "0x080CA014",
+        "thumb": true
+      },
+      "sDiplomaPalettes": {
+        "address": "0x0840CB0C",
+        "thumb": false,
+        "note": "gDiplomaPalettes"
+      },
+      "sDiplomaTilemap": {
+        "address": "0x0840CB4C",
+        "thumb": false,
+        "note": "gDiplomaTilemap"
+      },
+      "sDiplomaTiles": {
+        "address": "0x0840D288",
+        "thumb": false,
+        "note": "gDiplomaTiles"
+      },
+      "sStartMenuItems": {
+        "address": "0x08376D24",
+        "thumb": false
+      },
+      "HandleStartMenuInput": {
+        "address": "0x08071338",
+        "thumb": true,
+        "note": "StartMenu_InputProcessCallback"
+      },
+      "GetAbilityBySpecies": {
+        "address": "0x0803DB14",
+        "thumb": true
+      },
+      "LoadMonIconPalettes": {
+        "address": "0x0809D51C",
+        "thumb": true,
+        "note": "sub_809D51C"
+      }
+    }
+  },
+  "AXPE0": {
+    "project": "RUBY",
+    "publish": false,
+    "defines": [
+      "RUBY_SAPPHIRE"
+    ],
+    "symbols": {
+      "SetMainCallback2": {
+        "address": "0x080003CC",
+        "thumb": true
+      },
+      "SetVBlankCallback": {
+        "address": "0x08000540",
+        "thumb": true
+      },
+      "gBGTilemapBuffers": {
+        "address": "0x020211CC",
+        "thumb": false
+      },
+      "Text_LoadWindowTemplate": {
+        "address": "0x08002A34",
+        "thumb": true
+      },
+      "InitMenuWindow": {
+        "address": "0x08071C50",
+        "thumb": true
+      },
+      "ScanlineEffect_Stop": {
+        "address": "0x08089578",
+        "thumb": true
+      },
+      "Menu_DrawStdWindowFrame": {
+        "address": "0x08071F0C",
+        "thumb": true
+      },
+      "Menu_BlankWindowRect": {
+        "address": "0x08071EC0",
+        "thumb": true
+      },
+      "Menu_EraseWindowRect": {
+        "address": "0x08071E88",
+        "thumb": true
+      },
+      "ResetSpriteData": {
+        "address": "0x08000748",
+        "thumb": true
+      },
+      "CreateSprite": {
+        "address": "0x08000BDC",
+        "thumb": true
+      },
+      "FreeAllSpritePalettes": {
+        "address": "0x080025C8",
+        "thumb": true
+      },
+      "StringCopy": {
+        "address": "0x08006AB0",
+        "thumb": true
+      },
+      "StringCompare": {
+        "address": "0x08006B74",
+        "thumb": true
+      },
+      "ConvertIntToDecimalStringN": {
+        "address": "0x08006BC4",
+        "thumb": true
+      },
+      "ConvertIntToHexStringN": {
+        "address": "0x08006D28",
+        "thumb": true
+      },
+      "VBlankCB_SelectScreen": {
+        "address": "0x08145D74",
+        "thumb": true
+      },
+      "RtcInitLocalTimeOffset": {
+        "address": "0x080095E0",
+        "thumb": true
+      },
+      "ZeroMonData": {
+        "address": "0x0803A6D8",
+        "thumb": true
+      },
+      "CreateMon": {
+        "address": "0x0803A798",
+        "thumb": true
+      },
+      "CalculateBoxMonChecksum": {
+        "address": "0x0803B124",
+        "thumb": true
+      },
+      "CalculateMonStats": {
+        "address": "0x0803B1B8",
+        "thumb": true
+      },
+      "EncryptBoxMon": {
+        "address": "0x0803C5F0",
+        "thumb": true
+      },
+      "DecryptBoxMon": {
+        "address": "0x0803C614",
+        "thumb": true
+      },
+      "GetMonData": {
+        "address": "0x0803CB60",
+        "thumb": true
+      },
+      "SetMonData": {
+        "address": "0x0803D1FC",
+        "thumb": true
+      },
+      "GiveMonToPlayer": {
+        "address": "0x0803D91C",
+        "thumb": true
+      },
+      "SpeciesToNationalPokedexNum": {
+        "address": "0x0803F898",
+        "thumb": true
+      },
+      "Random": {
+        "address": "0x08040E84",
+        "thumb": true
+      },
+      "GetMapHeaderByGroupAndId": {
+        "address": "0x08053310",
+        "thumb": true
+      },
+      "SetWarpDestination": {
+        "address": "0x08053454",
+        "thumb": true
+      },
+      "ResetInitialPlayerAvatarState": {
+        "address": "0x08053A3C",
+        "thumb": true
+      },
+      "CB2_ReturnToFieldContinueScript": {
+        "address": "0x080546D8",
+        "thumb": true
+      },
+      "ScriptContext_SetupScript": {
+        "address": "0x080655BC",
+        "thumb": true,
+        "note": "ScriptContext1_SetupScript"
+      },
+      "EnableNationalPokedex": {
+        "address": "0x080690F4",
+        "thumb": true
+      },
+      "VarGet": {
+        "address": "0x08069258",
+        "thumb": true
+      },
+      "VarSet": {
+        "address": "0x08069274",
+        "thumb": true
+      },
+      "StartMenuExitCallback": {
+        "address": "0x08071558",
+        "thumb": true,
+        "note": "StartMenu_ExitCallback"
+      },
+      "LoadPalette": {
+        "address": "0x08073A5C",
+        "thumb": true
+      },
+      "ResetPaletteFade": {
+        "address": "0x08073B98",
+        "thumb": true
+      },
+      "BeginNormalPaletteFade": {
+        "address": "0x08073BF8",
+        "thumb": true
+      },
+      "PlaySE": {
+        "address": "0x08075498",
+        "thumb": true
+      },
+      "CreateTask": {
+        "address": "0x0807AA8C",
+        "thumb": true
+      },
+      "DestroyTask": {
+        "address": "0x0807AB78",
+        "thumb": true
+      },
+      "DoWarp": {
+        "address": "0x08080E88",
+        "thumb": true,
+        "note": "sub_8080E88"
+      },
+      "GetSetPokedexFlag": {
+        "address": "0x08090D90",
+        "thumb": true
+      },
+      "ClearItemSlots": {
+        "address": "0x080A9684",
+        "thumb": true
+      },
+      "AddBagItem": {
+        "address": "0x080A9424",
+        "thumb": true
+      },
+      "GetPlayerIDAsU32": {
+        "address": "0x080BFB94",
+        "thumb": true,
+        "note": "GetPlayerTrainerId"
+      },
+      "HealPlayerParty": {
+        "address": "0x080C52B0",
+        "thumb": true
+      },
+      "GetMapName": {
+        "address": "0x080FBFF8",
+        "thumb": true,
+        "note": "CopyMapName"
+      },
+      "CheckForPlayerAvatarCollision": {
+        "address": "0x08058DB8",
+        "thumb": true
+      },
+      "PlayerNotOnBikeMoving": {
+        "address": "0x08058D10",
+        "thumb": true,
+        "note": "sub_8058D0C"
+      },
+      "udivsi3": {
+        "address": "0x081E0E20",
+        "thumb": true
+      },
+      "umodsi3": {
+        "address": "0x081E0E98",
+        "thumb": true
+      },
+      "memcpy": {
+        "address": "0x081E268C",
+        "thumb": true
+      },
+      "GetHealLocation": {
+        "address": "0x080FA8CC",
+        "thumb": true
+      },
+      "ExpandBattleTextBuffPlaceholders": {
+        "address": "0x08121A68",
+        "thumb": true
+      },
+      "ItemUseCB_RareCandy": {
+        "address": "0x08070684",
+        "thumb": true,
+        "note": "DoRareCandyItemEffect"
+      },
+      "MainCB2": {
+        "address": "0x08145EFC",
+        "thumb": true
+      },
+      "Menu_PrintTextPixelCoords": {
+        "address": "0x080729DC",
+        "thumb": true,
+        "note": "Menu_PrintTextPixelCoords"
+      },
+      "throughWallFlag": {
+        "address": "0x02024E6D",
+        "thumb": false
+      },
+      "gSpecialVar_0x8004": {
+        "address": "0x0202E8CC",
+        "thumb": false
+      },
+      "gPaletteFade": {
+        "address": "0x0202F388",
+        "thumb": false
+      },
+      "gSprites": {
+        "address": "0x02020004",
+        "thumb": false
+      },
+      "gPlttBufferUnfaded": {
+        "address": "0x0202EAC8",
+        "thumb": false
+      },
+      "BG_PaletteMem": {
+        "address": "0x0202EAC8",
+        "thumb": false
+      },
+      "OBJ_PaletteMem": {
+        "address": "0x0202ECC8",
+        "thumb": false
+      },
+      "gPlttBufferFaded": {
+        "address": "0x0202EEC8",
+        "thumb": false
+      },
+      "BG_PaletteMem2": {
+        "address": "0x0202EEC8",
+        "thumb": false
+      },
+      "OBJ_PaletteMem2": {
+        "address": "0x0202F0C8",
+        "thumb": false
+      },
+      "gPlayerParty": {
+        "address": "0x03004360",
+        "thumb": false,
+        "note": "精灵队伍"
+      },
+      "gPlayerPartyCount": {
+        "address": "0x03004350",
+        "thumb": false,
+        "note": "精灵数量"
+      },
+      "gBagPockets": {
+        "address": "0x083C1670",
+        "thumb": false
+      },
+      "gStringVar1": {
+        "address": "0x020231CC",
+        "thumb": false
+      },
+      "gSaveBlock2": {
+        "address": "0x02024EA4",
+        "thumb": false
+      },
+      "gSaveBlock1": {
+        "address": "0x02025734",
+        "thumb": false
+      },
+      "gLocalTime": {
+        "address": "0x03004038",
+        "thumb": false
+      },
+      "gMain": {
+        "address": "0x03001770",
+        "thumb": false
+      },
+      "gTasks": {
+        "address": "0x03004B20",
+        "thumb": false
+      },
+      "gMonFrontPicTablePtr": {
+        "address": "0x0800D324",
+        "thumb": false,
+        "note": "精灵正面图"
+      },
+      "gMonPaletteTablePtr": {
+        "address": "0x08040954",
+        "thumb": false,
+        "note": "精灵普通调色板"
+      },
+      "gMonIconTablePtr": {
+        "address": "0x08099AA0",
+        "thumb": false,
+        "note": "精灵小图标"
+      },
+      "gMonIconPaletteIndicesPtr": {
+        "address": "0x08099BB0",
+        "thumb": false,
+        "note": "精灵小图标调色板编号"
+      },
+      "gMonIconPaletteTablePtr": {
+        "address": "0x0809D53C",
+        "thumb": false,
+        "note": "精灵小图标调色板"
+      },
+      "gSpeciesNamesPtr": {
+        "address": "0x0800FA58",
+        "thumb": false,
+        "note": "精灵种族名字"
+      },
+      "gMoveNamesPtr": {
+        "address": "0x0802E18C",
+        "thumb": false,
+        "note": "技能名称"
+      },
+      "gSpeciesInfoPtr": {
+        "address": "0x08010B64",
+        "thumb": false,
+        "note": "精灵种族值"
+      },
+      "gItemsPtr": {
+        "address": "0x080A98F0",
+        "thumb": false,
+        "note": "道具表"
+      },
+      "gBattleMovesPtr": {
+        "address": "0x0800CA54",
+        "thumb": false,
+        "note": "技能表"
+      },
+      "ItemUseOutOfBattle_Repel": {
+        "address": "0x080CA014",
+        "thumb": true
+      },
+      "sDiplomaPalettes": {
+        "address": "0x0840CB68",
+        "thumb": false,
+        "note": "gDiplomaPalettes"
+      },
+      "sDiplomaTilemap": {
+        "address": "0x0840CBA8",
+        "thumb": false,
+        "note": "gDiplomaTilemap"
+      },
+      "sDiplomaTiles": {
+        "address": "0x0840D2E4",
+        "thumb": false,
+        "note": "gDiplomaTiles"
+      },
+      "sStartMenuItems": {
+        "address": "0x08376CB4",
+        "thumb": false
+      },
+      "HandleStartMenuInput": {
+        "address": "0x0807133C",
+        "thumb": true,
+        "note": "StartMenu_InputProcessCallback"
+      }
+    }
+  }
+}

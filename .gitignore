@@ -2,6 +2,10 @@
 /.idea
 /.vscode
 /inner_cheater_bin/*.zip
+/rom_offsets.ld
+/insert.asm
+/.*.tmp
+/inner_cheater_bin/.*.tmp
 *.gba
 *.sav
 *.exe
