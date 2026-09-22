@@ -408,7 +408,7 @@ void UpdateKeyboardValue(){
 	PrintSmallText(154,0,text_table[TEXT_PAGELOCK]);//锁定页面
     #elif RUBY_SAPPHIRE
     UpdateSmallString(128,0,text_table[TEXT_CIRCLE_DOT]+myTempData->pageLock*4,1);//[点]
-	PrintSmallText(136,0,text_table[TEXT_PAGELOCK]);//锁定页面
+	PrintSmallText(144,0,text_table[TEXT_PAGELOCK]);//锁定页面
 	#else
 	UpdateSmallString(148,0,text_table[TEXT_CIRCLE_DOT]+myTempData->pageLock*4,1);//[点]
 	PrintSmallText(158,0,text_table[TEXT_PAGELOCK]);//锁定页面

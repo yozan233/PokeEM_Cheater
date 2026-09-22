@@ -1,4 +1,5 @@
 #include "header/data.h"
+#include "../build/resource_text.h"
 
 extern u32 GetPenWuMax();
 extern struct Pokemon *getCurrentPlayerParty();
@@ -70,7 +71,6 @@ void set_item_tile();
 
 #ifdef RUBY_SAPPHIRE
 #define CRC_AUTHOR_TEXT 0xF3D3
-#define CRC_VERSION_TEXT 0x49AA
 
 #define POS_04 0
 #define POS_09 8
@@ -103,10 +103,10 @@ void set_item_tile();
 #define POS_168 176
 #define POS_170 176
 #define POS_180 176
+#define LIMIT510_TITLE_X 48
 
 #else
 #define CRC_AUTHOR_TEXT 0x0710
-#define CRC_VERSION_TEXT 0x1C3B
 
 #define POS_04 4
 #define POS_09 9
@@ -139,6 +139,7 @@ void set_item_tile();
 #define POS_168 168
 #define POS_170 170
 #define POS_180 180
+#define LIMIT510_TITLE_X 40
 
 #endif
 
@@ -291,7 +292,7 @@ void UpdatePageValue(u8 page)
 				LoadMonIVEV();
 			if(myTempData->page == PAGE_EVS){
                 UpdateSmallString(32,104,text_table[TEXT_CIRCLE_DOT]+myTempData->limit510*4,1);//添加[点]
-				PrintSmallText(40,104,text_table[TEXT_LIMIT510]);
+				PrintSmallText(LIMIT510_TITLE_X,104,text_table[TEXT_LIMIT510]);
 			}
 			
 			UpdateNumString(POS_60,POS_28,myTempData->hp);//HP
@@ -553,8 +554,8 @@ void UpdatePageValue(u8 page)
             #ifdef RUBY_SAPPHIRE
             UpdateString(112,48,text_table[TEXT_CIRCLE_DOT]+ 4*myTempData->addItemEnable,1);//添加[点]
             UpdateString(112,72,text_table[TEXT_CIRCLE_DOT]+ 4*myTempData->throwKeyItemEnable,1);//扔掉一个重要道具[空心点]
-            PrintText(120,48,text_table[TEXT_ADD_ITEM]);//添加
-            PrintText(120,72,text_table[TEXT_THROW_KEYITEM]);//扔掉一个重要道具
+            PrintText(128,48,text_table[TEXT_ADD_ITEM]);//添加
+            PrintText(128,72,text_table[TEXT_THROW_KEYITEM]);//扔掉一个重要道具
             #else
             UpdateString(108,50,text_table[TEXT_CIRCLE_DOT]+ 4*myTempData->addItemEnable,1);//添加[点]
             UpdateString(108,70,text_table[TEXT_CIRCLE_DOT]+ 4*myTempData->throwKeyItemEnable,1);//扔掉一个重要道具[空心点]
@@ -842,7 +843,7 @@ u8 *GetAuthorText(){
  */
 u8 *GetVersionText(){
 	u8 *versionText = text_table[TEXT_VERSION];
-	int len = 13;
+	int len = VERSION_TEXT_LENGTH;
 	u16 versionCrc = AnalysisText(versionText,myTempData->textBuffer.temp,len);
 	if(versionCrc != CRC_VERSION_TEXT){
         restart(1);

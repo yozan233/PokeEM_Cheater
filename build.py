@@ -44,12 +44,12 @@ REQUIRED_MAP_SYMBOLS = {
 MAKE = "make"
 
 BUILD_TARGETS = {
-    "BPEE0": ("BPEE0", "src/resource.c", "EMERALD", False),
-    "BPEU0": ("BPEE0", "src/resource_us.c", "EMERALD_US", True),
-    "BPRE0": ("BPRE0", "src/resource.c", "FIRE_RED", False),
-    "BPRU0": ("BPRE0", "src/resource_us.c", "FIRE_RED_US", True),
-    "AXVE0": ("AXVE0", "src/resource.c", "RUBY", False),
-    "AXVU0": ("AXVE0", "src/resource_us.c", "RUBY_US", True),
+    "BPEE0": ("BPEE0", "EMERALD", False),
+    "BPEU0": ("BPEE0", "EMERALD_US", True),
+    "BPRE0": ("BPRE0", "FIRE_RED", False),
+    "BPRU0": ("BPRE0", "FIRE_RED_US", True),
+    "AXVE0": ("AXVE0", "RUBY", False),
+    "AXVU0": ("AXVE0", "RUBY_US", True),
 }
 
 VERSION_RE = re.compile(r"^[A-Z0-9_]+$")
@@ -365,12 +365,26 @@ def compile_project(target: str) -> None:
         choices = ", ".join(BUILD_TARGETS)
         raise BuildError(f"unknown build target {target}; expected one of: {choices}")
 
-    version, resource_source, output_project, english_resource = build_target
+    version, output_project, english_resource = build_target
     version_config = load_version(version)
     if not version_config["publish"]:
         raise BuildError(f"{version} is available for linking but is not a publish version")
 
     prepare(version)
+    run_command(
+        [
+            sys.executable,
+            "build_text.py",
+            "--version",
+            version,
+            "--language",
+            "en" if english_resource else "zh",
+            "--output",
+            "build/resource_text.c",
+            "--header-output",
+            "build/resource_text.h",
+        ]
+    )
     defines = list(version_config["defines"])
     if english_resource:
         defines.append("ENGLISH_RESOURCE")
@@ -383,7 +397,6 @@ def compile_project(target: str) -> None:
             "makefile",
             f"GAME_VERSION={version}",
             f"DEFINES={defines_text}",
-            f"RESOURCE_SOURCE={resource_source}",
             f"MAP_FILE={map_file}",
             "link",
         ]

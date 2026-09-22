@@ -37,7 +37,7 @@ python build.py bpee0
 python build.py bpeu0
 ```
 
-`bpeu0` 复用 `BPEE0` 的 ROM 地址配置，但编译英文资源 `src/resource_us.c`。
+`bpeu0` 复用 `BPEE0` 的 ROM 地址配置，并使用 `src/resource_text.json` 中的英文文本。
 
 ### 火红／叶绿公共资源
 
@@ -51,7 +51,7 @@ python build.py bpre0
 python build.py bpru0
 ```
 
-`bpru0` 复用 `BPRE0` 的 ROM 地址配置，但编译英文资源 `src/resource_us.c`。
+`bpru0` 复用 `BPRE0` 的 ROM 地址配置，并使用 `src/resource_text.json` 中的英文文本。
 
 ### 红宝石／蓝宝石公共资源
 
@@ -65,7 +65,7 @@ python build.py axve0
 python build.py axvu0
 ```
 
-`axvu0` 复用 `AXVE0` 的 ROM 地址配置，但编译英文资源 `src/resource_us.c`。
+`axvu0` 复用 `AXVE0` 的 ROM 地址配置，并使用 `src/resource_text.json` 中的英文文本。
 
 生成结果位于 `inner_cheater_bin`：
 
@@ -80,6 +80,7 @@ python build.py axvu0
 
 - `rom_offsets.json` 保存全部版本的 ROM 符号地址。
 - `build.py` 是唯一对外构建入口，它在内部调用 `makefile` 完成编译、链接和 armips。
+- 中英文文本及版本文字集中维护在 `src/resource_text.json`，字符编码表为项目根目录下的 `charmap.txt`；每次编译时，`build.py` 会先调用 `build_text.py`，按目标版本生成临时文件 `build/resource_text.c` 和包含版本文字长度、CRC 的 `build/resource_text.h`。
 - `rom_offsets.ld` 和 `insert.asm` 由 `build.py` 自动生成。
 - 构建会分别在 `0x08F20000` 和 `0x08FC0000` 插入代码，再比较两份结果、生成重定位信息。
 - `BPGE0` 和 `AXPE0` 偏移仍保留在 JSON 中，但不是正式发布目标，不会覆盖 FIRE_RED 或 RUBY 公共资源。
@@ -90,4 +91,4 @@ python build.py axvu0
 python build.py clean
 ```
 
-该命令只删除 `build`、`rom_offsets.ld` 和 `insert.asm`，不会删除 `EMPTY.gba` 或正式生成的 bin/info 文件。
+该命令删除 `build`、`rom_offsets.ld` 和 `insert.asm`，不会删除 `EMPTY.gba` 或正式生成的 bin/info 文件。
