@@ -44,6 +44,10 @@ void PrintSmallText(u8 x, u8 y, u8 *str);
 void UpdateSmallString(u8 pos_x, u8 pos_y, u8 *str,u16 len);
 void PrintText(u8 x, u8 y, u8 *str);
 void UpdateNumSmallString(u8 pos_x, u8 pos_y, u32 num);
+#ifdef ENGLISH_RESOURCE
+void UpdateMoveNumSmallString(u8 pos_y, u32 num);
+void UpdateMoveSmallString(u8 pos_y, u8 *str);
+#endif
 void getBallCount();
 void get_ball_addr();
 void ShowMonName();
@@ -147,6 +151,48 @@ void set_item_tile();
 #define POS_128 128
 #define POS_136 136
 
+#ifdef RUBY_SAPPHIRE
+#define SPECIE_TITLE_BASE_X 8
+#else
+#define SPECIE_TITLE_BASE_X 10
+#endif
+
+#ifdef ENGLISH_RESOURCE
+#ifdef RUBY_SAPPHIRE
+#define POKE_INFO_LEFT_TITLE_X (POS_24 - 16)
+#define MOVE_SECONDARY_TITLE_X (POS_70 + 2)
+#define SPECIE_TITLE_X (SPECIE_TITLE_BASE_X - 8)
+#else
+#define POKE_INFO_LEFT_TITLE_X (POS_24 - 12)
+#define MOVE_SECONDARY_TITLE_X (POS_70 + 4)
+#define SPECIE_TITLE_X (SPECIE_TITLE_BASE_X - 4)
+#endif
+#define POKE_INFO2_LEFT_TITLE_X POS_24
+#define POKE_INFO_RIGHT_TITLE_X (POS_124 - 8)
+#define POKE_INFO2_RIGHT_TITLE_X POS_120
+#define IVEV_RIGHT_TITLE_X (POS_124 - 8)
+#define MOVE_VALUE_X (POS_44 + 8)
+#define CANCEL_TITLE_X (POS_204 - 9)
+#define CATCH_LOCATION_VALUE_X POS_156
+#define MON_COPY_VALUE_X POS_60
+#define OBEDIENCE_VALUE_X POS_156
+#define POKE_INFO_LEFT_VALUE_CLEAR_WIDTH (POKE_INFO_RIGHT_TITLE_X - POS_60 - 4)
+#define MOVE_VALUE_CLEAR_WIDTH (MOVE_SECONDARY_TITLE_X - MOVE_VALUE_X - 4)
+#else
+#define POKE_INFO_LEFT_TITLE_X POS_24
+#define POKE_INFO2_LEFT_TITLE_X POS_24
+#define POKE_INFO_RIGHT_TITLE_X POS_124
+#define POKE_INFO2_RIGHT_TITLE_X POS_120
+#define IVEV_RIGHT_TITLE_X POS_124
+#define MOVE_VALUE_X POS_44
+#define MOVE_SECONDARY_TITLE_X POS_70
+#define SPECIE_TITLE_X SPECIE_TITLE_BASE_X
+#define CANCEL_TITLE_X POS_204
+#define CATCH_LOCATION_VALUE_X POS_164
+#define MON_COPY_VALUE_X POS_76
+#define OBEDIENCE_VALUE_X POS_172
+#endif
+
 
 /**
  * 更新页面数值
@@ -166,14 +212,24 @@ void UpdatePageValue(u8 page)
             //u8 *naturesStr = naturesTable+5*myTempData->nature;
 			u8 *naturesStr = myTempData->textBuffer.wordList;
 			getNatureName(myTempData->nature,naturesStr);
+			#ifdef ENGLISH_RESOURCE
+			ClearStringForWidth(POS_60, POS_56, POKE_INFO_LEFT_VALUE_CLEAR_WIDTH);
+			PrintText(POS_60, POS_56, naturesStr);
+			#else
 			UpdateString(POS_60, POS_56, naturesStr, 5);
+			#endif
 
             //特性
             u8 *abilityName = getAbilityName();
 			if(!abilityName){
                 abilityName = text_table[TEXT_UNKNOWN_ABILITY]+6*myTempData->abilityNumPos;
 			}
+			#ifdef ENGLISH_RESOURCE
+			ClearStringForWidth(POS_60, POS_84, POKE_INFO_LEFT_VALUE_CLEAR_WIDTH);
+			PrintText(POS_60, POS_84, abilityName);
+			#else
 			UpdateString(POS_60, POS_84, abilityName, 5);
+			#endif
 
             //闪光
 			UpdateString(POS_160,POS_56,text_table[TEXT_NOTSHINY]+2*myTempData->shiny,3);
@@ -187,9 +243,9 @@ void UpdatePageValue(u8 page)
 			ConvertIntToDecimalStringN(&myTempData->numTextBuff,myTempData->time,2,2);
 			PrintText(POS_156,POS_56,&myTempData->numTextBuff);//时间
 			#endif
-			UpdateString(POS_76,POS_84,text_table[TEXT_CIRCLE_DOT]+(myTempData->monCopy)*4,1);
+			UpdateString(MON_COPY_VALUE_X,POS_84,text_table[TEXT_CIRCLE_DOT]+(myTempData->monCopy)*4,1);
             #ifndef RUBY_SAPPHIRE
-			UpdateString(POS_172,POS_84,text_table[TEXT_CIRCLE_DOT]+(myTempData->obedience)*4,1);
+			UpdateString(OBEDIENCE_VALUE_X,POS_84,text_table[TEXT_CIRCLE_DOT]+(myTempData->obedience)*4,1);
             #endif
 
 			u8 *mapName = myTempData->textBuffer.wordList;
@@ -203,7 +259,7 @@ void UpdatePageValue(u8 page)
                 }
             }
 
-			UpdateString(POS_164,POS_28,mapName,5);//捕获地
+			UpdateString(CATCH_LOCATION_VALUE_X,POS_28,mapName,5);//捕获地
 
 			if(myTempData->selectedBall == 0){
 				UpdateString(POS_60,POS_28,text_table[TEXT_NONE],5);
@@ -262,23 +318,40 @@ void UpdatePageValue(u8 page)
 			}
 			
 			u8 power = getMoveAttr(1);//威力
+			#ifdef ENGLISH_RESOURCE
+			if(power){
+				UpdateMoveNumSmallString(POS_92,power);
+			}
+			else
+				UpdateMoveSmallString(POS_92,textNone);
+			#else
 			if(power){
 				UpdateNumSmallString(POS_44,POS_92,power);
 			}
 			else
 				UpdateSmallString(POS_44,POS_92,textNone,3);
+			#endif
 
             u8 accuracy = getMoveAttr(3);//命中率
+            #ifdef ENGLISH_RESOURCE
+            if(accuracy){
+                UpdateMoveNumSmallString(POS_106,accuracy);
+            }
+            else{
+                UpdateMoveSmallString(POS_106,textNone);
+            }
+            #else
             if(accuracy){
                 UpdateNumSmallString(POS_44,POS_106,accuracy);
             }
             else{
                 UpdateSmallString(POS_44,POS_106,textNone,3);
             }
+            #endif
 
             #ifdef RUBY_SAPPHIRE
-            PrintSmallText(POS_70,POS_92,text_table[TEXT_MOVE_TYPE]);//属性
-		    PrintSmallText(POS_70,POS_106,text_table[TEXT_PP]);//PP
+            PrintSmallText(MOVE_SECONDARY_TITLE_X,POS_92,text_table[TEXT_MOVE_TYPE]);//属性
+		    PrintSmallText(MOVE_SECONDARY_TITLE_X,POS_106,text_table[TEXT_PP]);//PP
             setSureCancelText();
             #endif
 
@@ -580,7 +653,7 @@ void InitPage(u8 page){
 
 void setSureCancelText(){
     PrintSmallText(POS_176,POS_104,text_table[TEXT_SURE]);//确认
-    PrintSmallText(POS_204,POS_104,text_table[TEXT_CANCEL]);//取消
+    PrintSmallText(CANCEL_TITLE_X,POS_104,text_table[TEXT_CANCEL]);//取消
 }
 
 void SetPageTxet(u8 page){
@@ -614,30 +687,30 @@ void SetPageTxet(u8 page){
 		PrintSmallText(176,0,GetVersionText());//版本号
 		break;
 	case PAGE_POKE_INFO:
-		PrintText(POS_24, POS_28, text_table[TEXT_LEVEL]);	 //等级
-		PrintText(POS_24, POS_56, text_table[TEXT_NATURES]);	 //性格
-		PrintText(POS_24, POS_84, text_table[TEXT_ABILITY]);	 //特性
-		PrintText(POS_124, POS_28, text_table[TEXT_HAPPINESS]); //亲密度
-		PrintText(POS_124, POS_56, text_table[TEXT_SHINY]);	 //闪光
-		PrintText(POS_124, POS_84, text_table[TEXT_GENDER]);	 //性别
+		PrintText(POKE_INFO_LEFT_TITLE_X, POS_28, text_table[TEXT_LEVEL]);	 //等级
+		PrintText(POKE_INFO_LEFT_TITLE_X, POS_56, text_table[TEXT_NATURES]);	 //性格
+		PrintText(POKE_INFO_LEFT_TITLE_X, POS_84, text_table[TEXT_ABILITY]);	 //特性
+		PrintText(POKE_INFO_RIGHT_TITLE_X, POS_28, text_table[TEXT_HAPPINESS]); //亲密度
+		PrintText(POKE_INFO_RIGHT_TITLE_X, POS_56, text_table[TEXT_SHINY]);	 //闪光
+		PrintText(POKE_INFO_RIGHT_TITLE_X, POS_84, text_table[TEXT_GENDER]);	 //性别
 		SetText_MsgBox(text_table[TEXT_BUTTON_PROMPT3]);
 		break;
 	case PAGE_POKE_INFO2:{
-		PrintText(POS_24, POS_28, text_table[TEXT_BALL_TYPE]);//球种
-		PrintText(POS_120,POS_28,text_table[TEXT_CATCH_LOCATION]);//捕获地
-		PrintText(POS_24, POS_56, text_table[TEXT_TELEPORT]);//瞬移
+		PrintText(POKE_INFO2_LEFT_TITLE_X, POS_28, text_table[TEXT_BALL_TYPE]);//球种
+		PrintText(POKE_INFO2_RIGHT_TITLE_X,POS_28,text_table[TEXT_CATCH_LOCATION]);//捕获地
+		PrintText(POKE_INFO2_LEFT_TITLE_X, POS_56, text_table[TEXT_TELEPORT]);//瞬移
 		#ifdef FIRE_RED_LEAF_GREEN
-		PrintText(120,POS_56,text_table[TEXT_COMING_SOON]);//敬请期待
+		PrintText(POKE_INFO2_RIGHT_TITLE_X,POS_56,text_table[TEXT_COMING_SOON]);//敬请期待
 		#else
-		PrintText(POS_120, POS_56, text_table[TEXT_TIME]);//时间
+		PrintText(POKE_INFO2_RIGHT_TITLE_X, POS_56, text_table[TEXT_TIME]);//时间
 		PrintText(POS_170, POS_56, text_table[TEXT_HOUR]);//时
 		#endif
-		PrintText(POS_24, POS_84, text_table[TEXT_MON_COPY]);//复制精灵
+		PrintText(POKE_INFO2_LEFT_TITLE_X, POS_84, text_table[TEXT_MON_COPY]);//复制精灵
 
         #ifdef RUBY_SAPPHIRE
-        PrintText(POS_120,POS_84,text_table[TEXT_COMING_SOON]);//敬请期待
+        PrintText(POKE_INFO2_RIGHT_TITLE_X,POS_84,text_table[TEXT_COMING_SOON]);//敬请期待
         #else
-		PrintText(POS_120,POS_84,text_table[TEXT_MON_OBEDIENCE]);//精灵听话
+		PrintText(POKE_INFO2_RIGHT_TITLE_X,POS_84,text_table[TEXT_MON_OBEDIENCE]);//精灵听话
         #endif
 	}break;
 	case PAGE_IVS:
@@ -645,9 +718,9 @@ void SetPageTxet(u8 page){
 		PrintText(POS_24,POS_28,text_table[TEXT_HP]);//HP
 		PrintText(POS_24, POS_56, text_table[TEXT_ATTACK]);//物攻
 		PrintText(POS_24, POS_84, text_table[TEXT_DEFENSE]);//物防
-		PrintText(POS_124,POS_28,text_table[TEXT_SPEED]);//速度
-		PrintText(POS_124, POS_56, text_table[TEXT_SP_ATTACK]);//特攻
-		PrintText(POS_124,POS_84,text_table[TEXT_SP_DEFENSE]);//特防
+		PrintText(IVEV_RIGHT_TITLE_X,POS_28,text_table[TEXT_SPEED]);//速度
+		PrintText(IVEV_RIGHT_TITLE_X, POS_56, text_table[TEXT_SP_ATTACK]);//特攻
+		PrintText(IVEV_RIGHT_TITLE_X,POS_84,text_table[TEXT_SP_DEFENSE]);//特防
         u8 *ivevTitle = text_table[TEXT_IV+(myTempData->page-PAGE_IVS)];
 		PrintText(POS_180,0,ivevTitle);//个体/努力
 	}break;
@@ -668,25 +741,25 @@ void SetPageTxet(u8 page){
 		PrintSmallText(POS_04,POS_92,text_table[TEXT_MOVE_POWER]);//威力
         PrintSmallText(POS_04,POS_106,text_table[TEXT_MOVE_ACCURACY]);//命中率
         #ifndef RUBY_SAPPHIRE
-        PrintSmallText(POS_70,POS_92,text_table[TEXT_MOVE_TYPE]);//属性
-		PrintSmallText(POS_70,POS_106,text_table[TEXT_PP]);//PP
+        PrintSmallText(MOVE_SECONDARY_TITLE_X,POS_92,text_table[TEXT_MOVE_TYPE]);//属性
+		PrintSmallText(MOVE_SECONDARY_TITLE_X,POS_106,text_table[TEXT_PP]);//PP
         #endif
 		break;
 	case PAGE_SPECIE:
         #ifdef RUBY_SAPPHIRE
-        PrintSmallText(8,POS_28+0*16-8,text_table[TEXT_HP]);//HP
-		PrintSmallText(8,POS_28+1*16-8,text_table[TEXT_ATTACK]);//物攻
-		PrintSmallText(8,POS_28+2*16-8,text_table[TEXT_DEFENSE]);//物防
-		PrintSmallText(8,POS_28+3*16-8,text_table[TEXT_SPEED]);//速度
-		PrintSmallText(8,POS_28+4*16-8,text_table[TEXT_SP_ATTACK]);//特攻
-		PrintSmallText(8,POS_28+5*16-8,text_table[TEXT_SP_DEFENSE]);//特防
+        PrintSmallText(SPECIE_TITLE_X,POS_28+0*16-8,text_table[TEXT_HP]);//HP
+		PrintSmallText(SPECIE_TITLE_X,POS_28+1*16-8,text_table[TEXT_ATTACK]);//物攻
+		PrintSmallText(SPECIE_TITLE_X,POS_28+2*16-8,text_table[TEXT_DEFENSE]);//物防
+		PrintSmallText(SPECIE_TITLE_X,POS_28+3*16-8,text_table[TEXT_SPEED]);//速度
+		PrintSmallText(SPECIE_TITLE_X,POS_28+4*16-8,text_table[TEXT_SP_ATTACK]);//特攻
+		PrintSmallText(SPECIE_TITLE_X,POS_28+5*16-8,text_table[TEXT_SP_DEFENSE]);//特防
         #else
-		PrintSmallText(10,POS_28+0*14,text_table[TEXT_HP]);//HP
-		PrintSmallText(10,POS_28+1*14,text_table[TEXT_ATTACK]);//物攻
-		PrintSmallText(10,POS_28+2*14,text_table[TEXT_DEFENSE]);//物防
-		PrintSmallText(10,POS_28+3*14,text_table[TEXT_SPEED]);//速度
-		PrintSmallText(10,POS_28+4*14,text_table[TEXT_SP_ATTACK]);//特攻
-		PrintSmallText(10,POS_28+5*14,text_table[TEXT_SP_DEFENSE]);//特防
+		PrintSmallText(SPECIE_TITLE_X,POS_28+0*14,text_table[TEXT_HP]);//HP
+		PrintSmallText(SPECIE_TITLE_X,POS_28+1*14,text_table[TEXT_ATTACK]);//物攻
+		PrintSmallText(SPECIE_TITLE_X,POS_28+2*14,text_table[TEXT_DEFENSE]);//物防
+		PrintSmallText(SPECIE_TITLE_X,POS_28+3*14,text_table[TEXT_SPEED]);//速度
+		PrintSmallText(SPECIE_TITLE_X,POS_28+4*14,text_table[TEXT_SP_ATTACK]);//特攻
+		PrintSmallText(SPECIE_TITLE_X,POS_28+5*14,text_table[TEXT_SP_DEFENSE]);//特防
         #endif
 		break;
 	case PAGE_ITEMS:
@@ -855,6 +928,19 @@ void UpdateNumSmallString(u8 pos_x, u8 pos_y, u32 num){
 	ConvertIntToDecimalStringN(numTextBuff,num,2,3);
 	UpdateSmallString(pos_x,pos_y,numTextBuff,3);
 }
+
+#ifdef ENGLISH_RESOURCE
+void UpdateMoveNumSmallString(u8 pos_y, u32 num){
+    u8 *numTextBuff = &myTempData->numTextBuff;
+	ConvertIntToDecimalStringN(numTextBuff,num,2,3);
+	UpdateMoveSmallString(pos_y,numTextBuff);
+}
+
+void UpdateMoveSmallString(u8 pos_y, u8 *str){
+	ClearStringForWidth(MOVE_VALUE_X,pos_y,MOVE_VALUE_CLEAR_WIDTH);
+	PrintSmallText(MOVE_VALUE_X,pos_y,str);
+}
+#endif
 
 void UpdateSmallString(u8 pos_x, u8 pos_y, u8 *str,u16 len){
 	ClearStringForWidth(pos_x,pos_y,8*len);

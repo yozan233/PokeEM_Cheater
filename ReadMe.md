@@ -11,6 +11,14 @@
 
 ## 生成 bin 和 info 文件
 
+### 编译全部中英文版本
+
+```shell
+python build.py all
+```
+
+该命令依次编译绿宝石、火红／叶绿、红宝石／蓝宝石的中文和英文资源，共生成六组 bin/info 文件。
+
 ### 绿宝石
 
 ```shell
@@ -23,11 +31,27 @@ python build.py
 python build.py bpee0
 ```
 
+### 绿宝石英文版
+
+```shell
+python build.py bpeu0
+```
+
+`bpeu0` 复用 `BPEE0` 的 ROM 地址配置，但编译英文资源 `src/resource_us.c`。
+
 ### 火红／叶绿公共资源
 
 ```shell
 python build.py bpre0
 ```
+
+英文版：
+
+```shell
+python build.py bpru0
+```
+
+`bpru0` 复用 `BPRE0` 的 ROM 地址配置，但编译英文资源 `src/resource_us.c`。
 
 ### 红宝石／蓝宝石公共资源
 
@@ -35,11 +59,22 @@ python build.py bpre0
 python build.py axve0
 ```
 
+英文版：
+
+```shell
+python build.py axvu0
+```
+
+`axvu0` 复用 `AXVE0` 的 ROM 地址配置，但编译英文资源 `src/resource_us.c`。
+
 生成结果位于 `inner_cheater_bin`：
 
 - `cheater_EMERALD.bin` 和 `info_cheater_EMERALD.txt`
+- `cheater_EMERALD_US.bin` 和 `info_cheater_EMERALD_US.txt`
 - `cheater_FIRE_RED.bin` 和 `info_cheater_FIRE_RED.txt`
+- `cheater_FIRE_RED_US.bin` 和 `info_cheater_FIRE_RED_US.txt`
 - `cheater_RUBY.bin` 和 `info_cheater_RUBY.txt`
+- `cheater_RUBY_US.bin` 和 `info_cheater_RUBY_US.txt`
 
 ## 配置和临时文件
 

@@ -43,6 +43,15 @@ REQUIRED_MAP_SYMBOLS = {
 
 MAKE = "make"
 
+BUILD_TARGETS = {
+    "BPEE0": ("BPEE0", "src/resource.c", "EMERALD", False),
+    "BPEU0": ("BPEE0", "src/resource_us.c", "EMERALD_US", True),
+    "BPRE0": ("BPRE0", "src/resource.c", "FIRE_RED", False),
+    "BPRU0": ("BPRE0", "src/resource_us.c", "FIRE_RED_US", True),
+    "AXVE0": ("AXVE0", "src/resource.c", "RUBY", False),
+    "AXVU0": ("AXVE0", "src/resource_us.c", "RUBY_US", True),
+}
+
 VERSION_RE = re.compile(r"^[A-Z0-9_]+$")
 SYMBOL_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 ADDRESS_RE = re.compile(r"^0[xX][0-9A-Fa-f]{1,8}$")
@@ -262,7 +271,13 @@ def hex_value(value: int) -> str:
     return f"0x{value & 0xFFFFFFFF:X}"
 
 
-def package(version: str, map_text: str, f2_rom_text: str, fc_rom_text: str) -> None:
+def package(
+    version: str,
+    output_project: str,
+    map_text: str,
+    f2_rom_text: str,
+    fc_rom_text: str,
+) -> None:
     version_config = load_version(version)
     if not version_config["publish"]:
         raise BuildError(f"{version} is available for linking but is not a publish version")
@@ -322,9 +337,8 @@ def package(version: str, map_text: str, f2_rom_text: str, fc_rom_text: str) -> 
             )
         )
 
-    project = version_config["project"]
-    info_path = OUTPUT_DIR / f"info_cheater_{project}.txt"
-    bin_path = OUTPUT_DIR / f"cheater_{project}.bin"
+    info_path = OUTPUT_DIR / f"info_cheater_{output_project}.txt"
+    bin_path = OUTPUT_DIR / f"cheater_{output_project}.bin"
     atomic_write_text(info_path, "\n".join(lines) + "\n")
     atomic_write_bytes(bin_path, f2_payload)
 
@@ -345,33 +359,44 @@ def run_command(arguments: list[str]) -> None:
         )
 
 
-def compile_project(version: str) -> None:
+def compile_project(target: str) -> None:
+    build_target = BUILD_TARGETS.get(target)
+    if build_target is None:
+        choices = ", ".join(BUILD_TARGETS)
+        raise BuildError(f"unknown build target {target}; expected one of: {choices}")
+
+    version, resource_source, output_project, english_resource = build_target
     version_config = load_version(version)
     if not version_config["publish"]:
         raise BuildError(f"{version} is available for linking but is not a publish version")
 
     prepare(version)
-    defines = " ".join(version_config["defines"])
-    map_file = f"build/{version}.map"
+    defines = list(version_config["defines"])
+    if english_resource:
+        defines.append("ENGLISH_RESOURCE")
+    defines_text = " ".join(defines)
+    map_file = f"build/{target}.map"
     run_command(
         [
             MAKE,
             "-f",
             "makefile",
             f"GAME_VERSION={version}",
-            f"DEFINES={defines}",
+            f"DEFINES={defines_text}",
+            f"RESOURCE_SOURCE={resource_source}",
+            f"MAP_FILE={map_file}",
             "link",
         ]
     )
 
-    f2_rom = f"build/{version}_0x08F20000.gba"
-    fc_rom = f"build/{version}_0x08FC0000.gba"
+    f2_rom = f"build/{target}_0x08F20000.gba"
+    fc_rom = f"build/{target}_0x08FC0000.gba"
     render(version, "0x08F20000", f2_rom)
     run_command([MAKE, "-f", "makefile", "armips"])
     render(version, "0x08FC0000", fc_rom)
     run_command([MAKE, "-f", "makefile", "armips"])
-    package(version, map_file, f2_rom, fc_rom)
-    print(f"Generated cheater_{version_config['project']}.bin and its info file.")
+    package(version, output_project, map_file, f2_rom, fc_rom)
+    print(f"Generated cheater_{output_project}.bin and its info file.")
 
 
 def clean() -> None:
@@ -384,7 +409,10 @@ def create_parser() -> argparse.ArgumentParser:
         "target",
         nargs="?",
         default="BPEE0",
-        help="build target (BPEE0, BPRE0, AXVE0) or clean; default: BPEE0",
+        help=(
+            "build target (BPEE0, BPEU0, BPRE0, BPRU0, AXVE0, AXVU0) "
+            "or all/clean; default: BPEE0"
+        ),
     )
     return parser
 
@@ -394,6 +422,9 @@ def main() -> int:
     try:
         if target == "CLEAN":
             clean()
+        elif target == "ALL":
+            for build_target in BUILD_TARGETS:
+                compile_project(build_target)
         else:
             compile_project(target)
     except (BuildError, OSError, json.JSONDecodeError) as error:

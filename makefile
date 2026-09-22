@@ -9,6 +9,7 @@ LDFLAGS=-z muldefs --relocatable
 
 GAME_VERSION?=BPEE0
 DEFINES?=EMERALD
+RESOURCE_SOURCE?=src/resource.c
 BUILD_DIR=build
 MAP_FILE=$(BUILD_DIR)/$(GAME_VERSION).map
 
@@ -33,7 +34,7 @@ objects:
 	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/change_pid_2.c" -o "$(BUILD_DIR)/change_pid_2.o"
 	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/task_02.c" -o "$(BUILD_DIR)/task_02.o"
 	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/button_events.c" -o "$(BUILD_DIR)/button_events.o"
-	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "src/resource.c" -o "$(BUILD_DIR)/resource.o"
+	$(CC) $(CFLAGS) $(C_DEFINE_FLAGS) -c "$(RESOURCE_SOURCE)" -o "$(BUILD_DIR)/resource.o"
 	$(AS) $(ASFLAGS) $(AS_DEFINE_FLAGS) -c "src/exit_asm.s" -o "$(BUILD_DIR)/exit_asm.o"
 	$(AS) $(ASFLAGS) $(AS_DEFINE_FLAGS) -c "src/Chuan.asm" -o "$(BUILD_DIR)/Chuan.o"
 

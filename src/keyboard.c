@@ -48,7 +48,9 @@ void UpdateKeyboardMousePos(){
             x = KEYBOARD_BASE_X;
             y = KEYBOARD_BASE_Y + udivsi3(select,10)*FONT_SPACE_V;
             select = umodsi3(select,10);
-            #ifdef FIRE_RED_LEAF_GREEN
+            #ifdef ENGLISH_RESOURCE
+            x += (ENGLISH_FONT_SPACE_H*select);
+            #elif FIRE_RED_LEAF_GREEN
             x += (CHINESE_FONT_SPACE_H*select);
             #else
             if(myTempData->fontType == FONT_CHINESE)
@@ -126,6 +128,7 @@ void UpdateEnglishWordList(){
 	
 }
 
+#ifndef ENGLISH_RESOURCE
 void UpdateChineseWordList(){
     struct font *ft = (struct font *)myTempData->textBuffer.wordList;
 	u8 a = myTempData->fontBit1;
@@ -164,10 +167,14 @@ void UpdateChineseWordList(){
 	ft->fill = 0xFF;
 
 }
+#endif
 
 void UpdateFontPageFlag(){
 	u8 *fontPage = myTempData->fontPage;
 	fontPage[1] = 0xFF;
+	#ifdef ENGLISH_RESOURCE
+	fontPage[0] = myTempData->fontType == FONT_LOWERCASE ? CHAR_a : CHAR_A;
+	#else
 	u16 a = (myTempData->fontBit1<<8)+myTempData->fontBit2;
 	u8 b = 0;
 	u16 c = 0x100;
@@ -297,6 +304,7 @@ void UpdateFontPageFlag(){
 
 	}
 	fontPage[0] = b;
+	#endif
 	#ifdef FIRE_RED_LEAF_GREEN
 	UpdateString(216,48,&myTempData->fontPage,1);
     #elif RUBY_SAPPHIRE
@@ -333,16 +341,30 @@ void PrintUnderline(u32 cur, u32 length){
     #endif
 }
 
+#ifndef ENGLISH_RESOURCE
 bool32 CheckCurrentFont(){
     u16 flag = myTempData->fontBit1*0x100+myTempData->fontBit2;
     return flag < 0x1E28;
 }
+#endif
 
 void UpdateWordList(){
+	#ifdef ENGLISH_RESOURCE
+	if(myTempData->fontType > FONT_LOWERCASE){
+		myTempData->fontType = FONT_UPPERCASE;
+		myTempData->fontBit1 = 0;
+		myTempData->fontBit2 = CHAR_A;
+	}
+	#endif
+
+	#ifdef ENGLISH_RESOURCE
+	UpdateEnglishWordList();
+	#else
 	if(myTempData->fontType > FONT_LOWERCASE)
         UpdateChineseWordList();
 	else
 		UpdateEnglishWordList();
+	#endif
 	#ifdef FIRE_RED_LEAF_GREEN
 	ClearStringRect(0,40,12*10+6*9,16*5);
 	PrintText(0,40,myTempData->textBuffer.wordList);
@@ -401,6 +423,18 @@ void UpdateKeyboardValue(){
 }
 
 void KeyboardPreviousPage(){
+	#ifdef ENGLISH_RESOURCE
+	myTempData->fontBit1 = 0;
+	if(myTempData->fontType == FONT_UPPERCASE){
+		myTempData->fontType = FONT_LOWERCASE;
+		myTempData->fontBit2 = CHAR_a;
+	}
+	else{
+		myTempData->fontType = FONT_UPPERCASE;
+		myTempData->fontBit2 = CHAR_A;
+	}
+	UpdateWordList();
+	#else
 	if(myTempData->fontType > FONT_LOWERCASE)
 	{
 		if(myTempData->fontBit1+myTempData->fontBit2 > 1)
@@ -436,9 +470,22 @@ void KeyboardPreviousPage(){
 		myTempData->fontBit2 = 0xBB;
 	}
 	UpdateWordList();
+	#endif
 }
 
 void KeyboardNextPage(){
+	#ifdef ENGLISH_RESOURCE
+	myTempData->fontBit1 = 0;
+	if(myTempData->fontType == FONT_UPPERCASE){
+		myTempData->fontType = FONT_LOWERCASE;
+		myTempData->fontBit2 = CHAR_a;
+	}
+	else{
+		myTempData->fontType = FONT_UPPERCASE;
+		myTempData->fontBit2 = CHAR_A;
+	}
+	UpdateWordList();
+	#else
 	if(myTempData->fontType > FONT_LOWERCASE)
 	{
 		if(CheckCurrentFont()){
@@ -463,14 +510,20 @@ void KeyboardNextPage(){
 		}
 		
 	}
-
+		
 	UpdateWordList();
+	#endif
 }
 
 void DeleteWord(){
 	if(myTempData->inputCursorIndex)
 	{
 		u8 *text_nd = myTempData->textBuffer.newName;
+		#ifdef ENGLISH_RESOURCE
+		text_nd += myTempData->inputCursorIndex-1;
+		text_nd[0] = 0xFF;
+		myTempData->inputCursorIndex--;
+		#else
 		u32 dm = 0;
 		if(myTempData->inputCursorIndex > 1)
 			dm = myTempData->inputCursorIndex-2;
@@ -491,6 +544,7 @@ void DeleteWord(){
 			text_nd--;
 			dm--;
 		}
+		#endif
 		
 		PlaySound(SOUND_DELETE);
 		UpdateCurrentPageText();
@@ -508,9 +562,13 @@ void KeyboardButtonAEvent(){
 			DeleteWord();
 			break;
 		default:{
+			#ifdef ENGLISH_RESOURCE
+			u32 m = 1;
+			#else
 			u32 m = 2;
 			if(myTempData->fontType < FONT_CHINESE)
 				m --;
+			#endif
 			int name_len = 10;
 			if(myTempData->page == PAGE_PLAYER_NAME)
 				name_len = 7;
@@ -523,6 +581,9 @@ void KeyboardButtonAEvent(){
 				
 				myTempData->inputCursorIndex += m;
 
+				#ifdef ENGLISH_RESOURCE
+				newName[0] = wordList->zi2;
+				#else
 				if(m == 2){
 					newName[0] = wordList->zi1;
 					newName[1] = wordList->zi2;
@@ -530,6 +591,7 @@ void KeyboardButtonAEvent(){
 				else{
 					newName[0] = wordList->zi2;
 				}
+				#endif
 
 				UpdateCurrentPageText();
 			}
@@ -540,6 +602,15 @@ void KeyboardButtonAEvent(){
 
 }
 
+#ifdef ENGLISH_RESOURCE
+void KeyboardPreviousFlag(){
+	KeyboardPreviousPage();
+}
+
+void KeyboardNextFlag(){
+	KeyboardNextPage();
+}
+#else
 //通过首字母获取对应的字
 void GetWordByFlag(u8 flag,u8* word){
 	switch (flag)
@@ -695,3 +766,4 @@ void KeyboardNextFlag(){
 
 	UpdateWordList();
 }
+#endif
