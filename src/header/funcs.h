@@ -82,6 +82,9 @@ extern void ResetInitialPlayerAvatarState(void);
 extern void DecryptBoxMon(void *boxMon);
 extern void EncryptBoxMon(void *boxMon);
 extern u16 CalculateBoxMonChecksum(void *boxMon);
+extern u8 CreateMonIcon(u16 species, void (*callback)(struct Sprite *), s16 x, s16 y, u8 subpriority, u32 personality, bool32 handleDeoxys);
+extern void SpriteCB_MonIcon(struct Sprite *sprite);
+extern void DestroySprite(struct Sprite *sprite);
 
 extern void Text_LoadWindowTemplate(const void *winConfig);
 extern void InitMenuWindow(const void *winConfig);
@@ -121,7 +124,6 @@ extern struct Time gLocalTime;
 extern struct Main gMain;
 extern struct Task *gTasks;
 
-extern u32 *gMonIconTablePtr;
 extern u32 *gMonFrontPicTablePtr;
 extern u32 gItemIconTablePtr;
 extern u32 *gMonPaletteTablePtr;

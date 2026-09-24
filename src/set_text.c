@@ -20,6 +20,7 @@ extern bool8 validAttackName(u16 attackNum);
 extern bool8 validMonSpeciesNameValid(u16 species);
 extern void UpdateKeyboardValue();
 extern void restart(int i);
+extern void destroyMonIconSprite();
 u8 getMapId(u16 mapGroup, u16 mapNum);
 u8 *getPlayerNameOffset();
 u16 get_ballNum(u8 index);
@@ -587,12 +588,12 @@ void InitPage(u8 page){
 		#ifndef RUBY_SAPPHIRE
 		HideSprite(mySav->itemPicId);
 		#endif
-		HideSprite(mySav->monIconId);
+		destroyMonIconSprite();
 		HideSprite(mySav->monPicId);
 		break;
 	case PAGE_POKE_INFO:
 		initMonTempData();
-		ShowSprite(mySav->monIconId);
+		//ShowSprite(mySav->monIconId);
 		break;
 	case PAGE_POKE_INFO2:
 		get_ball_addr();

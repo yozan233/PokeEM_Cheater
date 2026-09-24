@@ -3,11 +3,11 @@
 extern void task_loader(u8);
 extern u32 GetMonData(struct Pokemon* poke_address, u8 request);
 extern void SetMonPidTid(struct Pokemon *mon,u32 pid,u32 tid);
+extern u8 CreateMyMonIcon(u16 species);
 void initMonTempData();
 void loadMonName();
 void loadMonIconSprite();
 void loadAbilityNums();
-void loadMonIconTiles(u16 species);
 void loadMonIsShiny();
 void loadMonGender(u16 species);
 u32 getCurrentMonData(u8 request);
@@ -126,17 +126,32 @@ u8 *getMonSpeciesName(u16 species){
 	u32 speciesNames = gSpeciesNamesPtr[0];
 	return (u8*)(speciesNames + 0xB*species);
 }
+
+void destroyMonIconSprite(){
+    u8 id = mySav->monIconId;
+    if(id){
+        struct SpriteFrameImage image = { NULL, 32 * 32 / 2 };
+        getSprite(id)->images = &image;
+
+        DestroySprite(getSprite(id));
+        mySav->monIconId = 0;
+    }
+}
+
 /**
  * 加载精灵小图标
 */
 void loadMonIconSprite(){
 	u16 species = getCurrentMonData(ATTR_SPECIES_2);
 	
-	loadMonIconTiles(species);
-	struct Sprite* sprites = getSprite(mySav->monIconId);
-    u32 monIconPaletteIndices = gMonIconPaletteIndicesPtr[0];
-    u32 monIconPaletteIndex = ((u8*)(myTempData->species+monIconPaletteIndices))[0];
-	sprites->oam.paletteNum = monIconPaletteIndex;
+	// loadMonIconTiles(species);
+	// struct Sprite* sprites = getSprite(mySav->monIconId);
+    // u32 monIconPaletteIndices = gMonIconPaletteIndicesPtr[0];
+    // u32 monIconPaletteIndex = ((u8*)(myTempData->species+monIconPaletteIndices))[0];
+	// sprites->oam.paletteNum = monIconPaletteIndex;
+
+	destroyMonIconSprite();
+	mySav->monIconId = CreateMyMonIcon(species);
 }
 
 void loadAbilityNums(){
@@ -203,16 +218,6 @@ void loadAbilityNums(){
 
 struct Sprite *getSprite(u8 id){
 	return &gSprites[id];
-}
-
-/**
- * 加载精灵图标图块
- * @param species 种族编号
- */
-void loadMonIconTiles(u16 species){
-	u32* gMonIconTable = gMonIconTablePtr;
-	u32 monIconOffset = gMonIconTable[species];
-	CpuSet((void *) monIconOffset, (void *) 0x06010400, 0x200);
 }
 
 /**

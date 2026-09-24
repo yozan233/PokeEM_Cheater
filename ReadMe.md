@@ -17,7 +17,7 @@
 python build.py all
 ```
 
-该命令依次编译绿宝石、火红／叶绿、红宝石／蓝宝石的中文和英文资源，共生成六组 bin/info 文件。
+该命令依次编译`绿宝石`、`火红`、`红宝石`的中文和英文资源，共生成六组 bin/info 文件。
 
 ### 绿宝石
 
@@ -39,9 +39,9 @@ python build.py bpeu0
 
 `bpeu0` 复用 `BPEE0` 的 ROM 地址配置，并使用 `src/resource_text.json` 中的英文文本。
 
-### 火红／叶绿公共资源
+### 火红
 
-```shell
+```sh
 python build.py bpre0
 ```
 
@@ -53,7 +53,7 @@ python build.py bpru0
 
 `bpru0` 复用 `BPRE0` 的 ROM 地址配置，并使用 `src/resource_text.json` 中的英文文本。
 
-### 红宝石／蓝宝石公共资源
+### 红宝石
 
 ```shell
 python build.py axve0
@@ -83,7 +83,6 @@ python build.py axvu0
 - 中英文文本及版本文字集中维护在 `src/resource_text.json`，字符编码表为项目根目录下的 `charmap.txt`；每次编译时，`build.py` 会先调用 `build_text.py`，按目标版本生成临时文件 `build/resource_text.c` 和包含版本文字长度、CRC 的 `build/resource_text.h`。
 - `rom_offsets.ld` 和 `insert.asm` 由 `build.py` 自动生成。
 - 构建会分别在 `0x08F20000` 和 `0x08FC0000` 插入代码，再比较两份结果、生成重定位信息。
-- `BPGE0` 和 `AXPE0` 偏移仍保留在 JSON 中，但不是正式发布目标，不会覆盖 FIRE_RED 或 RUBY 公共资源。
 
 ## 清理
 

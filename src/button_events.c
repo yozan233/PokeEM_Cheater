@@ -295,7 +295,7 @@ void shiye(){
     #else
 	 gSaveBlock1Ptr->flashLevel = 0;
     #endif
-    #ifdef BPEE0
+    #ifdef EMERALD
     u8 *pyramidFlag = (u8 *)(((u32*)&gSaveBlock2Ptr)[0]+0x0E68);
     if(pyramidFlag[0] != 0){
         pyramidFlag[0] = 0xC0;

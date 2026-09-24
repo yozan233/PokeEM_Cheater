@@ -46,16 +46,6 @@ struct SpriteTemplate sNormalSpriteTemplate =
     .callback = SpriteCallbackDummy
 };
 
-void MonIconSpriteCallback(struct Sprite* sprite){
-    u8 flag = super->ptr_vblank_counter2 & 0xF;
-    
-    if(flag == 0x0)
-        sprite->oam.tileNum = 0x30;
-    else if(flag == 0x8)
-        sprite->oam.tileNum = 0x20;
-    
-}
-
 u8 CreateNormalSprite(s16 x, s16 y){
     u8 spriteId = CreateSprite(&sNormalSpriteTemplate, x, y, 0);
     struct Sprite *sprite = getSprite(spriteId);
@@ -82,13 +72,13 @@ void CreateSprites(){
     sprite->oam.size = SPRITE_SIZE(64x64);
     sprite->oam.mosaic = TRUE;
 
-    u8 monIconId = CreateNormalSprite(0x1A,0x4);
-    mySav->monIconId = monIconId;
-    sprite = getSprite(monIconId);
-    sprite->oam.tileNum = 0;
-    sprite->oam.size = SPRITE_SIZE(32x32);
-    sprite->oam.mosaic = TRUE;
-    sprite->callback = (void *) MonIconSpriteCallback;
+    // u8 monIconId = CreateNormalSprite(0x1A,0x4);
+    // mySav->monIconId = monIconId;
+    // sprite = getSprite(monIconId);
+    // sprite->oam.tileNum = 0;
+    // sprite->oam.size = SPRITE_SIZE(32x32);
+    // sprite->oam.mosaic = TRUE;
+    // sprite->callback = (void *) MonIconSpriteCallback;
 
     #ifndef RUBY_SAPPHIRE
     u8 itemPicId = CreateNormalSprite(0x70,0x28);
@@ -108,4 +98,16 @@ void CreateSprites(){
     LoadPalette(&mouse_pal,0x1C0,0x20);
     #endif
 
+}
+
+u8 CreateMyMonIcon(u16 species){
+    u8 spriteId = CreateMonIcon(species,SpriteCB_MonIcon,32,12,4,0,0);
+
+    u32 monIconPaletteIndices = gMonIconPaletteIndicesPtr[0];
+    u32 monIconPaletteIndex = ((u8*)(myTempData->species+monIconPaletteIndices))[0];
+
+    struct Sprite *sprite = getSprite(spriteId);
+    sprite->oam.paletteNum = monIconPaletteIndex;
+
+    return spriteId;
 }
