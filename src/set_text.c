@@ -1048,13 +1048,18 @@ u16 getAttackNum(u8 n){
 
 
 u8 *getAbilityName(){
-    u16 abilitie = myTempData->abilityNums.nums[myTempData->abilityNumPos];
-    u8 *abilityName = getBattleTextBuff(B_BUFF_ABILITY,abilitie);
-	if (checkNameString(abilityName,gNameLengthConfig.abilityNameLength)){
-		return abilityName;
-	}
-	
-	return 0;
+    u16 ability = myTempData->abilityNums.nums[myTempData->abilityNumPos];
+    u8 *abilityName;
+#ifdef FIRE_RED_LEAF_GREEN
+    if (HasCfruGetAbilityName())
+        abilityName = (u8 *)gCfruGetAbilityName(ability, myTempData->species);
+    else
+#endif
+        abilityName = getBattleTextBuff(B_BUFF_ABILITY, ability);
+
+    if (abilityName && checkNameString(abilityName, gNameLengthConfig.abilityNameLength))
+        return abilityName;
+    return 0;
 }
 
 u8 *getTypeName(u8 type){

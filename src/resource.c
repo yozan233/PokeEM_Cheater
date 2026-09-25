@@ -93,9 +93,18 @@ const struct rbox_short rbox_table[] = {
 const struct ListQuantityLimit gQuantityLimit = {
 	.pokemonCount = 0,
 	.moveCount = 0,
-	.itemCount = 0,
-	.abilityHook = FALSE
+	.itemCount = 0
 };
+
+#ifdef FIRE_RED_LEAF_GREEN
+extern const u8 *CfruGetAbilityName(u16 ability, u16 species);
+const u8 *(* const volatile gCfruGetAbilityName)(u16 ability, u16 species) = CfruGetAbilityName;
+
+bool8 HasCfruGetAbilityName(void){
+    u32 address = (u32)gCfruGetAbilityName;
+    return address > 1;
+}
+#endif
 
 const struct NameLengthConfig gNameLengthConfig = {
 	.pokemonNameLength = 11,

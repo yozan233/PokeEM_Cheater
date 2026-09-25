@@ -169,7 +169,7 @@ void loadAbilityNums(){
 		myTempData->abilityNums.nums[num] = 0;
 
 		#ifdef FIRE_RED_LEAF_GREEN
-		if(gQuantityLimit.abilityHook == TRUE){
+		if(HasCfruGetAbilityName()){
 			if(tempMon == NULL){
 				tempMon = Alloc(MON_DATA_SIZE);
 				memcpy(tempMon, curMon, MON_DATA_SIZE);

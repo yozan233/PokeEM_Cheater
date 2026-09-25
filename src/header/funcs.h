@@ -97,6 +97,11 @@ extern void ExpandBattleTextBuffPlaceholders(const u8 *src, u8 *dst);
 extern u8 ItemIdToBallId(u16 ballItem);
 extern u16 GetAbilityBySpecies(u16 species, u8 abilityNum);
 extern u16 GetMonAbility(struct Pokemon *mon);
+#ifdef FIRE_RED_LEAF_GREEN
+extern const u8 *CfruGetAbilityName(u16 ability, u16 species);
+extern const u8 *(* const volatile gCfruGetAbilityName)(u16 ability, u16 species);
+extern bool8 HasCfruGetAbilityName(void);
+#endif
 extern void LoadMonIconPalettes(void);
 
 extern void debug();

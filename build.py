@@ -230,6 +230,7 @@ def read_map(map_path: Path) -> tuple[int, dict[str, int]]:
     text_size: Optional[int] = None
     symbol_addresses: dict[str, int] = {}
     needed_symbols = set(MAP_SYMBOLS)
+    needed_symbols.add("gCfruGetAbilityName")
 
     with map_path.open("r", encoding="utf-8", errors="replace") as map_file:
         for line in map_file:
@@ -298,6 +299,8 @@ def package(
     symbols = version_config["symbols"]
     address_to_name: dict[int, str] = {}
     for name, symbol in symbols.items():
+        if name == "CfruGetAbilityName":
+            continue  # Its zero-address placeholder is identified by the pointer slot below.
         value = parse_address(symbol["address"], f"{version}.{name}.address")
         if symbol["thumb"]:
             value += 1
@@ -309,6 +312,15 @@ def package(
         name = address_to_name.get(value)
         if name is not None:
             reference_offsets.setdefault(name, []).append(offset)
+
+    if "CfruGetAbilityName" in symbols:
+        slot_address = map_symbols.get("gCfruGetAbilityName")
+        if slot_address is None:
+            raise BuildError("missing gCfruGetAbilityName pointer slot in the map")
+        slot_offset = slot_address - ROM_BASE
+        if not 0 <= slot_offset <= text_size - 4 or struct.unpack_from("<I", f2_payload, slot_offset)[0] != 1:
+            raise BuildError("invalid CfruGetAbilityName pointer slot")
+        reference_offsets["CfruGetAbilityName"] = [slot_offset]
 
     lines = [
         "Size",

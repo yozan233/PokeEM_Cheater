@@ -409,12 +409,12 @@ void OnSureClick(){
             SetCurrentMonLevel(myTempData->lvl);
         }
         struct Pokemon* party = getCurrentPlayerParty();
-        party->padding = 0;
+        //party->padding = 0;
         setCurrentMonData(ATTR_HAPPINESS,myTempData->happiness);
 
         #ifdef FIRE_RED_LEAF_GREEN
         bool8 abilityPid = FALSE;
-        if(gQuantityLimit.abilityHook == TRUE){
+        if(HasCfruGetAbilityName()){
             if(myTempData->abilityNumPos == 2){
                 ((struct Pokemon2*)party)->hiddenAbility = TRUE;
             }

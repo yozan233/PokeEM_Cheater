@@ -69,6 +69,10 @@ void SetMonPidTid(struct Pokemon *mon,u32 pid,u32 tid){
     GetMonData(mon, ATTR_OT_NAME, nick);
     SetMonData(changed, ATTR_OT_NAME, nick);
 
+#ifdef FIRE_RED_LEAF_GREEN
+    if (HasCfruGetAbilityName())
+        ((struct Pokemon2*)changed)->hiddenAbility = ((struct Pokemon2*)mon)->hiddenAbility;
+#endif
     memcpy(mon, changed, 0x64);
     Free(changed);
 }
@@ -138,7 +142,7 @@ u32 CreateShinyPid(u8 nature, u8 gender, u8 ratio, u32 TiD){
 
 bool8 checkAbilityNumInvalid(u32 pid){
     #ifdef FIRE_RED_LEAF_GREEN
-    if(gQuantityLimit.abilityHook == TRUE && myTempData->abilityNumPos != 2){
+    if(HasCfruGetAbilityName() && myTempData->abilityNumPos != 2){
         return (pid & 1) != myTempData->abilityNumPos;
     }
     #endif

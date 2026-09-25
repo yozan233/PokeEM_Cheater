@@ -353,7 +353,7 @@ struct TextBuffer{
 };
 
 struct AbilityNums {
-    u8 nums[3];
+    u16 nums[3];
     u8 size_1;
 };
 
@@ -423,8 +423,8 @@ struct MyDatastruct
     u8 fontBit2;        //0x49
     u8 fontPage[2];     //0x4A
     u8 inputCursorIndex;//0x4C
-    struct AbilityNums abilityNums; //0x4D
-    u8 field_space[0xAF];
+    struct AbilityNums abilityNums; //0x4E (aligned)
+    u8 field_space[0xAA];
 	struct TextBuffer textBuffer; //0x100
 };
 
@@ -799,8 +799,7 @@ struct ListQuantityLimit
     u32 pokemonCount;
     u32 moveCount;
     u32 itemCount;
-    bool8 abilityHook;
-	u8 padding[3];
+	u8 padding[4];
 };
 
 struct NameLengthConfig

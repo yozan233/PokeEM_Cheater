@@ -992,6 +992,10 @@
         "address": "0x08040D38",
         "thumb": true
       },
+      "CfruGetAbilityName": {
+        "address": "0x0",
+        "thumb": true
+      },
       "LoadMonIconPalettes": {
         "address": "0x0809707C",
         "thumb": true
